@@ -11,7 +11,7 @@ import SwiftUI
 struct SoloTravelApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SoloTabView()
         }
     }
 }
