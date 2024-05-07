@@ -16,28 +16,29 @@ final class MessagesViewModel: ObservableObject {
 struct MessagesView: View {
     
     @StateObject var viewModel = MessagesViewModel()
-    
-    
+    @State private var isNavigating = false
     
     var body: some View {
         NavigationView {
             
             // Need to get users here from firebase. Each user has an item that is an array of all the people they are messaging?
-            List(MockUsers.mockUsers ) { user in //currentUser.message_threads
-                MessageCellView(user: user)
-                    .onTapGesture {
-                        viewModel.selectedUser = user
-                        PersonalMessageView(selfUser: user, toUser: user)
-                    }
-                    .background(
-                        NavigationLink(destination: PersonalMessageView(selfUser: MockUsers.mockUsers[0], toUser: viewModel.selectedUser, currentMessage: "Current Message"),
-                                       isActive: $isNavigating) {
-                            EmptyView()
-                        }
-                    )
-                
-                
-            }
+//            List(MockUsers.mockUsers ) { user in //currentUser.message_threads
+//                MessageCellView(user: user)
+//                    .onTapGesture {
+//                        viewModel.selectedUser = user
+//                        isNavigating = true
+//                        PersonalMessageView(selfUser: user, toUser: user)
+//                    }
+//                    .background(
+//                        NavigationLink(destination: PersonalMessageView(selfUser: viewModel.selectedUser, toUser: viewModel.selectedUser, currentMessage: "Current Message"),
+//                                       isActive: $isNavigating) {
+//                            EmptyView()
+//                        }
+//                    )
+//                
+//                
+//            }
+            Text("Messages View")
             .navigationTitle("Messages")
         }
     }

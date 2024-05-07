@@ -6,12 +6,19 @@
 //
 
 import SwiftUI
+import Firebase
 
 final class HomeViewModel: ObservableObject {
     //@Published var emptyClass: Class = Class(name: "", professor: "", location: "", color: CodableColor(Color(.systemBackground)))
     @Published var selectedCity: String = ""
     @Published var selectedStay: String = ""
     
-    @Published var isShowingAccountView: Bool = false
-    @Published var isShowingTravelersView: Bool = false
+    
+    func updateUserCity(city: String) async throws {
+        guard let user = Auth.auth().currentUser else {
+            throw URLError(.badServerResponse)
+        }
+        
+        // MARK: This needs logic to update a specific field in the user's file
+    }
 }

@@ -33,17 +33,23 @@ struct HomeView: View {
                     .textFieldStyle(.roundedBorder)
                     .shadow(radius: 3)
                     
-                    Button(action: {
-                        viewModel.isShowingTravelersView = true
-                        
-                    }, label: {
+                    
+                    NavigationLink {
+                        MapView(city: viewModel.selectedCity)
+                    } label: {
                         Text("Connect")
                             .bold()
                             .foregroundStyle(.white)
                             .frame(width: 125, height: 40)
                             .background(.blue)
                             .clipShape(RoundedRectangle(cornerSize: CGSize(width: 50, height: 50)))
-                    })
+                    }
+                    .onTapGesture {
+                        Task {
+                            try await viewModel.updateUserCity(city: viewModel.selectedCity)
+                        }
+                    }
+                    
                     Spacer()
                 }
                 .padding(.horizontal)

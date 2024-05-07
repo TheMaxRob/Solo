@@ -8,11 +8,22 @@
 import SwiftUI
 
 struct MapView: View {
+    
+    var city: String
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        
+        NavigationStack {
+            Text("Map View!")
+            .navigationTitle("\(city)")
+        }
+        
+        // MARK: Figure out how to make this map exist.
+        
+        // Map of selected city
     }
 }
 
 #Preview {
-    MapView()
+    MapView(city: "Sevilla")
 }

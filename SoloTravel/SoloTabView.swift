@@ -9,21 +9,27 @@ import SwiftUI
 
 struct SoloTabView: View {
     
+    @Binding var showSignInView: Bool
+    
     var body: some View {
         TabView {
             HomeView()
                 .tabItem { Label("Home", systemImage: "house.fill") }
             
             MessagesView()
-                .tabItem { Label("Hello", systemImage: "message") }
+                .tabItem {
+                    Label("Messages", systemImage: "message.fill")
+                }
+            ProfileView(showSignInView: $showSignInView)
+                .tabItem {
+                    Label("Profile", systemImage: "person.crop.circle.fill")
+                }
             
-            AccountView()
-                .tabItem { Label("Account", systemImage: "person") }
         }
         .tint(.blue)
     }
 }
 
 #Preview {
-    SoloTabView()
+    SoloTabView(showSignInView: .constant(false))
 }
