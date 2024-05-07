@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MessageCellView: View {
     
-    var user: User
+    
     
     var body: some View {
         HStack {
@@ -17,7 +17,7 @@ struct MessageCellView: View {
                 .font(.largeTitle)
                 .padding(.horizontal)
             VStack(alignment: .leading) {
-                Text("\(user.firstName) \(user.lastName)")
+                Text("Max Roberts")
                     .bold()
                     .font(.title3)
                     .padding(.bottom, 2)
@@ -32,5 +32,5 @@ struct MessageCellView: View {
 }
 
 #Preview {
-    MessageCellView(user: MockUsers.mockUsers[0])
+    MessageCellView()
 }
