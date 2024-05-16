@@ -35,7 +35,7 @@ struct HomeView: View {
                     
                     
                     NavigationLink {
-                        MapView(city: viewModel.selectedCity)
+                        MeetupsView(city: viewModel.selectedCity)
                     } label: {
                         Text("Connect")
                             .bold()

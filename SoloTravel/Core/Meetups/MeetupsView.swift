@@ -23,17 +23,32 @@ final class MeetupsViewModel: ObservableObject {
         guard let user else { return }
         
         Task {
-            try await UserManager.shared.RSVPMeetup(userId: user.userId)
-            self.user = try await UserManager.shared.getUser(userId: user.userId)
-        } catch {
-            print("Error RSVPing to Meetup!")
+            do {
+                try await UserManager.shared.RSVPMeetup(userId: user.userId)
+                self.user = try await UserManager.shared.getUser(userId: user.userId)
+            } catch {
+                print("Error RSVPing to Meetup!")
+            }
         }
     }
 }
 
 struct MeetupsView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            List {
+                ForEach(MockMeetups.mockMeetups) { meetup in
+                    MeetupView(meetup: meetup)
+                        .onTapGesture {
+                            NavigationLink {
+                                MeetupsDetailView(meetup: meetup)
+                            } label: {
+                                Text("Meetups")
+                            }
+                        }
+                }
+            }
+        }
     }
 }
 

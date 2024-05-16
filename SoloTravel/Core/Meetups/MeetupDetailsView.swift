@@ -8,8 +8,29 @@
 import SwiftUI
 
 struct MeetupDetailsView: View {
+    
+    var meetup: Meetup
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            VStack {
+                Text("\(meetup.title)")
+                    .font(.headline)
+                    .padding(.bottom)
+                
+                Text("\(meetup.meetSpot)")
+                    .font(.subheadline)
+                
+                Text("\(meetup.meetTime)")
+                    .font(.subheadline)
+                    .padding(.bottom)
+                
+                Text("\(meetup.description)")
+                    .font(.caption)
+            }
+            .navigationTitle("Meetup Details")
+            
+        }
     }
 }
 
