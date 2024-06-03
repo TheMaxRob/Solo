@@ -1,8 +1,8 @@
 //
 //  SignInEmailViewModel.swift
-//  SoloTravel
+//  SwiftfulFirebaseBootcamp
 //
-//  Created by Max Roberts on 5/5/24.
+//  Created by Max Roberts on 5/3/24.
 //
 
 import Foundation
@@ -18,7 +18,10 @@ final class SignInEmailViewModel: ObservableObject {
             return
         }
         
-        try await AuthenticationManager.shared.createUser(email: email, password: password)
+        let authDataResult = try await AuthenticationManager.shared.createUser(email: email, password: password)
+        // try await UserManager.shared.createNewUser(auth: authDataResult)
+        let user =  DBUser(auth: authDataResult)
+        try await UserManager.shared.createNewUser(user: user)
     }
     
     
@@ -28,7 +31,11 @@ final class SignInEmailViewModel: ObservableObject {
             return
         }
         
-        try await AuthenticationManager.shared.signInUser(email: email, password: password)
+        let authDataResult = try await AuthenticationManager.shared.signInUser(email: email, password: password)
+        let user = DBUser(auth: authDataResult)
+        try await UserManager.shared.createNewUser(user: user)
+//        let user = DBUser(auth: authDataResult)
+//        try await UserManager.shared.createNewUser(user: user)
     }
     
     

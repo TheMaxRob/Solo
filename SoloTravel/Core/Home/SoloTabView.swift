@@ -13,7 +13,7 @@ struct SoloTabView: View {
     
     var body: some View {
         TabView {
-            HomeView()
+            HomeView(showSignInView: $showSignInView)
                 .tabItem { Label("Home", systemImage: "house.fill") }
             
             MessagesView()

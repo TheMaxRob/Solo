@@ -11,20 +11,14 @@ import Firebase
 @main
 struct SoloTravelApp: App {
     
-    class AppDelegate: NSObject, UIApplicationDelegate {
-      func application(_ application: UIApplication,
-                       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    init() {
         FirebaseApp.configure()
-
-        return true
-      }
+        print("Configured Firebase")
     }
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
                 RootView()
-            }
         }
     }
 }
