@@ -29,6 +29,7 @@ final class AuthenticationManager {
     func createUser(email: String, password: String) async throws -> AuthDataResultModel {
         
         let authDataResult = try await Auth.auth().createUser(withEmail: email, password: password)
+        
         let result = AuthDataResultModel(user: authDataResult.user)
         return result
     }
@@ -84,4 +85,3 @@ final class AuthenticationManager {
         try await user.delete()
     }
 }
-

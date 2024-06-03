@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-struct Meetup: Identifiable, Codable, Hashable {
+struct Meetup: Identifiable, Codable {
+    var id = UUID()
     let title: String
     let description: String
     let meetTime: Date
@@ -16,13 +17,49 @@ struct Meetup: Identifiable, Codable, Hashable {
     let meetSpot: String
 }
 
+final class MeetupViewModel: ObservableObject {
+    
+    @Published private(set) var user: DBUser? = nil
+    
+    func loadCurrentUser() async throws {
+        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        
+        
+    }
+    
+    
+//    func RSVPMeetup(meetup: Meetup) {
+//       guard let user else { return }
+//
+//       Task {
+//           do {
+//               try await UserManager.shared.RSVPMeetup(meetup: meetup, userId: user.userId)
+//               self.user = try await UserManager.shared.getUser(userId: user.userId)
+//           } catch {
+//               print("Error RSVPing to Meetup!")
+//           }
+//       }
+//   }
+        
+        
+}
+
 struct MeetupView: View {
     
+    @StateObject var viewModel = MeetupViewModel()
     var meetup: Meetup
     
     var body: some View {
         NavigationStack {
-            Text("\(meetup.title)")
+            VStack {
+                Text("\(meetup.description)")
+                    .font(.caption)
+                Text("\(meetup.meetSpot)")
+                Text("\(meetup.meetTime)")
+                Text("\(meetup.organizer.email ?? "")") // Should be their name but having trouble with that
+            }
+            .navigationTitle("meetup.title")
         }
         
     }

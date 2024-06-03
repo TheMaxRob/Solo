@@ -13,6 +13,7 @@ struct SignInEmailView: View {
     @StateObject private var viewModel = SignInEmailViewModel()
     @Binding var showSignInView: Bool
     
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -55,14 +56,11 @@ struct SignInEmailView: View {
                         .background(.blue)
                         .cornerRadius(10)
                 }
-                
                 Spacer()
             }
             .padding()
             .navigationTitle("Sign In with Email")
-            
         }
-        
     }
 }
 

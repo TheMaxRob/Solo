@@ -10,10 +10,24 @@ import SwiftUI
 struct HomeView: View {
     
     @StateObject var viewModel = HomeViewModel()
+    @Binding var showSignInView: Bool
     
     var body: some View {
         ZStack {
             NavigationStack {
+                
+                Button("Log out") {
+                    Task {
+                        do {
+                            try viewModel.signOut()
+                            showSignInView = true
+                        } catch {
+                            print(error)
+                        }
+                        
+                    }
+                }
+                
                 VStack(spacing: 10) {
                     Text("S o l o")
                         .bold()
@@ -35,7 +49,7 @@ struct HomeView: View {
                     
                     
                     NavigationLink {
-                        MeetupsView(city: viewModel.selectedCity)
+                        MeetupsView()
                     } label: {
                         Text("Connect")
                             .bold()
@@ -59,5 +73,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(showSignInView: .constant(false))
 }
