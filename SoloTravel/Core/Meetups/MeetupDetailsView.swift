@@ -16,33 +16,39 @@ final class MeetupDetailsViewModel: ObservableObject {
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
     }
     
-    
     func RSVPMeetup(meetup: Meetup) {
-       guard let user else { return }
-
-       Task {
-           do {
-               try await UserManager.shared.RSVPMeetup(userId: user.userId, meetup: meetup )
-               self.user = try await UserManager.shared.getUser(userId: user.userId)
-           } catch {
-               print("Error RSVPing to Meetup!")
-           }
-       }
+        guard let user else { return }
+        
+        Task {
+            do {
+                try await UserManager.shared.RSVPMeetup(userId: user.userId, meetup: meetup)
+                self.user = try await UserManager.shared.getUser(userId: user.userId)
+            } catch {
+                print("Error RSVPing to Meetup!")
+            }
+        }
     }
     
-    
-   
+    func createConversation(with organizerId: String) async throws -> String? {
+        print("Test output – Above guard let user")
+        guard let user else { return nil }
         
-        
+        let userIds = [user.userId, organizerId]
+        let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
+        print("Test Output – after MessageManager.createConversation")
+        print("Conversation created with ID: \(conversationId)")
+        return conversationId
+    }
 }
+
 struct MeetupDetailsView: View {
-    
     @StateObject var viewModel = MeetupDetailsViewModel()
+    @State private var isShowingPersonalMessageView = false
+    @State private var conversationId: String?
     var meetup: Meetup
     
     var body: some View {
         NavigationStack {
-            
             VStack {
                 Text("\(meetup.title)")
                     .font(.headline)
@@ -70,8 +76,12 @@ struct MeetupDetailsView: View {
                     }
                     
                     Button {
-                        // Send to personal message view with organizer.
-                        // How to know user id of organizer?
+                        Task {
+                            try await viewModel.loadCurrentUser()
+                            conversationId = try await viewModel.createConversation(with: meetup.organizer.userId)
+                            isShowingPersonalMessageView = true
+                            
+                        }
                     } label: {
                         Text("Message")
                             .tint(.black)
@@ -80,11 +90,13 @@ struct MeetupDetailsView: View {
                             .background(.blue)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-
+                }
+                
+                NavigationLink(destination: PersonalMessageView(conversationId: conversationId ?? ""), isActive: $isShowingPersonalMessageView) {
+                    EmptyView()
                 }
             }
             .navigationTitle("Meetup Details")
-            
         }
     }
 }

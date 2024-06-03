@@ -7,45 +7,71 @@
 
 import SwiftUI
 
-@MainActor
-final class MessagesViewModel: ObservableObject {
-    @Published var isShowingPersonalMessageView: Bool = false
-    //@Published var selectedUser: User = User()
-}
-
 struct MessagesView: View {
-    
     @StateObject var viewModel = MessagesViewModel()
-    @State private var isNavigating = false
+    @State private var isShowingChat = false
+    @State private var selectedConversation: Conversation?
     
     var body: some View {
         NavigationView {
-            
-            // Need to get users here from firebase. Each user has an item that is an array of all the people they are messaging?
-//            List(MockUsers.mockUsers ) { user in //currentUser.message_threads
-//                MessageCellView(user: user)
-//                    .onTapGesture {
-//                        viewModel.selectedUser = user
-//                        isNavigating = true
-//                        PersonalMessageView(selfUser: user, toUser: user)
-//                    }
-//                    .background(
-//                        NavigationLink(destination: PersonalMessageView(selfUser: viewModel.selectedUser, toUser: viewModel.selectedUser, currentMessage: "Current Message"),
-//                                       isActive: $isNavigating) {
-//                            EmptyView()
-//                        }
-//                    )
-//                
-//                
-//            }
-            Text("Messages View")
+            List(viewModel.conversations) { conversation in
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text(conversation.users.joined(separator: ", "))
+                            .font(.headline)
+                        Text(conversation.lastMessage ?? "")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                    Spacer()
+                }
+                .onTapGesture {
+                    selectedConversation = conversation
+                    viewModel.fetchMessages(for: conversation.id!)
+                    isShowingChat = true
+                }
+            }
+            .onAppear {
+                // Fetch conversations for the current user
+                if let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
+                    viewModel.fetchConversations(for: userId)
+                }
+            }
             .navigationTitle("Messages")
+            .background(
+                NavigationLink(destination: ChatView(viewModel: viewModel, conversation: selectedConversation), isActive: $isShowingChat) {
+                    EmptyView()
+                }
+                
+            )
         }
     }
 }
 
-
-
-#Preview {
-    MessagesView()
+struct ChatView: View {
+    @ObservedObject var viewModel: MessagesViewModel
+    @State private var messageText: String = ""
+    var conversation: Conversation?
+    
+    var body: some View {
+        VStack {
+            List(viewModel.messages) { message in
+                Text(message.content)
+            }
+            HStack {
+                TextField("Message", text: $messageText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Button("Send") {
+                    if let conversationId = conversation?.id, let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
+                        Task {
+                            await viewModel.sendMessage(to: conversationId, content: messageText, senderId: userId, recipientId: conversation!.users.filter { $0 != userId }.first!)
+                            messageText = ""
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+        .navigationTitle("Chat")
+    }
 }
