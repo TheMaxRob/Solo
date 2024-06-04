@@ -93,6 +93,7 @@ final class MessageManager {
         // Check if a conversation already exists between the specified users
         if let existingConversationId = try await findExistingConversationId(for: userIds) {
             // Return the ID of the existing conversation
+            print("Conversation already exists.")
             return existingConversationId
         }
         
@@ -123,8 +124,6 @@ final class MessageManager {
                 return document.documentID
             }
         }
-        
-        print("No matching conversation found – returning nil")
         return nil
     }
 
