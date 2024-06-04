@@ -21,8 +21,4 @@ final class HomeViewModel: ObservableObject {
         
         // MARK: This needs logic to update a specific field in the user's file
     }
-    
-    func signOut() throws {
-        try AuthenticationManager.shared.signOut()
-    }
 }

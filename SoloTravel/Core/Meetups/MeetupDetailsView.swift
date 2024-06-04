@@ -30,13 +30,11 @@ final class MeetupDetailsViewModel: ObservableObject {
     }
     
     func createConversation(with organizerId: String) async throws -> String? {
-        print("Test output – Above guard let user")
+
         guard let user else { return nil }
         
         let userIds = [user.userId, organizerId]
         let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
-        print("Test Output – after MessageManager.createConversation")
-        print("Conversation created with ID: \(conversationId)")
         return conversationId
     }
 }
@@ -91,10 +89,12 @@ struct MeetupDetailsView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                 }
-                
-                NavigationLink(destination: PersonalMessageView(conversationId: conversationId ?? ""), isActive: $isShowingPersonalMessageView) {
-                    EmptyView()
+                .navigationDestination(isPresented: $isShowingPersonalMessageView) {
+                    PersonalMessageView(conversationId: conversationId ?? "")
                 }
+//                NavigationLink(destination: PersonalMessageView(conversationId: conversationId ?? ""), isActive: $isShowingPersonalMessageView) {
+//                    EmptyView()
+//                }
             }
             .navigationTitle("Meetup Details")
         }

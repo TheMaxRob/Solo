@@ -1,33 +1,14 @@
-//
-//  ContentView.swift
-//  SoloTravel
-//
-//  Created by Max Roberts on 4/16/24.
-//
-
 import SwiftUI
 
 struct HomeView: View {
     
     @StateObject var viewModel = HomeViewModel()
     @Binding var showSignInView: Bool
+    @State var isShowingMeetups: Bool = false
     
     var body: some View {
         ZStack {
             NavigationStack {
-                
-                Button("Log out") {
-                    Task {
-                        do {
-                            try viewModel.signOut()
-                            showSignInView = true
-                        } catch {
-                            print(error)
-                        }
-                        
-                    }
-                }
-                
                 VStack(spacing: 10) {
                     Text("S o l o")
                         .bold()
@@ -47,26 +28,23 @@ struct HomeView: View {
                     .textFieldStyle(.roundedBorder)
                     .shadow(radius: 3)
                     
-                    
-                    NavigationLink {
-                        MeetupsView()
+                    Button {
+                        isShowingMeetups = true
                     } label: {
                         Text("Connect")
-                            .bold()
-                            .foregroundStyle(.white)
-                            .frame(width: 125, height: 40)
-                            .background(.blue)
-                            .clipShape(RoundedRectangle(cornerSize: CGSize(width: 50, height: 50)))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .background(Color.blue)
+                            .foregroundColor(.white)
                     }
-                    .onTapGesture {
-                        Task {
-                            try await viewModel.updateUserCity(city: viewModel.selectedCity)
-                        }
-                    }
-                    
+
                     Spacer()
                 }
                 .padding(.horizontal)
+            }
+            
+            if isShowingMeetups {
+                MeetupsView(isShowingMeetups: $isShowingMeetups)
+                    .zIndex(1)
             }
         }
     }

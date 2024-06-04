@@ -32,27 +32,57 @@ final class MeetupsViewModel: ObservableObject {
 //    }
 }
 
+
 struct MeetupsView: View {
+    @Binding var isShowingMeetups: Bool
     
-    // MARK: You can only see the location of the event if you are accepted to RSVP by the host
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(MockMeetups.mockMeetups) { meetup in
-                    NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
-                        VStack {
-                            MeetupView(meetup: meetup)
+            VStack {
+                HStack {
+                    Button(action: {
+                        isShowingMeetups = false
+                    }) {
+                        Image(systemName: "arrow.left")
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .background(Color.blue.opacity(0.8))
+                            .clipShape(Circle())
+                    }
+                    .padding(.leading, 20)
+                    .padding(.top, 55)
+                    
+                    Spacer()
+                }
+                
+                Text("Meetups")
+                    .font(.largeTitle)
+                    .bold()
+                    .padding(.top, 16)
+                
+                List {
+                    ForEach(MockMeetups.mockMeetups) { meetup in
+                        NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
+                            VStack {
+                                MeetupView(meetup: meetup)
+                            }
+                            
                         }
-                        
                     }
                 }
+                .listStyle(PlainListStyle())
+                .navigationTitle("Meetups")
+                
+                
             }
-            .navigationTitle("Meetups")
+            .background(Color.white)
+            .edgesIgnoringSafeArea(.all) // This ensures the background color covers the entire screen
+            
         }
+        
     }
 }
 
-
 #Preview {
-    MeetupsView()
+    MeetupsView(isShowingMeetups: .constant(true))
 }
