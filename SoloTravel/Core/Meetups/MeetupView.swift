@@ -7,16 +7,6 @@
 
 import SwiftUI
 
-struct Meetup: Identifiable, Codable {
-    var id = UUID()
-    let title: String
-    let description: String
-    let meetTime: Date
-    let createdDate: Date
-    let organizer: DBUser
-    let meetSpot: String
-}
-
 final class MeetupViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
@@ -57,7 +47,7 @@ struct MeetupView: View {
                     .font(.caption)
                 Text("\(meetup.meetSpot)")
                 Text("\(meetup.meetTime)")
-                Text("\(meetup.organizer.email ?? "")") // Should be their name but having trouble with that
+                Text("\(String(describing: meetup.organizer.firstName)) \(meetup.organizer.lastName ?? "")") 
             }
             .navigationTitle("meetup.title")
         }

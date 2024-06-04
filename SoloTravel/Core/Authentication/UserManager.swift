@@ -86,8 +86,57 @@ final class UserManager {
             throw URLError(.badURL)
         }
         let dict: [String:Any] = [
-            DBUser.CodingKeys.meetups.rawValue : data
+            DBUser.CodingKeys.rsvpMeetups.rawValue : data
         ]
         try await userDocument(userId: userId).updateData(dict)
     }
+    
+    
+    func createMeetup(userId: String, meetup: Meetup) async throws {
+      print("createMeetup in UserManager called!")
+
+      // Fetch existing meetups array from the user document (handle empty case)
+      var existingMeetups = try await getUserMeetups(userId: userId)
+      print("Existing Meetups Fetched")
+
+      // Ensure that the user has not exceeded the maximum number of meetups allowed
+      guard existingMeetups.count < 3 else {
+        throw Error.tooManyMeetups
+      }
+
+      // Append the new meetup to the existing array (optional)
+      existingMeetups.append(meetup) // This line can be removed if preferred
+
+      print("Meetup: \(meetup)")
+      print("Existing Meetups \(existingMeetups)")
+
+      // Directly update the field in Firestore using arrayUnion
+      try await userDocument(userId: userId).updateData([
+        DBUser.CodingKeys.createdMeetups.rawValue: FieldValue.arrayUnion([try encoder.encode(meetup)])
+      ])
+      print("Meetup created successfully!")
+    }
+
+
+
+    // Function to fetch existing meetups array from the user document
+    func getUserMeetups(userId: String) async throws -> [Meetup] {
+        let document = try await userDocument(userId: userId).getDocument()
+        if let meetupsData = document[DBUser.CodingKeys.createdMeetups.rawValue] as? Data {
+            if !meetupsData.isEmpty { // Check if data is not empty
+                return try decoder.decode([Meetup].self, from: meetupsData)
+            } else {
+                return [] // Return empty array if data is empty
+            }
+        } else {
+            // Handle the case where "createdMeetups" is missing entirely
+            print("createdMeetups not found in user document")
+            return []
+        }
+    }
+
+    enum Error: Swift.Error {
+        case tooManyMeetups
+    }
+
 }

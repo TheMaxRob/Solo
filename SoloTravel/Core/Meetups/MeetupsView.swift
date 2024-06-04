@@ -12,6 +12,7 @@ final class MeetupsViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
     
+    
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
@@ -35,6 +36,7 @@ final class MeetupsViewModel: ObservableObject {
 
 struct MeetupsView: View {
     @Binding var isShowingMeetups: Bool
+    @StateObject private var viewModel = MeetupsViewModel()
     
     var body: some View {
         NavigationStack {
@@ -77,7 +79,15 @@ struct MeetupsView: View {
             }
             .background(Color.white)
             .edgesIgnoringSafeArea(.all) // This ensures the background color covers the entire screen
-            
+            .overlay(alignment: .topTrailing) {
+                
+            NavigationLink {
+                MeetupCreationView()
+            } label: {
+                Image(systemName: "plus")
+                    .tint(.blue)
+            }
+            }
         }
         
     }
