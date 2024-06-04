@@ -24,6 +24,18 @@ struct Message: Codable, Identifiable {
     }
 }
 
+
+struct Meetup: Identifiable, Codable {
+    var id = UUID()
+    let title: String
+    let description: String
+    let meetTime: Date
+    let createdDate: Date
+    let organizer: DBUser
+    let meetSpot: String
+}
+
+
 struct Conversation: Codable, Identifiable {
     @DocumentID var id: String?
     let users: [String]
@@ -45,7 +57,8 @@ struct DBUser: Codable {
     let lastName: String?
     let photoURL: String?
     let dateCreated: Date?
-    let meetups: [Meetup]?
+    let rsvpMeetups: [Meetup]?
+    let createdMeetups: [Meetup]?
     let preferences: [String]?
     
     init(auth: AuthDataResultModel) {
@@ -55,7 +68,8 @@ struct DBUser: Codable {
         self.dateCreated = Date()
         self.firstName = nil
         self.lastName = nil
-        self.meetups = nil
+        self.rsvpMeetups = nil
+        self.createdMeetups = nil
         self.preferences = nil
     }
     
@@ -66,7 +80,8 @@ struct DBUser: Codable {
         lastName: String? = nil,
         photoURL: String? = nil,
         dateCreated: Date? = nil,
-        meetups: [Meetup]? = nil,
+        rsvpMeetups: [Meetup]? = nil,
+        createdMeetups: [Meetup]? = nil,
         preferences: [String]? = nil
     ) {
         self.userId = userId
@@ -75,7 +90,8 @@ struct DBUser: Codable {
         self.lastName = lastName
         self.photoURL = photoURL
         self.dateCreated = dateCreated
-        self.meetups = meetups
+        self.rsvpMeetups = rsvpMeetups
+        self.createdMeetups = createdMeetups
         self.preferences = preferences
     }
     
@@ -93,7 +109,8 @@ struct DBUser: Codable {
         case photoURL = "photo_url"
         case dateCreated = "date_created"
         case preferences = "preferences"
-        case meetups = "meetups"
+        case rsvpMeetups = "rsvp_meetups"
+        case createdMeetups = "created_meetups"
     }
     
     
@@ -106,8 +123,8 @@ struct DBUser: Codable {
         self.photoURL = try container.decodeIfPresent(String.self, forKey: .photoURL)
         self.dateCreated = try container.decodeIfPresent(Date.self, forKey: .dateCreated)
         self.preferences = try container.decodeIfPresent([String].self, forKey: .preferences)
-        self.meetups = try container.decodeIfPresent([Meetup].self, forKey: .meetups)
-
+        self.rsvpMeetups = try container.decodeIfPresent([Meetup].self, forKey: .rsvpMeetups)
+        self.createdMeetups = try container.decodeIfPresent([Meetup].self, forKey: .createdMeetups)
     }
     
     
@@ -120,8 +137,11 @@ struct DBUser: Codable {
         try container.encodeIfPresent(self.photoURL, forKey: .photoURL)
         try container.encodeIfPresent(self.dateCreated, forKey: .dateCreated)
         try container.encodeIfPresent(self.preferences, forKey: .preferences)
-        try container.encodeIfPresent(self.meetups, forKey: .meetups)
+        try container.encodeIfPresent(self.rsvpMeetups, forKey: .rsvpMeetups)
+        try container.encodeIfPresent(self.createdMeetups, forKey: .createdMeetups)
     }
     
 }
+
+
 
