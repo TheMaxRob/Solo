@@ -11,12 +11,22 @@ import SwiftUI
 final class MeetupsViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
+    @State var meetups: [Meetup] = []
     
     
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
     }
+    
+    
+    func fetchMeetups(city: String) async throws {
+        try await MeetupManager.shared.fetchMeetups(city: city) { meetup in
+            self.meetups.append(contentsOf: meetup)
+        }
+    }
+
+    
     
     
 //    func RSVPMeetup() {
@@ -35,8 +45,10 @@ final class MeetupsViewModel: ObservableObject {
 
 
 struct MeetupsView: View {
+    
     @Binding var isShowingMeetups: Bool
     @StateObject private var viewModel = MeetupsViewModel()
+    var city: String
     
     var body: some View {
         NavigationStack {
@@ -57,18 +69,17 @@ struct MeetupsView: View {
                     Spacer()
                 }
                 
-                Text("Meetups")
+                Text("\(city) Meetups")
                     .font(.largeTitle)
                     .bold()
                     .padding(.top, 16)
                 
                 List {
-                    ForEach(MockMeetups.mockMeetups) { meetup in
+                    ForEach(viewModel.meetups) { meetup in
                         NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
                             VStack {
                                 MeetupView(meetup: meetup)
                             }
-                            
                         }
                     }
                 }
@@ -78,7 +89,7 @@ struct MeetupsView: View {
                 
             }
             .background(Color.white)
-            .edgesIgnoringSafeArea(.all) // This ensures the background color covers the entire screen
+            .edgesIgnoringSafeArea(.all) 
             .overlay(alignment: .topTrailing) {
                 
             NavigationLink {
@@ -89,10 +100,14 @@ struct MeetupsView: View {
             }
             }
         }
-        
+        .onAppear {
+            Task {
+                try await viewModel.fetchMeetups(city: city)
+            }
+        }
     }
 }
 
 #Preview {
-    MeetupsView(isShowingMeetups: .constant(true))
+    MeetupsView(isShowingMeetups: .constant(true), city: "Sevilla")
 }

@@ -50,6 +50,7 @@
 		92DC6B812BF6B0BF001B2680 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 92DC6B802BF6B0BF001B2680 /* FirebaseAnalyticsOnDeviceConversion */; };
 		92DC6B832BF6B0BF001B2680 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 92DC6B822BF6B0BF001B2680 /* FirebaseFirestore */; };
 		92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */; };
+		92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +110,7 @@
 		92DC6B7C2BF65206001B2680 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupDetailsView.swift; sourceTree = "<group>"; };
 		92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupCreationView.swift; sourceTree = "<group>"; };
+		92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -341,6 +343,7 @@
 			isa = PBXGroup;
 			children = (
 				92DC6B702BF65041001B2680 /* MeetupsView.swift */,
+				92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */,
 				92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */,
 				92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */,
 				92DC6B7A2BF651B8001B2680 /* MeetupView.swift */,
@@ -501,6 +504,7 @@
 				92D2F8372BCE82B90057534B /* HomeViewModel.swift in Sources */,
 				92DC6B7F2BF65428001B2680 /* MeetupDetailsView.swift in Sources */,
 				925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */,
+				92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */,
 				925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */,
 				920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */,
 				92D53E6A2C0E12900085B3EF /* MessageManager.swift in Sources */,

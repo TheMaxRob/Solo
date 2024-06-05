@@ -15,7 +15,6 @@ struct SoloTravelApp: App {
         FirebaseApp.configure()
         print("Configured Firebase")
     }
-    
     var body: some Scene {
         WindowGroup {
                 RootView()

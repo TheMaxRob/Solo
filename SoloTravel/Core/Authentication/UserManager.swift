@@ -93,50 +93,88 @@ final class UserManager {
     
     
     func createMeetup(userId: String, meetup: Meetup) async throws {
-      print("createMeetup in UserManager called!")
-
-      // Fetch existing meetups array from the user document (handle empty case)
-      var existingMeetups = try await getUserMeetups(userId: userId)
-      print("Existing Meetups Fetched")
-
-      // Ensure that the user has not exceeded the maximum number of meetups allowed
-      guard existingMeetups.count < 3 else {
-        throw Error.tooManyMeetups
-      }
-
-      // Append the new meetup to the existing array (optional)
-      existingMeetups.append(meetup) // This line can be removed if preferred
-
-      print("Meetup: \(meetup)")
-      print("Existing Meetups \(existingMeetups)")
-
-      // Directly update the field in Firestore using arrayUnion
-      try await userDocument(userId: userId).updateData([
-        DBUser.CodingKeys.createdMeetups.rawValue: FieldValue.arrayUnion([try encoder.encode(meetup)])
-      ])
-      print("Meetup created successfully!")
+//      // Fetch existing meetups array from the user document (handle empty case)
+//      var existingMeetups = try await getCreatedUserMeetups(userId: userId)
+//      // Ensure that the user has not exceeded the maximum number of meetups allowed
+//      guard existingMeetups.count < 3 else {
+//        throw Error.tooManyMeetups
+//      }
+//
+//      existingMeetups.append(meetup)
+//        print("Existing Meetups: \(existingMeetups)")
+//      do {
+//         let data = try? encoder.encode(existingMeetups)
+//          print("Existing Meetups as Data: ", data)
+//         let dict: [String:Any] = [
+//            DBUser.CodingKeys.createdMeetups.rawValue : FieldValue.arrayUnion([data])
+//         ]
+//          
+//          try await userDocument(userId: userId).updateData(dict)
+//         
+//      } catch {
+//          print("Error: \(error)")
+//      }
+//         
+//        
+//
+//        print("arrayUnion successful")
+//        try await MeetupManager.shared.addMeetup(meetup: meetup)
+//    
+//    
+//      print("Meetup created successfully!")
+        
+        let docRef = userCollection.document(userId)
+                
+        let documentSnapshot = try await docRef.getDocument()
+        
+        if documentSnapshot.exists {
+            try await docRef.updateData([
+                "created_meetups": FieldValue.arrayUnion([try encoder.encode(meetup)])
+            ])
+        } else {
+            try await docRef.setData([
+                "created_meetups": [try encoder.encode(meetup)]
+            ])
+        }
+        
+        try await MeetupManager.shared.addMeetup(meetup: meetup)
     }
 
 
 
     // Function to fetch existing meetups array from the user document
-    func getUserMeetups(userId: String) async throws -> [Meetup] {
-        let document = try await userDocument(userId: userId).getDocument()
-        if let meetupsData = document[DBUser.CodingKeys.createdMeetups.rawValue] as? Data {
-            if !meetupsData.isEmpty { // Check if data is not empty
-                return try decoder.decode([Meetup].self, from: meetupsData)
+    func getCreatedUserMeetups(userId: String) async throws -> [Meetup] {
+        print("getCreatedUserMeetups called")
+        
+        let docRef = userCollection.document(userId)
+        
+        // Fetch the document
+        let document = try await docRef.getDocument()
+        print("document fetched")
+        
+        // Check if the document exists
+        if document.exists {
+            var existingMeetups = [Meetup]()
+            
+            // Check if the created_meetups field exists
+            if let meetupsData = document.data()?["created_meetups"] as? Data {
+                // Decode the existing meetups from the data
+                existingMeetups = try decoder.decode([Meetup].self, from: meetupsData)
             } else {
-                return [] // Return empty array if data is empty
+                // If the created_meetups field doesn't exist, create an empty array
+                try await docRef.setData(["created_meetups": []], merge: true)
             }
+            
+            return existingMeetups
         } else {
-            // Handle the case where "createdMeetups" is missing entirely
-            print("createdMeetups not found in user document")
+            // Handle the case where the document doesn't exist
+            print("User document not found")
             return []
         }
     }
 
+
     enum Error: Swift.Error {
         case tooManyMeetups
     }
-
 }

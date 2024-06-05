@@ -14,6 +14,7 @@ final class MeetupCreationViewModel: ObservableObject {
     var meetTime: Date = Date()
     var createdDate: Date = Date()
     var meetSpot: String = ""
+    var city: String = ""
     
     @Published private(set) var user: DBUser? = nil
     
@@ -46,12 +47,18 @@ struct MeetupCreationView: View {
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .padding()
                 
+                TextField("City", text: $viewModel.city)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+                
                 TextField("Meeting Spot", text: $viewModel.meetSpot)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
                 
                 DatePicker("Meet Time:", selection: $viewModel.meetTime, displayedComponents: [.date, .hourAndMinute])
                     .padding()
+                
+                
                                 
                 
                 TextField("Description", text: $viewModel.meetupDescription, axis: .vertical)
@@ -61,12 +68,11 @@ struct MeetupCreationView: View {
                     .padding()
                 
                 Button {
-                    print("Button Pressed")
                     Task {
                         do {
                             try await viewModel.loadCurrentUser()
                             
-                            let newMeetup = Meetup(title: viewModel.meetupTitle, description: viewModel.meetupDescription, meetTime: viewModel.meetTime, createdDate: Date(), organizer: viewModel.user!, meetSpot: viewModel.meetSpot)
+                            let newMeetup = Meetup(title: viewModel.meetupTitle, description: viewModel.meetupDescription, meetTime: viewModel.meetTime, city: viewModel.city, createdDate: Date(), organizer: viewModel.user!, meetSpot: viewModel.meetSpot)
                             
                             try await viewModel.createMeetup(userId: viewModel.user?.userId ?? "", meetup: newMeetup)
                         } catch {
