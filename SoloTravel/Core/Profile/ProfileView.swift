@@ -16,11 +16,6 @@ struct ProfileView: View {
     @StateObject var viewModel = ProfileViewModel()
     @Binding var showSignInView: Bool
     
-    let preferenceOptions: [String] = ["Sports", "Movies", "Books"]
-    
-    private func preferenceIsSelected(text: String) -> Bool {
-        viewModel.user?.preferences?.contains(text) == true
-    }
    
     var body: some View {
         NavigationStack {

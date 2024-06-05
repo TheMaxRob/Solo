@@ -28,12 +28,61 @@ struct Message: Codable, Identifiable {
 struct Meetup: Identifiable, Codable {
     var id = UUID()
     let title: String
-    let description: String
+    let description: String?
     let meetTime: Date
+    let city: String
     let createdDate: Date
     let organizer: DBUser
     let meetSpot: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case description
+        case meetTime
+        case city
+        case createdDate
+        case organizer
+        case meetSpot
+    }
+    
+    init(id: UUID = UUID(), title: String, description: String?, meetTime: Date, city: String, createdDate: Date, organizer: DBUser, meetSpot: String) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.meetTime = meetTime
+        self.city = city
+        self.createdDate = createdDate
+        self.organizer = organizer
+        self.meetSpot = meetSpot
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(UUID.self, forKey: .id)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.description = try container.decodeIfPresent(String.self, forKey: .description)
+        self.meetTime = try container.decode(Date.self, forKey: .meetTime)
+        self.city = try container.decode(String.self, forKey: .city)
+        self.createdDate = try container.decode(Date.self, forKey: .createdDate)
+        self.organizer = try container.decode(DBUser.self, forKey: .organizer)
+        self.meetSpot = try container.decode(String.self, forKey: .meetSpot)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encode(description, forKey: .description)
+        try container.encode(meetTime, forKey: .meetTime)
+        try container.encode(city, forKey: .city)
+        try container.encode(createdDate, forKey: .createdDate)
+        try container.encode(organizer, forKey: .organizer)
+        try container.encode(meetSpot, forKey: .meetSpot)
+    }
 }
+
+
 
 
 struct Conversation: Codable, Identifiable {
@@ -59,7 +108,6 @@ struct DBUser: Codable {
     let dateCreated: Date?
     let rsvpMeetups: [Meetup]?
     let createdMeetups: [Meetup]?
-    let preferences: [String]?
     
     init(auth: AuthDataResultModel) {
         self.userId = auth.uid
@@ -68,9 +116,8 @@ struct DBUser: Codable {
         self.dateCreated = Date()
         self.firstName = nil
         self.lastName = nil
-        self.rsvpMeetups = nil
-        self.createdMeetups = nil
-        self.preferences = nil
+        self.rsvpMeetups = []
+        self.createdMeetups = []
     }
     
     init(
@@ -80,9 +127,8 @@ struct DBUser: Codable {
         lastName: String? = nil,
         photoURL: String? = nil,
         dateCreated: Date? = nil,
-        rsvpMeetups: [Meetup]? = nil,
-        createdMeetups: [Meetup]? = nil,
-        preferences: [String]? = nil
+        rsvpMeetups: [Meetup]? = [],
+        createdMeetups: [Meetup]? = []
     ) {
         self.userId = userId
         self.email = email
@@ -92,7 +138,6 @@ struct DBUser: Codable {
         self.dateCreated = dateCreated
         self.rsvpMeetups = rsvpMeetups
         self.createdMeetups = createdMeetups
-        self.preferences = preferences
     }
     
     
@@ -108,7 +153,6 @@ struct DBUser: Codable {
         case lastName = "last_name"
         case photoURL = "photo_url"
         case dateCreated = "date_created"
-        case preferences = "preferences"
         case rsvpMeetups = "rsvp_meetups"
         case createdMeetups = "created_meetups"
     }
@@ -122,7 +166,6 @@ struct DBUser: Codable {
         self.lastName = try container.decodeIfPresent(String.self, forKey: .lastName)
         self.photoURL = try container.decodeIfPresent(String.self, forKey: .photoURL)
         self.dateCreated = try container.decodeIfPresent(Date.self, forKey: .dateCreated)
-        self.preferences = try container.decodeIfPresent([String].self, forKey: .preferences)
         self.rsvpMeetups = try container.decodeIfPresent([Meetup].self, forKey: .rsvpMeetups)
         self.createdMeetups = try container.decodeIfPresent([Meetup].self, forKey: .createdMeetups)
     }
@@ -136,12 +179,8 @@ struct DBUser: Codable {
         try container.encodeIfPresent(self.lastName, forKey: .lastName)
         try container.encodeIfPresent(self.photoURL, forKey: .photoURL)
         try container.encodeIfPresent(self.dateCreated, forKey: .dateCreated)
-        try container.encodeIfPresent(self.preferences, forKey: .preferences)
         try container.encodeIfPresent(self.rsvpMeetups, forKey: .rsvpMeetups)
         try container.encodeIfPresent(self.createdMeetups, forKey: .createdMeetups)
     }
     
 }
-
-
-

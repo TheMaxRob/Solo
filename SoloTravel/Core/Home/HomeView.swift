@@ -21,7 +21,7 @@ struct HomeView: View {
                     
                     Text("Where are you staying?").bold()
                     HStack {
-                        TextField("City", text:$viewModel.selectedCity)
+                        TextField("City", text: $viewModel.selectedCity)
                         TextField("Hotel/Hostel", text:$viewModel.selectedStay)
                     }
                     .padding(.bottom)
@@ -43,7 +43,7 @@ struct HomeView: View {
             }
             
             if isShowingMeetups {
-                MeetupsView(isShowingMeetups: $isShowingMeetups)
+                MeetupsView(isShowingMeetups: $isShowingMeetups, city: viewModel.selectedCity)
                     .zIndex(1)
             }
         }
