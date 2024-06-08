@@ -11,7 +11,7 @@ import SwiftUI
 final class MeetupsViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
-    @State var meetups: [Meetup] = []
+    @Published var meetups: [Meetup] = []
     
     
     func loadCurrentUser() async throws {
@@ -21,26 +21,11 @@ final class MeetupsViewModel: ObservableObject {
     
     
     func fetchMeetups(city: String) async throws {
-        try await MeetupManager.shared.fetchMeetups(city: city) { meetup in
-            self.meetups.append(contentsOf: meetup)
-        }
+        meetups = try await MeetupManager.shared.fetchMeetups(city: city)
     }
-
     
     
     
-//    func RSVPMeetup() {
-//        guard let user else { return }
-//        
-//        Task {
-//            do {
-//                try await UserManager.shared.RSVPMeetup(meetup: meetup, userId: user.userId)
-//                self.user = try await UserManager.shared.getUser(userId: user.userId)
-//            } catch {
-//                print("Error RSVPing to Meetup!")
-//            }
-//        }
-//    }
 }
 
 
@@ -75,6 +60,7 @@ struct MeetupsView: View {
                     .padding(.top, 16)
                 
                 List {
+                    
                     ForEach(viewModel.meetups) { meetup in
                         NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
                             VStack {
@@ -89,7 +75,7 @@ struct MeetupsView: View {
                 
             }
             .background(Color.white)
-            .edgesIgnoringSafeArea(.all) 
+            .edgesIgnoringSafeArea(.all)
             .overlay(alignment: .topTrailing) {
                 
             NavigationLink {

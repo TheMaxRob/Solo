@@ -43,11 +43,11 @@ struct MeetupView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("\(meetup.description)")
+                Text("\(String(describing: meetup.description))")
                     .font(.caption)
                 Text("\(meetup.meetSpot)")
                 Text("\(meetup.meetTime)")
-                Text("\(String(describing: meetup.organizer.firstName)) \(meetup.organizer.lastName ?? "")") 
+                Text("\(String(describing: meetup.organizerId))")
             }
             .navigationTitle("meetup.title")
         }
