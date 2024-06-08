@@ -17,12 +17,14 @@ final class MeetupDetailsViewModel: ObservableObject {
     }
     
     func RSVPMeetup(meetup: Meetup) {
-        guard let user else { return }
-        
+        guard let user else {
+            print("No user found.")
+            return
+        }
         Task {
             do {
                 try await UserManager.shared.RSVPMeetup(userId: user.userId, meetup: meetup)
-                self.user = try await UserManager.shared.getUser(userId: user.userId)
+                // self.user = try await UserManager.shared.getUser(userId: user.userId)
             } catch {
                 print("Error RSVPing to Meetup!")
             }
@@ -59,12 +61,15 @@ struct MeetupDetailsView: View {
                     .font(.subheadline)
                     .padding(.bottom)
                 
-                Text("\(meetup.description)")
+                Text("\(String(describing: meetup.description))")
                     .font(.caption)
                 
                 HStack {
                     Button {
-                        viewModel.RSVPMeetup(meetup: meetup)
+                        Task {
+                            try await viewModel.loadCurrentUser()
+                            viewModel.RSVPMeetup(meetup: meetup)
+                        }
                     } label: {
                         Text("RSVP")
                             .frame(width: 90, height: 45)
@@ -76,9 +81,8 @@ struct MeetupDetailsView: View {
                     Button {
                         Task {
                             try await viewModel.loadCurrentUser()
-                            conversationId = try await viewModel.createConversation(with: meetup.organizer.userId)
+                            conversationId = try await viewModel.createConversation(with: meetup.organizerId)
                             isShowingPersonalMessageView = true
-                            
                         }
                     } label: {
                         Text("Message")

@@ -32,9 +32,11 @@ struct HomeView: View {
                         isShowingMeetups = true
                     } label: {
                         Text("Connect")
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .padding()
                             .background(Color.blue)
                             .foregroundColor(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 30))
+                            
                     }
 
                     Spacer()

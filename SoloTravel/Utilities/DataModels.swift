@@ -26,13 +26,13 @@ struct Message: Codable, Identifiable {
 
 
 struct Meetup: Identifiable, Codable {
-    var id = UUID()
+    @DocumentID var id = UUID().uuidString
     let title: String
     let description: String?
     let meetTime: Date
     let city: String
     let createdDate: Date
-    let organizer: DBUser
+    let organizerId: String
     let meetSpot: String
     
     enum CodingKeys: String, CodingKey {
@@ -42,30 +42,30 @@ struct Meetup: Identifiable, Codable {
         case meetTime
         case city
         case createdDate
-        case organizer
+        case organizerId
         case meetSpot
     }
     
-    init(id: UUID = UUID(), title: String, description: String?, meetTime: Date, city: String, createdDate: Date, organizer: DBUser, meetSpot: String) {
+    init(id: String, title: String, description: String?, meetTime: Date, city: String, createdDate: Date, organizerId: String, meetSpot: String) {
         self.id = id
         self.title = title
         self.description = description
         self.meetTime = meetTime
         self.city = city
         self.createdDate = createdDate
-        self.organizer = organizer
+        self.organizerId = organizerId
         self.meetSpot = meetSpot
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(UUID.self, forKey: .id)
+        self.id = try container.decode(String.self, forKey: .id)
         self.title = try container.decode(String.self, forKey: .title)
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
         self.meetTime = try container.decode(Date.self, forKey: .meetTime)
         self.city = try container.decode(String.self, forKey: .city)
         self.createdDate = try container.decode(Date.self, forKey: .createdDate)
-        self.organizer = try container.decode(DBUser.self, forKey: .organizer)
+        self.organizerId = try container.decode(String.self, forKey: .organizerId)
         self.meetSpot = try container.decode(String.self, forKey: .meetSpot)
     }
     
@@ -77,7 +77,7 @@ struct Meetup: Identifiable, Codable {
         try container.encode(meetTime, forKey: .meetTime)
         try container.encode(city, forKey: .city)
         try container.encode(createdDate, forKey: .createdDate)
-        try container.encode(organizer, forKey: .organizer)
+        try container.encode(organizerId, forKey: .organizerId)
         try container.encode(meetSpot, forKey: .meetSpot)
     }
 }

@@ -72,7 +72,7 @@ struct MeetupCreationView: View {
                         do {
                             try await viewModel.loadCurrentUser()
                             
-                            let newMeetup = Meetup(title: viewModel.meetupTitle, description: viewModel.meetupDescription, meetTime: viewModel.meetTime, city: viewModel.city, createdDate: Date(), organizer: viewModel.user!, meetSpot: viewModel.meetSpot)
+                            let newMeetup = Meetup(id: UUID().uuidString, title: viewModel.meetupTitle, description: viewModel.meetupDescription, meetTime: viewModel.meetTime, city: viewModel.city, createdDate: Date(), organizerId: viewModel.user?.userId ?? "", meetSpot: viewModel.meetSpot)
                             
                             try await viewModel.createMeetup(userId: viewModel.user?.userId ?? "", meetup: newMeetup)
                         } catch {
