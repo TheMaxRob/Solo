@@ -30,7 +30,7 @@ final class MessagesViewModel: ObservableObject {
     func sendMessage(to conversationId: String, content: String, senderId: String, recipientId: String) async {
         let message = Message(senderId: senderId, recipientId: recipientId, content: content, timestamp: Timestamp())
         do {
-            try await MessageManager .shared.sendMessage(conversationId: conversationId, message: message)
+            try await MessageManager.shared.sendMessage(conversationId: conversationId, message: message)
         } catch {
             print("Failed to send message: \(error)")
         }

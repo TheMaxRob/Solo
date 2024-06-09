@@ -21,7 +21,8 @@ final class UserManager {
     
     
     private func userDocument(userId: String) -> DocumentReference {
-        userCollection.document(userId)
+        print("userDocument in UserManager called!")
+        return userCollection.document(userId)
     }
     
     private let encoder: Firestore.Encoder = {
@@ -62,7 +63,8 @@ final class UserManager {
     
     
     func getUser(userId: String) async throws -> DBUser {
-        try await userDocument(userId: userId).getDocument(as: DBUser.self)
+        print("getUser called in UserManager!")
+        return try await userDocument(userId: userId).getDocument(as: DBUser.self)
     }
     
     

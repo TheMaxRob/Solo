@@ -42,10 +42,11 @@ final class AuthenticationManager {
     
     
     func getAuthenticatedUser() throws -> AuthDataResultModel {
+        print("getAuthenticatedUser called in AuthManager!")
         guard let user = Auth.auth().currentUser else {
             throw URLError(.badServerResponse)
         }
-        
+        print("Returning user: \(user)")
         return AuthDataResultModel(user: user)
     }
     

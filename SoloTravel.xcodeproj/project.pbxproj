@@ -17,7 +17,6 @@
 		925B35F22BE2EBDF00DAF991 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35F12BE2EBDF00DAF991 /* SettingsView.swift */; };
 		925B35F42BE2EC3500DAF991 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35F32BE2EC3500DAF991 /* AuthenticationManager.swift */; };
 		926BC0382C0A9760001279CF /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 926BC0372C0A9760001279CF /* FirebaseFirestoreSwift */; };
-		928CCCCA2BDE6D05007831A9 /* MessagesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928CCCC92BDE6D05007831A9 /* MessagesData.swift */; };
 		928CCCCD2BDEF6EE007831A9 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCCC2BDEF6EE007831A9 /* FirebaseAnalytics */; };
 		928CCCCF2BDEF6EE007831A9 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCCE2BDEF6EE007831A9 /* FirebaseAuth */; };
 		928CCCD12BDEF6EE007831A9 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCD02BDEF6EE007831A9 /* FirebaseCrashlytics */; };
@@ -80,7 +79,6 @@
 		925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInEmailView.swift; sourceTree = "<group>"; };
 		925B35F12BE2EBDF00DAF991 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		925B35F32BE2EC3500DAF991 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
-		928CCCC92BDE6D05007831A9 /* MessagesData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesData.swift; sourceTree = "<group>"; };
 		92BD68292BE2F7B5000BACB3 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		92BD682D2BE2FAEC000BACB3 /* PersonalMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalMessageView.swift; sourceTree = "<group>"; };
 		92C479492BCEA94C0020EB10 /* SoloTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTabView.swift; sourceTree = "<group>"; };
@@ -177,7 +175,6 @@
 		92BD682F2BE2FAF1000BACB3 /* Messages */ = {
 			isa = PBXGroup;
 			children = (
-				928CCCC92BDE6D05007831A9 /* MessagesData.swift */,
 				920D08512BDABCDA00B2466C /* Custom Views */,
 				92D53E692C0E12900085B3EF /* MessageManager.swift */,
 			);
@@ -510,7 +507,6 @@
 				92D53E6A2C0E12900085B3EF /* MessageManager.swift in Sources */,
 				92D732A32BE7FC2C005629CB /* SignInEmailViewModel.swift in Sources */,
 				92D2F80D2BCE7DCB0057534B /* SoloTravelApp.swift in Sources */,
-				928CCCCA2BDE6D05007831A9 /* MessagesData.swift in Sources */,
 				92D2F8392BCE85140057534B /* AccountButton.swift in Sources */,
 				92DC6B7D2BF65206001B2680 /* MockData.swift in Sources */,
 				92DC6B7B2BF651B8001B2680 /* MeetupView.swift in Sources */,
