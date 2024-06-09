@@ -15,57 +15,178 @@ final class MessageManager {
     
     private init() { }
     
-    func fetchConversations(userId: String, completion: @escaping ([Conversation]) -> Void) {
-        let conversationsRef = db.collection("conversations")
-        conversationsRef
-            .whereField("users", arrayContains: userId)
-            .order(by: "timestamp", descending: true)
-            .addSnapshotListener { querySnapshot, error in
-                guard let documents = querySnapshot?.documents else {
-                    print("No conversations found, creating a new conversation")
-                    self.createInitialConversation(for: userId, completion: completion)
-                    return
-                }
-                let conversations = documents.compactMap { document -> Conversation? in
-                    try? document.data(as: Conversation.self)
-                }
-                completion(conversations)
+    private let encoder: Firestore.Encoder = {
+        let encoder = Firestore.Encoder()
+        return encoder
+    }()
+    
+    private let decoder: Firestore.Decoder = {
+        let decoder = Firestore.Decoder()
+        return decoder
+    }()
+    
+    func fetchConversations(userId: String) async throws -> [Conversation] {
+        let userRef = db.collection("users").document(userId)
+        let documentSnapshot = try await userRef.getDocument()
+        
+        if documentSnapshot.exists {
+            guard let conversationsData = documentSnapshot.get("conversations") as? [[String:Any]] else {
+                print("Error getting conversation data.")
+                return []
             }
-    }
-
-    private func createInitialConversation(for userId: String, completion: @escaping ([Conversation]) -> Void) {
-        let conversation = Conversation(users: [userId], lastMessage: nil, timestamp: Timestamp())
-        do {
-            let ref = try db.collection("conversations").addDocument(from: conversation)
-            // Fetch the newly created conversation
-            ref.getDocument { document, error in
-                guard let document = document, document.exists, let conversation = try? document.data(as: Conversation.self) else {
-                    print("Error fetching the newly created conversation: \(String(describing: error))")
-                    completion([])
-                    return
-                }
-                completion([conversation])
-            }
-        } catch {
-            print("Error creating initial conversation: \(error)")
-            completion([])
+            let conversations = convertToConversationObjects(conversationDicts: conversationsData)
+            return conversations
+        } else {
+            print("No conversation found.")
+            return []
         }
+    }
+    
+    private func convertToConversationObjects(conversationDicts: [[String:Any]]) -> [Conversation] {
+        var conversations = [Conversation]()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        
+        for dict in conversationDicts {
+            guard
+                let conversationId = dict["id"] as? String,
+                let userIds = dict["users"] as? [String],
+                let lastMessage = dict["last_message"] as? String,
+                let timestamp = dict["timestamp"] as? Timestamp
+            else {
+                print("Data parsing error for dict: \(dict)")
+                continue
+            }
+            
+            let createdDate = timestamp.dateValue()
+            
+            let conversation = Conversation(id: conversationId, userIds: userIds, lastMessage: lastMessage, createdDate: createdDate)
+            conversations.append(conversation)
+        }
+        return conversations
     }
 
     
-    func sendMessage(conversationId: String, message: Message) async throws {
-            let conversationRef = db.collection("conversations").document(conversationId)
-            let messageRef = conversationRef.collection("messages").document()
-
-            try await db.runTransaction { (transaction, errorPointer) -> Any? in
-                transaction.setData(message.toDictionary(), forDocument: messageRef)
-                transaction.updateData([
-                    "last_message": message.content,
-                    "timestamp": message.timestamp
-                ], forDocument: conversationRef)
-                return nil
+    
+    private func convertToMeetupObjects(meetupDicts: [[String: Any]]) -> [Meetup] {
+        var meetups = [Meetup]()
+        
+        
+        // Manually decoding because this is making me pull my hair out
+        for dict in meetupDicts {
+            guard
+                let id = dict["id"] as? String,
+                let title = dict["title"] as? String,
+                let description = dict["description"] as? String?,
+                let city = dict["city"] as? String,
+                let organizerId = dict["organizerId"] as? String,
+                let meetSpot = dict["meetSpot"] as? String,
+                let createdDateTimestamp = dict["createdDate"] as? Timestamp,
+                let meetTimeTimestamp = dict["meetTime"] as? Timestamp
+            else {
+                // Handle missing or incorrect data
+                print("Data parsing error for dict: \(dict)")
+                continue
+            }
+            
+            // Convert FIRTimestamp to Date
+            let createdDate = createdDateTimestamp.dateValue()
+            let meetTime = meetTimeTimestamp.dateValue()
+            
+            // Initialize Meetup object
+            let meetup = Meetup(
+                id: id,
+                title: title,
+                description: description,
+                meetTime: meetTime,
+                city: city,
+                createdDate: createdDate,
+                organizerId: organizerId,
+                meetSpot: meetSpot
+            )
+            
+            meetups.append(meetup)
+        }
+        return meetups
+    }
+    func createConversation(userIds: [String]) async throws -> String? {
+        let conversation = Conversation(id: UUID().uuidString, userIds: userIds, lastMessage: "", createdDate: Date())
+        if let existingId = try await conversationExistsId(for: userIds) {
+            print("Conversation already exists.")
+            return existingId
+        } else {
+            for userId in userIds {
+                let userRef = db.collection("users").document(userId)
+                
+                let documentSnapshot = try await userRef.getDocument()
+                
+                if documentSnapshot.exists {
+                    try await userRef.updateData([
+                        "conversations" : FieldValue.arrayUnion([try encoder.encode(conversation)])
+                    ])
+                } else {
+                    try await userRef.setData([
+                        "conversations" : [try encoder.encode(conversation)]
+                    ])
+                }
             }
         }
+        return nil
+    }
+        
+    func conversationExistsId(for userIds: [String]) async throws -> String? {
+        guard let firstUserId = userIds.first else { return nil }
+        
+        let userRef = db.collection("users").document(firstUserId)
+        
+        let documentSnapshot = try await userRef.getDocument()
+        
+        if documentSnapshot.exists {
+            if let conversationsData = documentSnapshot.get("conversations") as? [Any] {
+                for item in conversationsData {
+                    if let conversationDict = item as? [String: Any] {
+                        do {
+                            guard let conversationId = conversationDict["id"] as? String else {
+                                print("Conversation ID is missing")
+                                continue
+                            }
+                            let conversation = try Conversation(from: conversationDict as! Decoder)
+                            let conversationUserIds = Set(conversation.users)
+                            let inputUserIds = Set(userIds)
+                            
+                            if conversationUserIds == inputUserIds {
+                                print("Matching user arrays found - returning existing conversationId")
+                                return conversationId
+                            }
+                        } catch {
+                            print("Error decoding conversation: \(error)")
+                        }
+                    } else {
+                        print("Invalid format in conversation array.")
+                    }
+                }
+            } else {
+                print("Conversations field is missing or not an array")
+            }
+        } else {
+            print("User Document does not exist.")
+        }
+        return nil
+    }
+        
+    func sendMessage(conversationId: String, message: Message) async throws {
+        let conversationRef = db.collection("conversations").document(conversationId)
+        let messageRef = conversationRef.collection("messages").document()
+        
+        try await db.runTransaction { (transaction, errorPointer) -> Any? in
+            transaction.setData(message.toDictionary(), forDocument: messageRef)
+            transaction.updateData([
+                "last_message": message.content,
+                "timestamp": message.timestamp
+            ], forDocument: conversationRef)
+            return nil
+        }
+    }
     
     @discardableResult
     func fetchMessages(conversationId: String, completion: @escaping ([Message]) -> Void) -> ListenerRegistration {
@@ -85,57 +206,15 @@ final class MessageManager {
                 completion(messages)
             }
     }
-
-
-        // Create a new conversation
-    func createConversation(userIds: [String]) async throws -> String {
-        
-        // Check if a conversation already exists between the specified users
-        if let existingConversationId = try await findExistingConversationId(for: userIds) {
-            // Return the ID of the existing conversation
-            print("Conversation already exists.")
-            return existingConversationId
-        }
-        
-        // If no existing conversation found, create a new conversation
-        let conversation = Conversation(users: userIds, lastMessage: nil, timestamp: Timestamp())
-        let ref = try db.collection("conversations").addDocument(from: conversation)
-        return ref.documentID
-    }
-
-    private func findExistingConversationId(for userIds: [String]) async throws -> String? {
-        let firstUserId = userIds.first ?? ""
-        
-        // Perform a query that checks if the first user ID is in the 'users' array
-        let querySnapshot = try await db.collection("conversations")
-            .whereField("users", arrayContains: firstUserId)
-            .getDocuments()
-        
-        // If there are no documents, return nil
-        guard !querySnapshot.isEmpty else {
-            print("querySnapshot is empty – returning nil")
-            return nil
-        }
-        
-        // Filter the results client-side to find a conversation with both user IDs
-        for document in querySnapshot.documents {
-            let conversation = try document.data(as: Conversation.self)
-            if Set(conversation.users).isSuperset(of: Set(userIds)) {
-                return document.documentID
-            }
-        }
-        return nil
-    }
-
 }
 
-    extension Encodable {
-        func toDictionary() -> [String: Any] {
-            guard let data = try? JSONEncoder().encode(self),
-                  let dictionary = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
-                return [:]
-            }
-            return dictionary
-        }
-    }
 
+extension Encodable {
+    func toDictionary() -> [String: Any] {
+        guard let data = try? JSONEncoder().encode(self),
+              let dictionary = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+            return [:]
+        }
+        return dictionary
+    }
+}

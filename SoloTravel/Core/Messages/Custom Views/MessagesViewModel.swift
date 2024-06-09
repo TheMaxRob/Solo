@@ -16,10 +16,8 @@ final class MessagesViewModel: ObservableObject {
     @Published var selectedConversation: Conversation?
     private var listener: ListenerRegistration?
 
-    func fetchConversations(for userId: String) {
-        MessageManager.shared.fetchConversations(userId: userId) { [weak self] conversations in
-            self?.conversations = conversations
-        }
+    func fetchConversations(for userId: String) async throws {
+        conversations = try await MessageManager.shared.fetchConversations(userId: userId)
     }
 
     func fetchMessages(for conversationId: String) {

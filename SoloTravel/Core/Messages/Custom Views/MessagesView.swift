@@ -27,14 +27,17 @@ struct MessagesView: View {
                 }
                 .onTapGesture {
                     selectedConversation = conversation
-                    viewModel.fetchMessages(for: conversation.id!)
+                    viewModel.fetchMessages(for: conversation.id ?? "")
                     isShowingChat = true
                 }
             }
             .onAppear {
                 // Fetch conversations for the current user
-                if let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
-                    viewModel.fetchConversations(for: userId)
+                Task {
+                    if let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
+                    try await viewModel.fetchConversations(for: userId)
+                }
+                
                 }
             }
             .navigationTitle("Messages")
