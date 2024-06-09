@@ -86,16 +86,28 @@ struct Meetup: Identifiable, Codable {
 
 
 struct Conversation: Codable, Identifiable {
-    @DocumentID var id: String?
+    var id = UUID().uuidString
     let users: [String]
     let lastMessage: String?
-    let timestamp: Timestamp?
+    let timestamp: Date?
 
     enum CodingKeys: String, CodingKey {
         case id
         case users
         case lastMessage = "last_message"
         case timestamp
+    }
+    
+    init(
+        id: String,
+        userIds: [String],
+        lastMessage: String,
+        createdDate: Date
+    ) {
+        self.id = id
+        self.users = userIds
+        self.lastMessage = lastMessage
+        self.timestamp = createdDate
     }
 }
 

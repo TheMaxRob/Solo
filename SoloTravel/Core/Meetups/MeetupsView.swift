@@ -83,6 +83,7 @@ struct MeetupsView: View {
             } label: {
                 Image(systemName: "plus")
                     .tint(.blue)
+                    .padding()
             }
             }
         }

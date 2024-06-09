@@ -82,17 +82,21 @@ final class UserManager {
     //    }
     
     func RSVPMeetup(userId: String, meetup: Meetup) async throws {
+        print("RSVPMeetup UserManager called!")
         let docRef = userCollection.document(userId)
-        
+        print("docRef")
         let documentSnapshot = try await docRef.getDocument()
             if documentSnapshot.exists {
+                print("docSnap exists")
                 try await docRef.updateData([
                     "rsvp_meetups": FieldValue.arrayUnion([try encoder.encode(meetup)])
                 ])
+                print("updateData success")
             } else {
                 try await docRef.setData([
                     "rsvp_meetups": [try encoder.encode(meetup)]
                 ])
+                print("create rsvp_meetups")
             }
     }
     
