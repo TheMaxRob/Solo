@@ -26,45 +26,45 @@ final class MessageManager {
     }()
     
     func fetchConversations(userId: String) async throws -> [Conversation] {
-        let userRef = db.collection("users").document(userId)
-        let documentSnapshot = try await userRef.getDocument()
+        let ref = db.collection("conversations")
         
-        if documentSnapshot.exists {
-            guard let conversationsData = documentSnapshot.get("conversations") as? [[String:Any]] else {
-                print("Error getting conversation data.")
-                return []
-            }
-            let conversations = convertToConversationObjects(conversationDicts: conversationsData)
-            return conversations
-        } else {
-            print("No conversation found.")
-            return []
-        }
-    }
-    
-    private func convertToConversationObjects(conversationDicts: [[String:Any]]) -> [Conversation] {
-        var conversations = [Conversation]()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        let querySnapshot = try await ref.whereField("users", arrayContains: userId).getDocuments()
         
-        for dict in conversationDicts {
-            guard
-                let conversationId = dict["id"] as? String,
-                let userIds = dict["users"] as? [String],
-                let lastMessage = dict["last_message"] as? String,
-                let timestamp = dict["timestamp"] as? Timestamp
-            else {
-                print("Data parsing error for dict: \(dict)")
-                continue
+        var conversations: [Conversation] = []
+        
+        for document in querySnapshot.documents {
+            if let conversation = try? document.data(as: Conversation.self) {
+                conversations.append(conversation)
+            } else {
+                print("Error decoding document into Conversation: \(document.documentID)")
             }
-            
-            let createdDate = timestamp.dateValue()
-            
-            let conversation = Conversation(id: conversationId, userIds: userIds, lastMessage: lastMessage, createdDate: createdDate)
-            conversations.append(conversation)
         }
         return conversations
     }
+    
+//    private func convertToConversationObjects(conversationDicts: [[String:Any]]) -> [Conversation] {
+//        var conversations = [Conversation]()
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+//        
+//        for dict in conversationDicts {
+//            guard
+//                let conversationId = dict["id"] as? String,
+//                let userIds = dict["users"] as? [String],
+//                let lastMessage = dict["last_message"] as? String,
+//                let timestamp = dict["timestamp"] as? Timestamp
+//            else {
+//                print("Data parsing error for dict: \(dict)")
+//                continue
+//            }
+//            
+//            let createdDate = timestamp.dateValue()
+//            
+//            let conversation = Conversation(id: conversationId, userIds: userIds, lastMessage: lastMessage, createdDate: createdDate)
+//            conversations.append(conversation)
+//        }
+//        return conversations
+//    }
 
     
     
@@ -109,12 +109,29 @@ final class MessageManager {
         }
         return meetups
     }
+    
+    
     func createConversation(userIds: [String]) async throws -> String? {
-        let conversation = Conversation(id: UUID().uuidString, userIds: userIds, lastMessage: "", createdDate: Date())
         if let existingId = try await conversationExistsId(for: userIds) {
             print("Conversation already exists.")
             return existingId
         } else {
+            let newConversationId = UUID().uuidString
+            let newConversation = Conversation(
+                id: newConversationId,
+                userIds: userIds,
+                lastMessage: "",
+                createdDate: Date()
+            )
+            
+            let conversationRef = db.collection("conversations").document(newConversationId)
+            try await conversationRef.setData([
+                "id": newConversation.id,
+                "users": newConversation.users,
+                "last_message": newConversation.lastMessage ?? "",
+                "timestamp": newConversation.timestamp ?? FieldValue.serverTimestamp()
+            ])
+            
             for userId in userIds {
                 let userRef = db.collection("users").document(userId)
                 
@@ -122,54 +139,31 @@ final class MessageManager {
                 
                 if documentSnapshot.exists {
                     try await userRef.updateData([
-                        "conversations" : FieldValue.arrayUnion([try encoder.encode(conversation)])
+                        "conversations": FieldValue.arrayUnion([newConversationId])
                     ])
                 } else {
                     try await userRef.setData([
-                        "conversations" : [try encoder.encode(conversation)]
+                        "conversations": [newConversationId]
                     ])
                 }
             }
+            return newConversationId
         }
-        return nil
     }
         
     func conversationExistsId(for userIds: [String]) async throws -> String? {
-        guard let firstUserId = userIds.first else { return nil }
+        if userIds[0].isEmpty { return nil }
         
-        let userRef = db.collection("users").document(firstUserId)
+        let ref = db.collection("conversations")
         
-        let documentSnapshot = try await userRef.getDocument()
+        let querySnapshot = try await ref.whereField("users", arrayContainsAny: userIds).getDocuments()
         
-        if documentSnapshot.exists {
-            if let conversationsData = documentSnapshot.get("conversations") as? [Any] {
-                for item in conversationsData {
-                    if let conversationDict = item as? [String: Any] {
-                        do {
-                            guard let conversationId = conversationDict["id"] as? String else {
-                                print("Conversation ID is missing")
-                                continue
-                            }
-                            let conversation = try Conversation(from: conversationDict as! Decoder)
-                            let conversationUserIds = Set(conversation.users)
-                            let inputUserIds = Set(userIds)
-                            
-                            if conversationUserIds == inputUserIds {
-                                print("Matching user arrays found - returning existing conversationId")
-                                return conversationId
-                            }
-                        } catch {
-                            print("Error decoding conversation: \(error)")
-                        }
-                    } else {
-                        print("Invalid format in conversation array.")
-                    }
+        for document in querySnapshot.documents {
+            if let conversation = try? document.data(as: Conversation.self) {
+                if Set(conversation.users) == Set(userIds) {
+                    return conversation.id
                 }
-            } else {
-                print("Conversations field is missing or not an array")
             }
-        } else {
-            print("User Document does not exist.")
         }
         return nil
     }

@@ -120,6 +120,7 @@ struct DBUser: Codable {
     let dateCreated: Date?
     let rsvpMeetups: [Meetup]?
     let createdMeetups: [Meetup]?
+    let conversations: [Conversation]?
     
     init(auth: AuthDataResultModel) {
         self.userId = auth.uid
@@ -130,6 +131,7 @@ struct DBUser: Codable {
         self.lastName = nil
         self.rsvpMeetups = []
         self.createdMeetups = []
+        self.conversations = []
     }
     
     init(
@@ -140,7 +142,8 @@ struct DBUser: Codable {
         photoURL: String? = nil,
         dateCreated: Date? = nil,
         rsvpMeetups: [Meetup]? = [],
-        createdMeetups: [Meetup]? = []
+        createdMeetups: [Meetup]? = [],
+        conversations: [Conversation]? = []
     ) {
         self.userId = userId
         self.email = email
@@ -150,6 +153,7 @@ struct DBUser: Codable {
         self.dateCreated = dateCreated
         self.rsvpMeetups = rsvpMeetups
         self.createdMeetups = createdMeetups
+        self.conversations = conversations
     }
     
     
@@ -167,6 +171,7 @@ struct DBUser: Codable {
         case dateCreated = "date_created"
         case rsvpMeetups = "rsvp_meetups"
         case createdMeetups = "created_meetups"
+        case conversations = "conversations"
     }
     
     
@@ -180,6 +185,7 @@ struct DBUser: Codable {
         self.dateCreated = try container.decodeIfPresent(Date.self, forKey: .dateCreated)
         self.rsvpMeetups = try container.decodeIfPresent([Meetup].self, forKey: .rsvpMeetups)
         self.createdMeetups = try container.decodeIfPresent([Meetup].self, forKey: .createdMeetups)
+        self.conversations = try container.decodeIfPresent([Conversation].self, forKey: .conversations)
     }
     
     
@@ -193,6 +199,7 @@ struct DBUser: Codable {
         try container.encodeIfPresent(self.dateCreated, forKey: .dateCreated)
         try container.encodeIfPresent(self.rsvpMeetups, forKey: .rsvpMeetups)
         try container.encodeIfPresent(self.createdMeetups, forKey: .createdMeetups)
+        try container.encodeIfPresent(self.conversations, forKey: .conversations)
     }
     
 }

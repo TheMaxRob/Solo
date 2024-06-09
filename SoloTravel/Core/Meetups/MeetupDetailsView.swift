@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 final class MeetupDetailsViewModel: ObservableObject {
     @Published private(set) var user: DBUser? = nil
+    @Published var conversationId: String?
     
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
@@ -24,7 +25,7 @@ final class MeetupDetailsViewModel: ObservableObject {
         Task {
             do {
                 try await UserManager.shared.RSVPMeetup(userId: user.userId, meetup: meetup)
-                // self.user = try await UserManager.shared.getUser(userId: user.userId)
+                
             } catch {
                 print("Error RSVPing to Meetup!")
             }
@@ -32,7 +33,6 @@ final class MeetupDetailsViewModel: ObservableObject {
     }
     
     func createConversation(with organizerId: String) async throws -> String? {
-
         guard let user else { return nil }
         
         let userIds = [user.userId, organizerId]
@@ -44,7 +44,7 @@ final class MeetupDetailsViewModel: ObservableObject {
 struct MeetupDetailsView: View {
     @StateObject var viewModel = MeetupDetailsViewModel()
     @State private var isShowingPersonalMessageView = false
-    @State private var conversationId: String?
+    
     var meetup: Meetup
     
     var body: some View {
@@ -79,10 +79,18 @@ struct MeetupDetailsView: View {
                     }
                     
                     Button {
+                        print("Button Pressed")
                         Task {
-                            try await viewModel.loadCurrentUser()
-                            conversationId = try await viewModel.createConversation(with: meetup.organizerId)
-                            isShowingPersonalMessageView = true
+                            print("Task Entered")
+                            if viewModel.user == nil {
+                                print("User == nil")
+                                try await viewModel.loadCurrentUser()
+                                print("User Loaded")
+                                viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId)
+                                print("conversationId: \(String(describing: viewModel.conversationId))")
+                                isShowingPersonalMessageView = true
+                            }
+                            
                         }
                     } label: {
                         Text("Message")
@@ -94,11 +102,8 @@ struct MeetupDetailsView: View {
                     }
                 }
                 .navigationDestination(isPresented: $isShowingPersonalMessageView) {
-                    PersonalMessageView(conversationId: conversationId ?? "")
+                    PersonalMessageView(conversationId: viewModel.conversationId ?? "")
                 }
-//                NavigationLink(destination: PersonalMessageView(conversationId: conversationId ?? ""), isActive: $isShowingPersonalMessageView) {
-//                    EmptyView()
-//                }
             }
             .navigationTitle("Meetup Details")
         }
