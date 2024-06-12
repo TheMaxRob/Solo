@@ -42,35 +42,50 @@ final class MessageManager {
         return conversations
     }
     
-//    private func convertToConversationObjects(conversationDicts: [[String:Any]]) -> [Conversation] {
-//        var conversations = [Conversation]()
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-//        
-//        for dict in conversationDicts {
-//            guard
-//                let conversationId = dict["id"] as? String,
-//                let userIds = dict["users"] as? [String],
-//                let lastMessage = dict["last_message"] as? String,
-//                let timestamp = dict["timestamp"] as? Timestamp
-//            else {
-//                print("Data parsing error for dict: \(dict)")
-//                continue
-//            }
-//            
-//            let createdDate = timestamp.dateValue()
-//            
-//            let conversation = Conversation(id: conversationId, userIds: userIds, lastMessage: lastMessage, createdDate: createdDate)
-//            conversations.append(conversation)
-//        }
-//        return conversations
-//    }
+    private func convertToConversationObjects(conversationDicts: [[String:Any]]) -> [Conversation] {
+        var conversations = [Conversation]()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        
+        for dict in conversationDicts {
+            guard
+                let conversationId = dict["id"] as? String,
+                let userIds = dict["users"] as? [String],
+                let lastMessage = dict["last_message"] as? String,
+                let timestamp = dict["timestamp"] as? Timestamp
+            else {
+                print("Data parsing error for dict: \(dict)")
+                continue
+            }
+            
+            let createdDate = timestamp.dateValue()
+            
+            let conversation = Conversation(id: conversationId, userIds: userIds, lastMessage: lastMessage, createdDate: createdDate)
+            conversations.append(conversation)
+        }
+        return conversations
+    }
+    
+    
+    func fetchConversation(conversationId: String) async throws -> Conversation {
+        let conversationRef = db.collection("conversations").document(conversationId)
+        do {
+            let documentSnapshot = try await conversationRef.getDocument()
+            if documentSnapshot.exists, let data = documentSnapshot.data() {
+                let conversation = try documentSnapshot.data(as: Conversation.self)
+                return conversation
+            } else {
+                throw NSError(domain: "com.yourdomain.app", code: 404, userInfo: [NSLocalizedDescriptionKey: "Conversation not found"])
+            }
+        } catch {
+            throw error
+        }
+    }
 
     
     
     private func convertToMeetupObjects(meetupDicts: [[String: Any]]) -> [Meetup] {
         var meetups = [Meetup]()
-        
         
         // Manually decoding because this is making me pull my hair out
         for dict in meetupDicts {
@@ -169,37 +184,37 @@ final class MessageManager {
     }
         
     func sendMessage(conversationId: String, message: Message) async throws {
+        print("sendMessage in Manager called!")
         let conversationRef = db.collection("conversations").document(conversationId)
         let messageRef = conversationRef.collection("messages").document()
         
-        try await db.runTransaction { (transaction, errorPointer) -> Any? in
-            transaction.setData(message.toDictionary(), forDocument: messageRef)
-            transaction.updateData([
-                "last_message": message.content,
-                "timestamp": message.timestamp
-            ], forDocument: conversationRef)
-            return nil
+        do {
+            var newMessage = message
+            newMessage.id = messageRef.documentID
+            try messageRef.setData(from: newMessage)
+        } catch {
+            throw error
         }
     }
     
-    @discardableResult
-    func fetchMessages(conversationId: String, completion: @escaping ([Message]) -> Void) -> ListenerRegistration {
-        return db.collection("conversations")
-            .document(conversationId)
-            .collection("messages")
-            .order(by: "timestamp")
-            .addSnapshotListener { querySnapshot, error in
-                guard let documents = querySnapshot?.documents else {
-                    print("No messages found")
-                    completion([])
-                    return
+
+    func fetchMessages(conversationId: String) async throws -> [Message] {
+        let conversationDocRef = db.collection("conversations").document(conversationId)
+            let messagesCollectionRef = conversationDocRef.collection("messages")
+            
+            do {
+                let querySnapshot = try await messagesCollectionRef.getDocuments()
+                let messages = try querySnapshot.documents.compactMap { document in
+                    try document.data(as: Message.self)
                 }
-                let messages = documents.compactMap { document -> Message? in
-                    try? document.data(as: Message.self)
-                }
-                completion(messages)
+                return messages
+                
+            } catch {
+                print("Error fetching messages: \(error)")
+                throw error
             }
     }
+
 }
 
 

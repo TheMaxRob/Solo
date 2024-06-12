@@ -1,8 +1,8 @@
 //
-//  MessagesViewModel.swift
+//  ChatViewModel.swift
 //  SoloTravel
 //
-//  Created by Max Roberts on 6/3/24.
+//  Created by Max Roberts on 6/12/24.
 //
 
 import Foundation
@@ -10,22 +10,16 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 @MainActor
-final class MessagesViewModel: ObservableObject {
-    @Published var conversations: [Conversation] = []
+final class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
-    @Published var selectedConversationId: String = ""
     @Published var user: DBUser?
-    private var listener: ListenerRegistration?
-
     
     func loadCurrentUser() async throws {
+        print("loadCurrentUser")
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+        print("authDataResult created")
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
-    }
-    
-    
-    func fetchConversations(for userId: String) async throws {
-        conversations = try await MessageManager.shared.fetchConversations(userId: userId)
+        print("self.user assigned - Returning")
     }
     
     
@@ -33,6 +27,7 @@ final class MessagesViewModel: ObservableObject {
         return try await MessageManager.shared.fetchConversation(conversationId: conversationId)
     }
 
+    
     func fetchMessages(conversationId: String) async throws {
         messages = try await MessageManager.shared.fetchMessages(conversationId: conversationId)
     }
@@ -45,9 +40,6 @@ final class MessagesViewModel: ObservableObject {
             print("Failed to send message: \(error)")
         }
     }
-
-    deinit {
-        listener?.remove()
-    }
 }
+
 
