@@ -10,7 +10,7 @@ import SwiftUI
 struct MessagesView: View {
     @StateObject var viewModel = MessagesViewModel()
     @State private var isShowingChat = false
-    @State private var selectedConversation: Conversation?
+    
     
     var body: some View {
         NavigationView {
@@ -26,13 +26,14 @@ struct MessagesView: View {
                     Spacer()
                 }
                 .onTapGesture {
-                    selectedConversation = conversation
-                    viewModel.fetchMessages(for: conversation.id ?? "")
-                    isShowingChat = true
+                    Task {
+                        viewModel.selectedConversationId = conversation.id
+                        try await viewModel.fetchMessages(conversationId: viewModel.selectedConversationId)
+                        isShowingChat = true
+                    }
                 }
             }
             .onAppear {
-                // Fetch conversations for the current user
                 Task {
                     if let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
                     try await viewModel.fetchConversations(for: userId)
@@ -42,7 +43,7 @@ struct MessagesView: View {
             }
             .navigationTitle("Messages")
             .background(
-                NavigationLink(destination: ChatView(viewModel: viewModel, conversation: selectedConversation), isActive: $isShowingChat) {
+                NavigationLink(destination: ChatView(conversationId: viewModel.selectedConversationId), isActive: $isShowingChat) {
                     EmptyView()
                 }
                 
@@ -51,30 +52,3 @@ struct MessagesView: View {
     }
 }
 
-struct ChatView: View {
-    @ObservedObject var viewModel: MessagesViewModel
-    @State private var messageText: String = ""
-    var conversation: Conversation?
-    
-    var body: some View {
-        VStack {
-            List(viewModel.messages) { message in
-                Text(message.content)
-            }
-            HStack {
-                TextField("Message", text: $messageText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                Button("Send") {
-                    if let conversationId = conversation?.id, let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
-                        Task {
-                            await viewModel.sendMessage(to: conversationId, content: messageText, senderId: userId, recipientId: conversation!.users.filter { $0 != userId }.first!)
-                            messageText = ""
-                        }
-                    }
-                }
-            }
-            .padding()
-        }
-        .navigationTitle("Chat")
-    }
-}

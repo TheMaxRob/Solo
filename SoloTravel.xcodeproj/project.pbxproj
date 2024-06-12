@@ -22,7 +22,6 @@
 		928CCCD12BDEF6EE007831A9 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCD02BDEF6EE007831A9 /* FirebaseCrashlytics */; };
 		928CCCD32BDEF6EE007831A9 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCD22BDEF6EE007831A9 /* FirebaseDatabaseSwift */; };
 		92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BD68292BE2F7B5000BACB3 /* MessagesView.swift */; };
-		92BD682E2BE2FAEC000BACB3 /* PersonalMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BD682D2BE2FAEC000BACB3 /* PersonalMessageView.swift */; };
 		92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C479492BCEA94C0020EB10 /* SoloTabView.swift */; };
 		92D2F80D2BCE7DCB0057534B /* SoloTravelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */; };
 		92D2F80F2BCE7DCB0057534B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D2F80E2BCE7DCB0057534B /* HomeView.swift */; };
@@ -50,6 +49,8 @@
 		92DC6B832BF6B0BF001B2680 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 92DC6B822BF6B0BF001B2680 /* FirebaseFirestore */; };
 		92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */; };
 		92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */; };
+		92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F4875B2C1A422A00E82EA3 /* ChatView.swift */; };
+		92F4875E2C1A485D00E82EA3 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F4875D2C1A485D00E82EA3 /* ChatViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,7 +81,6 @@
 		925B35F12BE2EBDF00DAF991 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		925B35F32BE2EC3500DAF991 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		92BD68292BE2F7B5000BACB3 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
-		92BD682D2BE2FAEC000BACB3 /* PersonalMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalMessageView.swift; sourceTree = "<group>"; };
 		92C479492BCEA94C0020EB10 /* SoloTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTabView.swift; sourceTree = "<group>"; };
 		92D2F8092BCE7DCB0057534B /* SoloTravel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloTravel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTravelApp.swift; sourceTree = "<group>"; };
@@ -109,6 +109,8 @@
 		92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupDetailsView.swift; sourceTree = "<group>"; };
 		92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupCreationView.swift; sourceTree = "<group>"; };
 		92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupManager.swift; sourceTree = "<group>"; };
+		92F4875B2C1A422A00E82EA3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		92F4875D2C1A485D00E82EA3 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,8 +149,9 @@
 			isa = PBXGroup;
 			children = (
 				92BD68292BE2F7B5000BACB3 /* MessagesView.swift */,
+				92F4875B2C1A422A00E82EA3 /* ChatView.swift */,
+				92F4875D2C1A485D00E82EA3 /* ChatViewModel.swift */,
 				92D53E6B2C0E146B0085B3EF /* MessagesViewModel.swift */,
-				92BD682D2BE2FAEC000BACB3 /* PersonalMessageView.swift */,
 				920D08522BDABCE400B2466C /* MessageCellView.swift */,
 				920D08582BDAC55000B2466C /* MessageBubbleView.swift */,
 			);
@@ -497,6 +500,7 @@
 				92D2F8432BCE891A0057534B /* Alert.swift in Sources */,
 				92D2F80F2BCE7DCB0057534B /* HomeView.swift in Sources */,
 				92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */,
+				92F4875E2C1A485D00E82EA3 /* ChatViewModel.swift in Sources */,
 				92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */,
 				92D2F8372BCE82B90057534B /* HomeViewModel.swift in Sources */,
 				92DC6B7F2BF65428001B2680 /* MeetupDetailsView.swift in Sources */,
@@ -512,8 +516,8 @@
 				92DC6B7B2BF651B8001B2680 /* MeetupView.swift in Sources */,
 				920D08532BDABCE400B2466C /* MessageCellView.swift in Sources */,
 				92D2F8412BCE88FF0057534B /* TravelError.swift in Sources */,
-				92BD682E2BE2FAEC000BACB3 /* PersonalMessageView.swift in Sources */,
 				925B35F02BE2EBD400DAF991 /* SignInEmailView.swift in Sources */,
+				92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */,
 				92D2F8482BCE89C30057534B /* String+Ext.swift in Sources */,
 				920E50332C0C18F500368677 /* SettingsViewModel.swift in Sources */,
 				925B35F42BE2EC3500DAF991 /* AuthenticationManager.swift in Sources */,

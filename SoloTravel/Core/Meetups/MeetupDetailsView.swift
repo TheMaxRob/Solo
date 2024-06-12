@@ -102,7 +102,7 @@ struct MeetupDetailsView: View {
                     }
                 }
                 .navigationDestination(isPresented: $isShowingPersonalMessageView) {
-                    PersonalMessageView(conversationId: viewModel.conversationId ?? "")
+                    ChatView(conversationId: viewModel.conversationId ?? "")
                 }
             }
             .navigationTitle("Meetup Details")
