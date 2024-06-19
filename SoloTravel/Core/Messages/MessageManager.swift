@@ -200,20 +200,22 @@ final class MessageManager {
 
     func fetchMessages(conversationId: String) async throws -> [Message] {
         let conversationDocRef = db.collection("conversations").document(conversationId)
-            let messagesCollectionRef = conversationDocRef.collection("messages")
-            
-            do {
-                let querySnapshot = try await messagesCollectionRef.getDocuments()
-                let messages = try querySnapshot.documents.compactMap { document in
-                    try document.data(as: Message.self)
-                }
-                return messages
-                
-            } catch {
-                print("Error fetching messages: \(error)")
-                throw error
+        let messagesCollectionRef = conversationDocRef.collection("messages")
+        
+        do {
+            let querySnapshot = try await messagesCollectionRef.order(by: "timestamp", descending: false).getDocuments()
+            let messages = try querySnapshot.documents.compactMap { document in
+                try document.data(as: Message.self)
             }
+            
+            return messages
+            
+        } catch {
+            print("Error fetching messages: \(error)")
+            throw error
+        }
     }
+
 
 }
 

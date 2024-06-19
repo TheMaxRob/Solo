@@ -14,12 +14,22 @@ struct ChatView: View {
     
     var body: some View {
         VStack {
-            List(viewModel.messages) { message in
-                MessageBubbleView(text: message.content)
+            ScrollView {
+                VStack {
+                    ForEach(viewModel.messages) { message in
+                        MessageBubbleView(
+                            text: message.content,
+                            isCurrentUser: message.senderId == viewModel.user?.userId
+                        )
+                    }
+                }
             }
+            .padding(.horizontal)
+            
             HStack {
                 TextField("Message", text: $messageText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                
                 Button("Send") {
                     Task {
                         print("Task Entered")
@@ -30,22 +40,27 @@ struct ChatView: View {
                         
                         print("User Successfully Loaded")
                         if let conversation = try? await viewModel.fetchConversation(conversationId: conversationId) {
-                            print("Conversation successfuly created")
-                            try await viewModel.sendMessage(to: conversationId, content: messageText, senderId: viewModel.user?.userId ?? "", recipientId: conversation.users.filter { $0 != viewModel.user?.userId }.first!)
+                            print("Conversation successfully created")
+                            try await viewModel.sendMessage(
+                                to: conversationId,
+                                content: messageText,
+                                senderId: viewModel.user?.userId ?? "",
+                                recipientId: conversation.users.filter { $0 != viewModel.user?.userId }.first!
+                            )
                             print("Message Sent - resetting messageText")
                             messageText = ""
                             try await viewModel.fetchMessages(conversationId: conversationId)
                         } else {
                             print("Error sending message.")
                         }
-                        
                     }
                 }
+                .padding(.leading, 8)
             }
             .padding()
-        .navigationTitle("Chat")
-        
+            .background(Color(.systemGray6))
         }
+        .navigationTitle("Chat")
         .onAppear {
             Task {
                 try await viewModel.fetchMessages(conversationId: conversationId)
@@ -53,3 +68,4 @@ struct ChatView: View {
         }
     }
 }
+
