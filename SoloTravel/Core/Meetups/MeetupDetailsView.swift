@@ -81,16 +81,11 @@ struct MeetupDetailsView: View {
                     Button {
                         print("Button Pressed")
                         Task {
-                            print("Task Entered")
-                            if viewModel.user == nil {
-                                print("User == nil")
-                                try await viewModel.loadCurrentUser()
-                                print("User Loaded")
-                                viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId)
-                                print("conversationId: \(String(describing: viewModel.conversationId))")
-                                isShowingPersonalMessageView = true
-                            }
-                            
+                            try await viewModel.loadCurrentUser()
+                            print("User Loaded")
+                            viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId)
+                            print("conversationId: \(String(describing: viewModel.conversationId))")
+                            isShowingPersonalMessageView = true    
                         }
                     } label: {
                         Text("Message")
@@ -108,8 +103,4 @@ struct MeetupDetailsView: View {
             .navigationTitle("Meetup Details")
         }
     }
-}
-
-#Preview {
-    MeetupDetailsView(meetup: MockMeetups.mockMeetups[0])
 }

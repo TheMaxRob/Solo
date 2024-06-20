@@ -71,8 +71,7 @@ final class AuthenticationManager {
         guard let user = Auth.auth().currentUser else {
             throw URLError(.badServerResponse)
         }
-        // MARK: This doesn't really work anymore, you have to use the sendverification thing
-        try await user.updateEmail(to: newEmail)
+        try await user.sendEmailVerification(beforeUpdatingEmail: user.email ?? "")
     }
     
     

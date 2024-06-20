@@ -42,44 +42,10 @@ final class UserManager {
     }
     
     
-    //    func createNewUser(auth: AuthDataResultModel) async throws {
-    //
-    //        var userData: [String : Any] = [
-    //            "user_id" : auth.uid,
-    //            "date_created" : Timestamp()
-    //        ]
-    //
-    //        if let email = auth.email {
-    //            userData["email"] = email
-    //        }
-    //        if let url = auth.photoURL {
-    //            userData["photo_url"] = url
-    //        }
-    //
-    //        try await userDocument(userId: auth.uid).setData(userData, merge: false)
-    //        print("users collection has been added.")
-    //
-    
-    
     func getUser(userId: String) async throws -> DBUser {
         return try await userDocument(userId: userId).getDocument(as: DBUser.self)
     }
     
-    
-    //    func getUser(userId: String) async throws -> DBUser {
-    //        let snapshot =  try await userDocument(userId: userId).getDocument()
-    //
-    //        guard let data = snapshot.data(), let userId = data["user_id"] as? String else {
-    //            throw URLError(.badServerResponse)
-    //        }
-    //
-    //
-    //        let email = data["email"] as? String
-    //        let photoURL = data["photo_url"] as? String
-    //        let dateCreated = data["date_created"] as? Date
-    //
-    //        return DBUser(userId: userId, email: email, photoURL: photoURL, dateCreated: dateCreated)
-    //    }
     
     func RSVPMeetup(userId: String, meetup: Meetup) async throws {
         print("RSVPMeetup UserManager called!")
@@ -147,7 +113,25 @@ final class UserManager {
             return []
         }
     }
-
+    
+    
+    func createUserProfile(userId: String, firstName: String, lastName: String, country: String, bio: String, birthDate: Date) async throws {
+        let snapshot = try await userCollection.document(userId).getDocument()
+        if snapshot.exists {
+            let userProfile: [String: Any] = [
+                "firstName": firstName,
+                "lastName": lastName,
+                "home_country": country,
+                "bio": bio,
+                "birthDate": Timestamp(date: birthDate)
+            ]
+            try await userCollection.document(userId).updateData(userProfile)
+        } else {
+            print("No existing user profile found for userId: \(userId). The document must exist to update it.")
+            throw NSError(domain: "Firestore", code: 404, userInfo: [NSLocalizedDescriptionKey: "User document does not exist."])
+        }
+    }
+    
 
     enum Error: Swift.Error {
         case tooManyMeetups

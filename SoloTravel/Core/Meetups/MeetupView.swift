@@ -54,7 +54,3 @@ struct MeetupView: View {
         
     }
 }
-
-#Preview {
-    MeetupView(meetup: MockMeetups.mockMeetups[0])
-}

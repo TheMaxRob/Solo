@@ -7,22 +7,21 @@
 
 import SwiftUI
 
-
 struct SignInEmailView: View {
     
     @StateObject private var viewModel = SignInEmailViewModel()
     @Binding var showSignInView: Bool
-    
+    @State private var showAlert = false
+    @State private var alertMessage = ""
     
     var body: some View {
         NavigationStack {
             VStack {
-                TextField("Email...", text: $viewModel.email)
+                TextField("Email", text: $viewModel.email)
                     .padding()
                     .background(Color(.gray).opacity(0.4))
                     .cornerRadius(10)
-                    
-                    
+                
                 SecureField("Password", text: $viewModel.password)
                     .padding()
                     .background(Color(.gray).opacity(0.4))
@@ -31,31 +30,27 @@ struct SignInEmailView: View {
                 Button {
                     Task {
                         do {
-                            try await viewModel.signUp()
-                            showSignInView = false
-                            return
-                        } catch {
-                            print(error)
-                        }
-                        
-                        do {
                             try await viewModel.signIn()
                             showSignInView = false
                         } catch {
-                            print(error)
+                            print("Sign in error: \(error)")
+                            showAlert = true
+                            alertMessage = "Failed to sign in: \(error.localizedDescription)"
                         }
-                        
                     }
-                    
                 } label: {
                     Text("Sign In")
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundColor(.white)
                         .frame(height: 55)
                         .frame(maxWidth: .infinity)
-                        .background(.blue)
+                        .background(Color.blue)
                         .cornerRadius(10)
                 }
+                .alert(isPresented: $showAlert) {
+                    Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+                }
+                
                 Spacer()
             }
             .padding()

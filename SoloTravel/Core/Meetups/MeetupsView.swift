@@ -45,8 +45,7 @@ struct MeetupsView: View {
                         Image(systemName: "arrow.left")
                             .foregroundColor(.white)
                             .padding(10)
-                            .background(Color.blue.opacity(0.8))
-                            .clipShape(Circle())
+                            
                     }
                     .padding(.leading, 20)
                     .padding(.top, 55)
@@ -74,7 +73,7 @@ struct MeetupsView: View {
                 
                 
             }
-            .background(Color.white)
+            .background(.yellow)
             .edgesIgnoringSafeArea(.all)
             .overlay(alignment: .topTrailing) {
                 
@@ -86,6 +85,7 @@ struct MeetupsView: View {
                     .padding()
             }
             }
+            
         }
         .onAppear {
             Task {
