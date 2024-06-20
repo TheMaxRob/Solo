@@ -121,6 +121,7 @@ struct DBUser: Codable {
     let rsvpMeetups: [Meetup]?
     let createdMeetups: [Meetup]?
     let conversations: [Conversation]?
+    let homeCountry: String?
     
     init(auth: AuthDataResultModel) {
         self.userId = auth.uid
@@ -132,6 +133,7 @@ struct DBUser: Codable {
         self.rsvpMeetups = []
         self.createdMeetups = []
         self.conversations = []
+        self.homeCountry = ""
     }
     
     init(
@@ -143,7 +145,8 @@ struct DBUser: Codable {
         dateCreated: Date? = nil,
         rsvpMeetups: [Meetup]? = [],
         createdMeetups: [Meetup]? = [],
-        conversations: [Conversation]? = []
+        conversations: [Conversation]? = [],
+        homeCountry: String? = nil
     ) {
         self.userId = userId
         self.email = email
@@ -154,6 +157,7 @@ struct DBUser: Codable {
         self.rsvpMeetups = rsvpMeetups
         self.createdMeetups = createdMeetups
         self.conversations = conversations
+        self.homeCountry = homeCountry
     }
     
     
@@ -172,6 +176,7 @@ struct DBUser: Codable {
         case rsvpMeetups = "rsvp_meetups"
         case createdMeetups = "created_meetups"
         case conversations = "conversations"
+        case homeCountry = "home_country"
     }
     
     
@@ -186,6 +191,7 @@ struct DBUser: Codable {
         self.rsvpMeetups = try container.decodeIfPresent([Meetup].self, forKey: .rsvpMeetups)
         self.createdMeetups = try container.decodeIfPresent([Meetup].self, forKey: .createdMeetups)
         self.conversations = try container.decodeIfPresent([Conversation].self, forKey: .conversations)
+        self.homeCountry = try container.decodeIfPresent(String.self, forKey: .homeCountry)
     }
     
     
@@ -200,6 +206,7 @@ struct DBUser: Codable {
         try container.encodeIfPresent(self.rsvpMeetups, forKey: .rsvpMeetups)
         try container.encodeIfPresent(self.createdMeetups, forKey: .createdMeetups)
         try container.encodeIfPresent(self.conversations, forKey: .conversations)
+        try container.encodeIfPresent(self.homeCountry, forKey: .homeCountry)
     }
     
 }

@@ -28,25 +28,20 @@ struct HomeView: View {
                     .textFieldStyle(.roundedBorder)
                     .shadow(radius: 3)
                     
-                    Button {
-                        isShowingMeetups = true
+                    NavigationLink {
+                        MeetupsView(isShowingMeetups: $isShowingMeetups, city: viewModel.selectedCity)
+                            .zIndex(1)
                     } label: {
                         Text("Connect")
                             .padding()
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 30))
-                            
                     }
-
                     Spacer()
                 }
                 .padding(.horizontal)
-            }
-            
-            if isShowingMeetups {
-                MeetupsView(isShowingMeetups: $isShowingMeetups, city: viewModel.selectedCity)
-                    .zIndex(1)
+                .background(.yellow)
             }
         }
     }

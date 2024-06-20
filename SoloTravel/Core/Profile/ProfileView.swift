@@ -19,28 +19,31 @@ struct ProfileView: View {
    
     var body: some View {
         NavigationStack {
-            List {
-                if let user = viewModel.user {
-                    Text("UserId: \(user.userId)")
-                }
-            }
-            .task {
-                try? await viewModel.loadCurrentUser()
-            }
-            .navigationTitle("Profile")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        SettingsView(showSignInView: $showSignInView)
-                    } label: {
-                        Image(systemName: "gear")
-                            .font(.headline)
+            VStack {
+                List {
+                    if let user = viewModel.user {
+                        Text("UserId: \(user.userId)")
                     }
-
                 }
-            }
+                .scrollContentBackground(.hidden)
+                .background(.yellow)
+                .task {
+                    try? await viewModel.loadCurrentUser()
+                }
+                .navigationTitle("Profile")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink {
+                            SettingsView(showSignInView: $showSignInView)
+                        } label: {
+                            Image(systemName: "gear")
+                                .font(.headline)
+                        }
+
+                    }
+                }
+            }.background(.yellow)
         }
-        
     }
 }
 

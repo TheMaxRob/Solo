@@ -10,6 +10,7 @@ import SwiftUI
 struct RootView: View {
     
     @State var showSignInView: Bool = false
+    @State var showCreateAccountView: Bool = false
     
     var body: some View {
         ZStack {
@@ -23,7 +24,7 @@ struct RootView: View {
         }
         .fullScreenCover(isPresented: $showSignInView, content: {
             NavigationStack {
-                AuthenticationView(showSignInView: $showSignInView)
+                AuthenticationView(showSignInView: $showSignInView, showCreateAccountView: $showCreateAccountView)
             }
         })
     }
