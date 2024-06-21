@@ -3,7 +3,7 @@ import SwiftUI
 struct HomeView: View {
     
     @StateObject var viewModel = HomeViewModel()
-    @Binding var showSignInView: Bool
+    @Binding var isNotAuthenticated: Bool
     @State var isShowingMeetups: Bool = false
     
     var body: some View {
@@ -21,12 +21,10 @@ struct HomeView: View {
                     
                     Text("Where are you staying?").bold()
                     HStack {
-                        TextField("City", text: $viewModel.selectedCity)
-                        TextField("Hotel/Hostel", text:$viewModel.selectedStay)
+                        BottomLineTextField(placeholder: "City", text: $viewModel.selectedCity)
+                        BottomLineTextField(placeholder: "Hotel/Hostel", text: $viewModel.selectedStay)
                     }
                     .padding(.bottom)
-                    .textFieldStyle(.roundedBorder)
-                    .shadow(radius: 3)
                     
                     NavigationLink {
                         MeetupsView(isShowingMeetups: $isShowingMeetups, city: viewModel.selectedCity)
@@ -34,12 +32,14 @@ struct HomeView: View {
                     } label: {
                         Text("Connect")
                             .padding()
-                            .background(Color.blue)
+                            .background(viewModel.selectedCity.isEmpty ? Color.gray : Color.blue)
                             .foregroundColor(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 30))
                     }
+                    .disabled(viewModel.selectedCity.isEmpty)
                     Spacer()
                 }
+                
                 .padding(.horizontal)
                 .background(.yellow)
             }
@@ -48,5 +48,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(showSignInView: .constant(false))
+    HomeView(isNotAuthenticated: .constant(false))
 }

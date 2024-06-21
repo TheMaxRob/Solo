@@ -215,7 +215,11 @@ final class MessageManager {
             throw error
         }
     }
-
+    
+    
+    func deleteMessage(messageId: String) async throws {
+        try await db.collection("conversations").document(messageId).delete()
+    }
 
 }
 

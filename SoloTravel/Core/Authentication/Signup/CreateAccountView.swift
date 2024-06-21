@@ -12,10 +12,10 @@ struct CreateAccountView: View {
     
     @StateObject private var viewModel = CreateAccountViewModel()
     @Binding var showCreateAccountView: Bool
-    @Binding var showSignInView: Bool
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State var isShowingProfileCreationView: Bool = false
+    @Binding var isNotAuthenticated: Bool
     
     var body: some View {
         NavigationStack {
@@ -57,12 +57,14 @@ struct CreateAccountView: View {
             }
             .padding()
             .fullScreenCover(isPresented: $isShowingProfileCreationView, content: {
-                ProfileCreationView(isShowingProfileCreationView: $isShowingProfileCreationView, isShowingAccountCreationView: $showCreateAccountView, isShowingSignInView: $showSignInView)
+                ProfileCreationView(isShowingProfileCreationView: $isShowingProfileCreationView,
+                                    isShowingAccountCreationView: $showCreateAccountView,
+                                    isNotAuthenticated: $isNotAuthenticated)
             })
         }
     }
 }
 
 #Preview {
-    CreateAccountView(showCreateAccountView: .constant(true), showSignInView: .constant(true))
+    CreateAccountView(showCreateAccountView: .constant(true), isNotAuthenticated: .constant(true))
 }

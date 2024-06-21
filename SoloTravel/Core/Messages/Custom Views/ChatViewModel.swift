@@ -30,7 +30,16 @@ final class ChatViewModel: ObservableObject {
     
     func fetchMessages(conversationId: String) async throws {
         messages = try await MessageManager.shared.fetchMessages(conversationId: conversationId)
+        for message in messages {
+            let date = message.timestamp.dateValue()
+            
+            // Delete messages older than one week
+            if date < Date().addingTimeInterval(-7 * 24 * 60 * 60) {
+                try? await deleteMessage(messageId: message.id ?? "")
+            }
+        }
     }
+    
 
     func sendMessage(to conversationId: String, content: String, senderId: String, recipientId: String) async throws {
         let message = Message(senderId: senderId, recipientId: recipientId, content: content, timestamp: Timestamp())
@@ -40,6 +49,12 @@ final class ChatViewModel: ObservableObject {
             print("Failed to send message: \(error)")
         }
     }
+    
+    
+    func deleteMessage(messageId: String) async throws {
+        try await MessageManager.shared.deleteMessage(messageId: messageId)
+    }
+    
 }
 
 

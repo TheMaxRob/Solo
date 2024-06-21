@@ -43,6 +43,7 @@ final class UserManager {
     
     
     func getUser(userId: String) async throws -> DBUser {
+        print("getUser")
         return try await userDocument(userId: userId).getDocument(as: DBUser.self)
     }
     
@@ -115,15 +116,15 @@ final class UserManager {
     }
     
     
-    func createUserProfile(userId: String, firstName: String, lastName: String, country: String, bio: String, birthDate: Date) async throws {
+    func createUserProfile(userId: String, firstName: String, lastName: String, country: String, bio: String, age: String) async throws {
         let snapshot = try await userCollection.document(userId).getDocument()
         if snapshot.exists {
             let userProfile: [String: Any] = [
-                "firstName": firstName,
-                "lastName": lastName,
+                "first_name": firstName,
+                "last_name": lastName,
                 "home_country": country,
                 "bio": bio,
-                "birthDate": Timestamp(date: birthDate)
+                "age": age
             ]
             try await userCollection.document(userId).updateData(userProfile)
         } else {

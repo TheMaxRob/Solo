@@ -16,11 +16,11 @@ struct Message: Codable, Identifiable {
     let timestamp: Timestamp
 
     enum CodingKeys: String, CodingKey {
-        case id
+        case id = "id"
         case senderId = "sender_id"
         case recipientId = "recipient_id"
-        case content
-        case timestamp
+        case content = "content"
+        case timestamp = "timestamp"
     }
 }
 
@@ -46,7 +46,16 @@ struct Meetup: Identifiable, Codable {
         case meetSpot
     }
     
-    init(id: String, title: String, description: String?, meetTime: Date, city: String, createdDate: Date, organizerId: String, meetSpot: String) {
+    init(id: String, 
+         title: String,
+         description: String?,
+         meetTime: Date, 
+         city: String,
+         createdDate: Date, 
+         organizerId: String,
+         meetSpot: String)
+    
+    {
         self.id = id
         self.title = title
         self.description = description
@@ -122,6 +131,7 @@ struct DBUser: Codable {
     let createdMeetups: [Meetup]?
     let conversations: [Conversation]?
     let homeCountry: String?
+    let birthDate: Date?
     
     init(auth: AuthDataResultModel) {
         self.userId = auth.uid
@@ -134,6 +144,7 @@ struct DBUser: Codable {
         self.createdMeetups = []
         self.conversations = []
         self.homeCountry = ""
+        self.birthDate = nil
     }
     
     init(
@@ -146,7 +157,8 @@ struct DBUser: Codable {
         rsvpMeetups: [Meetup]? = [],
         createdMeetups: [Meetup]? = [],
         conversations: [Conversation]? = [],
-        homeCountry: String? = nil
+        homeCountry: String? = nil,
+        birthDate: Date? = nil
     ) {
         self.userId = userId
         self.email = email
@@ -158,6 +170,7 @@ struct DBUser: Codable {
         self.createdMeetups = createdMeetups
         self.conversations = conversations
         self.homeCountry = homeCountry
+        self.birthDate = birthDate
     }
     
     
@@ -177,6 +190,7 @@ struct DBUser: Codable {
         case createdMeetups = "created_meetups"
         case conversations = "conversations"
         case homeCountry = "home_country"
+        case birthDate = "birth_date"
     }
     
     
@@ -192,6 +206,7 @@ struct DBUser: Codable {
         self.createdMeetups = try container.decodeIfPresent([Meetup].self, forKey: .createdMeetups)
         self.conversations = try container.decodeIfPresent([Conversation].self, forKey: .conversations)
         self.homeCountry = try container.decodeIfPresent(String.self, forKey: .homeCountry)
+        self.birthDate = try container.decodeIfPresent(Date.self, forKey: .birthDate)
     }
     
     
@@ -207,6 +222,7 @@ struct DBUser: Codable {
         try container.encodeIfPresent(self.createdMeetups, forKey: .createdMeetups)
         try container.encodeIfPresent(self.conversations, forKey: .conversations)
         try container.encodeIfPresent(self.homeCountry, forKey: .homeCountry)
+        try container.encodeIfPresent(self.birthDate, forKey: .birthDate)
     }
     
 }

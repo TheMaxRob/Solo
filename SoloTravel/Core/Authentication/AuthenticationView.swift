@@ -7,17 +7,25 @@
 
 import SwiftUI
 
+@MainActor
+final class AuthenticationViewModel: ObservableObject {
+    @Published var showSignInView: Bool = false
+    @Published var showCreateAccountView: Bool = false
+    
+}
+
 struct AuthenticationView: View {
     
-    @Binding var showSignInView: Bool
-    @Binding var showCreateAccountView: Bool
+    @Binding var showAuthenticationView: Bool
+    @StateObject var viewModel = AuthenticationViewModel()
+    @Binding var isNotAuthenticated: Bool
     
     var body: some View {
         NavigationStack {
             VStack {
                 
                 NavigationLink {
-                    SignInEmailView(showSignInView: $showSignInView)
+                    SignInEmailView(showSignInView: $viewModel.showSignInView)
                 } label: {
                     Text("Sign in with Email")
                         .font(.headline)
@@ -29,7 +37,7 @@ struct AuthenticationView: View {
                 }
                 
                 NavigationLink {
-                    CreateAccountView(showCreateAccountView: $showCreateAccountView, showSignInView: $showSignInView)
+                    CreateAccountView( showCreateAccountView: $viewModel.showCreateAccountView, isNotAuthenticated: $isNotAuthenticated)
                 } label: {
                     Text("Create Account")
                         .font(.headline)
@@ -49,5 +57,5 @@ struct AuthenticationView: View {
 }
 
 #Preview {
-    AuthenticationView(showSignInView: .constant(false), showCreateAccountView: .constant(false))
+    AuthenticationView(showAuthenticationView: .constant(true), isNotAuthenticated: .constant(true))
 }

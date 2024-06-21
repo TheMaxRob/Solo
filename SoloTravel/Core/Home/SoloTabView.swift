@@ -9,18 +9,18 @@ import SwiftUI
 
 struct SoloTabView: View {
     
-    @Binding var showSignInView: Bool
+    @Binding var isNotAuthenticated: Bool
     
     var body: some View {
         TabView {
-            HomeView(showSignInView: $showSignInView)
+            HomeView(isNotAuthenticated: $isNotAuthenticated)
                 .tabItem { Label("Home", systemImage: "house.fill") }
             
             MessagesView()
                 .tabItem {
                     Label("Messages", systemImage: "message.fill")
                 }
-            ProfileView(showSignInView: $showSignInView)
+            ProfileView(isNotAuthenticated: $isNotAuthenticated)
                 .tabItem {
                     Label("Profile", systemImage: "person.crop.circle.fill")
                 }
@@ -31,5 +31,5 @@ struct SoloTabView: View {
 }
 
 #Preview {
-    SoloTabView(showSignInView: .constant(false))
+    SoloTabView(isNotAuthenticated: .constant(false))
 }
