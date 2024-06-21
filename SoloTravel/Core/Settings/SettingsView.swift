@@ -10,7 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     
     @StateObject private var viewModel = SettingsViewModel()
-    @Binding var showSignInView: Bool
+    @Binding var isNotAuthenticated: Bool
     
     
     var body: some View {
@@ -20,7 +20,7 @@ struct SettingsView: View {
                     Task {
                         do {
                             try viewModel.signOut()
-                            showSignInView = true
+                            isNotAuthenticated = true
                         } catch {
                             print(error)
                         }
@@ -37,15 +37,11 @@ struct SettingsView: View {
                             print(error)
                         }
                     }
-                    
-                    showSignInView = true
+                    isNotAuthenticated = true
                 } label: {
                     Text("Delete Account")
                 }
-                
                 emailSection
-                
-                
             }
             .navigationTitle("Settings")
         }
@@ -53,7 +49,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(showSignInView: .constant(false))
+    SettingsView(isNotAuthenticated: .constant(false))
 }
 
 

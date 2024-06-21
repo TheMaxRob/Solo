@@ -23,9 +23,6 @@ final class MeetupsViewModel: ObservableObject {
     func fetchMeetups(city: String) async throws {
         meetups = try await MeetupManager.shared.fetchMeetups(city: city)
     }
-    
-    
-    
 }
 
 
@@ -38,28 +35,7 @@ struct MeetupsView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                HStack {
-                    Button(action: {
-                        isShowingMeetups = false
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .foregroundColor(.white)
-                            .padding(10)
-                            
-                    }
-                    .padding(.leading, 20)
-                    .padding(.top, 55)
-                    
-                    Spacer()
-                }
-                
-                Text("\(city) Meetups")
-                    .font(.largeTitle)
-                    .bold()
-                    .padding(.top, 16)
-                
                 List {
-                    
                     ForEach(viewModel.meetups) { meetup in
                         NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
                             VStack {
@@ -68,22 +44,19 @@ struct MeetupsView: View {
                         }
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(.yellow)
                 .listStyle(PlainListStyle())
-                .navigationTitle("Meetups")
-                
-                
             }
-            .background(.yellow)
-            .edgesIgnoringSafeArea(.all)
+            .navigationTitle("\(city) Meetups")
             .overlay(alignment: .topTrailing) {
-                
-            NavigationLink {
-                MeetupCreationView()
-            } label: {
-                Image(systemName: "plus")
-                    .tint(.blue)
-                    .padding()
-            }
+                NavigationLink {
+                    MeetupCreationView()
+                } label: {
+                    Image(systemName: "plus")
+                        .tint(.blue)
+                        .padding()
+                }
             }
             
         }

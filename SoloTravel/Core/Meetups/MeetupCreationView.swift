@@ -36,6 +36,7 @@ final class MeetupCreationViewModel: ObservableObject {
 struct MeetupCreationView: View {
     
    @StateObject private var viewModel = MeetupCreationViewModel()
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationStack {
@@ -43,20 +44,16 @@ struct MeetupCreationView: View {
                 Spacer()
                     .frame(height: 75)
                 
-                TextField("Meetup Title", text: $viewModel.meetupTitle)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .padding()
+                BottomLineTextField(placeholder: "Meetup Title", text: $viewModel.meetupTitle)
+                                    
                 
-                TextField("City", text: $viewModel.city)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-                
-                TextField("Meeting Spot", text: $viewModel.meetSpot)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-                
+                HStack {
+                    BottomLineTextField(placeholder: "City", text: $viewModel.city)
+                    BottomLineTextField(placeholder: "Meeting Spot", text: $viewModel.meetSpot)
+                }
                 DatePicker("Meet Time:", selection: $viewModel.meetTime, displayedComponents: [.date, .hourAndMinute])
                     .padding()
+                    .foregroundStyle(.gray.opacity(0.8))
                 
                 
                                 
@@ -75,10 +72,10 @@ struct MeetupCreationView: View {
                             let newMeetup = Meetup(id: UUID().uuidString, title: viewModel.meetupTitle, description: viewModel.meetupDescription, meetTime: viewModel.meetTime, city: viewModel.city, createdDate: Date(), organizerId: viewModel.user?.userId ?? "", meetSpot: viewModel.meetSpot)
                             
                             try await viewModel.createMeetup(userId: viewModel.user?.userId ?? "", meetup: newMeetup)
+                            dismiss()
                         } catch {
                             print("Error ocurred: \(error)")
                         }
-                        
                     }
                    
                 } label: {
@@ -91,6 +88,7 @@ struct MeetupCreationView: View {
                 
                 Spacer()
             }
+            .background(.yellow)
             .navigationTitle("Create a Meetup")
         }
             

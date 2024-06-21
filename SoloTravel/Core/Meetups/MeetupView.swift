@@ -10,29 +10,17 @@ import SwiftUI
 final class MeetupViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
+    @Published private(set) var host: DBUser? = nil
     
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
-        
-        
     }
     
     
-//    func RSVPMeetup(meetup: Meetup) {
-//       guard let user else { return }
-//
-//       Task {
-//           do {
-//               try await UserManager.shared.RSVPMeetup(meetup: meetup, userId: user.userId)
-//               self.user = try await UserManager.shared.getUser(userId: user.userId)
-//           } catch {
-//               print("Error RSVPing to Meetup!")
-//           }
-//       }
-//   }
-        
-        
+    func getUser(userId: String) async throws {
+        host = try await UserManager.shared.getUser(userId: userId)
+    }
 }
 
 struct MeetupView: View {
@@ -42,15 +30,33 @@ struct MeetupView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Text("\(String(describing: meetup.description))")
-                    .font(.caption)
-                Text("\(meetup.meetSpot)")
-                Text("\(meetup.meetTime)")
-                Text("\(String(describing: meetup.organizerId))")
+            HStack(spacing: 20) {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .frame(width: 60, height: 60)
+                VStack {
+                    Text("\(String(describing: meetup.title))")
+                        .font(.headline)
+                    Text("\(formatDayAndTime(date: meetup.meetTime))")
+                    
+                }
             }
-            .navigationTitle("meetup.title")
+           
         }
         
     }
+    
+    private func formatDayAndTime(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE, MMM d, yyyy h:mm a"
+        
+        return formatter.string(from: date)
+    }
+    
+    
+    
+}
+
+#Preview {
+    MeetupView(meetup: Meetup(id: "id", title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot"))
 }

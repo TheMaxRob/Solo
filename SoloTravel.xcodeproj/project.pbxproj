@@ -11,6 +11,8 @@
 		920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920D08582BDAC55000B2466C /* MessageBubbleView.swift */; };
 		920E50312C0C144400368677 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 920E50302C0C144400368677 /* GoogleService-Info.plist */; };
 		920E50332C0C18F500368677 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920E50322C0C18F500368677 /* SettingsViewModel.swift */; };
+		925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */; };
+		925181002C260149003F8ACA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FF2C260149003F8ACA /* WelcomeView.swift */; };
 		925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */; };
 		925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35ED2BE2EBCC00DAF991 /* RootView.swift */; };
 		925B35F02BE2EBD400DAF991 /* SignInEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */; };
@@ -78,6 +80,8 @@
 		920D08582BDAC55000B2466C /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
 		920E50302C0C144400368677 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		920E50322C0C18F500368677 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicturesCreationView.swift; sourceTree = "<group>"; };
+		925180FF2C260149003F8ACA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		925B35ED2BE2EBCC00DAF991 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInEmailView.swift; sourceTree = "<group>"; };
@@ -164,15 +168,25 @@
 			path = "Custom Views";
 			sourceTree = "<group>";
 		};
+		925180FC2C25F723003F8ACA /* Signup */ = {
+			isa = PBXGroup;
+			children = (
+				92DA73542C23931B004D271A /* ProfileCreationView.swift */,
+				92DA73562C2396D0004D271A /* ProfileCreationViewModel.swift */,
+				92DA73522C239129004D271A /* CreateAccountViewModel.swift */,
+				92DA73502C23836F004D271A /* CreateAccountView.swift */,
+				925180FF2C260149003F8ACA /* WelcomeView.swift */,
+				925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */,
+			);
+			path = Signup;
+			sourceTree = "<group>";
+		};
 		925B35EA2BE2EBAE00DAF991 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
 				92DC6B602BF64D46001B2680 /* UserManager.swift */,
 				925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */,
-				92DA73502C23836F004D271A /* CreateAccountView.swift */,
-				92DA73542C23931B004D271A /* ProfileCreationView.swift */,
-				92DA73562C2396D0004D271A /* ProfileCreationViewModel.swift */,
-				92DA73522C239129004D271A /* CreateAccountViewModel.swift */,
+				925180FC2C25F723003F8ACA /* Signup */,
 				92DC6B662BF64E69001B2680 /* Subviews */,
 			);
 			path = Authentication;
@@ -510,6 +524,7 @@
 				92D2F8432BCE891A0057534B /* Alert.swift in Sources */,
 				92DA73532C239129004D271A /* CreateAccountViewModel.swift in Sources */,
 				92D2F80F2BCE7DCB0057534B /* HomeView.swift in Sources */,
+				925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */,
 				92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */,
 				92F4875E2C1A485D00E82EA3 /* ChatViewModel.swift in Sources */,
 				92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */,
@@ -533,6 +548,7 @@
 				92D2F8482BCE89C30057534B /* String+Ext.swift in Sources */,
 				920E50332C0C18F500368677 /* SettingsViewModel.swift in Sources */,
 				925B35F42BE2EC3500DAF991 /* AuthenticationManager.swift in Sources */,
+				925181002C260149003F8ACA /* WelcomeView.swift in Sources */,
 				92D732A62BE7FDA7005629CB /* ProfileView.swift in Sources */,
 				92DC6B612BF64D46001B2680 /* UserManager.swift in Sources */,
 				925B35F22BE2EBDF00DAF991 /* SettingsView.swift in Sources */,
