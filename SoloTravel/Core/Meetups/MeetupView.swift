@@ -7,14 +7,21 @@
 
 import SwiftUI
 
+@MainActor
 final class MeetupViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
     @Published private(set) var host: DBUser? = nil
+    @Published var profileImage: UIImage? = nil
     
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+    }
+    
+    
+    func loadImage(from url: String) async throws {
+        profileImage = try await UserManager.shared.loadImage(from: url)
     }
     
     
@@ -31,9 +38,22 @@ struct MeetupView: View {
     var body: some View {
         NavigationStack {
             HStack(spacing: 20) {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 60, height: 60)
+                if let profileImage = viewModel.profileImage {
+                    Image(uiImage: profileImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                        .shadow(radius: 5)
+                } else {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundStyle(.gray)
+                        .font(.system(size: 85))
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                        .shadow(radius: 5)
+                }
                 VStack {
                     Text("\(String(describing: meetup.title))")
                         .font(.headline)
@@ -41,7 +61,11 @@ struct MeetupView: View {
                     
                 }
             }
-           
+            .onAppear {
+                Task {
+                    try await viewModel.loadImage(from: viewModel.host?.photoURL ?? "")
+                }
+            }
         }
         
     }

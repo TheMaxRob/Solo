@@ -7,9 +7,16 @@
 
 import SwiftUI
 
+@MainActor
+final class ProfilePicturesCreationViewModel: ObservableObject {
+    @Published var isShowingWelcomeView: Bool = false
+}
+
 struct ProfilePicturesCreationView: View {
     
+    @StateObject private var viewModel = ProfilePicturesCreationViewModel()
     @Binding var isNotAuthenticated: Bool
+    
     
     var body: some View {
         NavigationStack {
@@ -19,9 +26,9 @@ struct ProfilePicturesCreationView: View {
                     .frame(maxWidth: .infinity)
                     .navigationTitle("Profile Pictures")
                 
-                NavigationLink {
-                    WelcomeView(isNotAuthenticated: $isNotAuthenticated)
-                } label: {
+                Button {
+                    viewModel.isShowingWelcomeView = true
+                                    } label: {
                     Text("Save and Finish Profile")
                         .padding()
                         .frame(width: 350)
@@ -33,6 +40,9 @@ struct ProfilePicturesCreationView: View {
                 Spacer()
             }
             .background(.yellow)
+            .fullScreenCover(isPresented: $viewModel.isShowingWelcomeView, content: {
+                WelcomeView(isNotAuthenticated: $isNotAuthenticated, isShowingWelcomeView: $viewModel.isShowingWelcomeView)
+            })
         }
 
     }
