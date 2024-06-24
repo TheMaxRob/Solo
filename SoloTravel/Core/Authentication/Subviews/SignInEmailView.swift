@@ -10,6 +10,7 @@ import SwiftUI
 struct SignInEmailView: View {
     
     @StateObject private var viewModel = SignInEmailViewModel()
+    @Binding var isNotAuthenticated: Bool
     @Binding var showSignInView: Bool
     @State private var showAlert = false
     @State private var alertMessage = ""
@@ -32,6 +33,7 @@ struct SignInEmailView: View {
                         do {
                             try await viewModel.signIn()
                             showSignInView = false
+                            isNotAuthenticated = false
                         } catch {
                             print("Sign in error: \(error)")
                             showAlert = true
@@ -60,5 +62,5 @@ struct SignInEmailView: View {
 }
 
 #Preview {
-    SignInEmailView(showSignInView: .constant(true))
+    SignInEmailView(isNotAuthenticated: .constant(true), showSignInView: .constant(true))
 }

@@ -25,7 +25,7 @@ struct AuthenticationView: View {
             VStack {
                 
                 NavigationLink {
-                    SignInEmailView(showSignInView: $viewModel.showSignInView)
+                    SignInEmailView(isNotAuthenticated: $isNotAuthenticated, showSignInView: $viewModel.showSignInView)
                 } label: {
                     Text("Sign in with Email")
                         .font(.headline)

@@ -13,6 +13,7 @@ struct ProfileCreationView: View {
     @Binding var isShowingProfileCreationView: Bool
     @Binding var isShowingAccountCreationView: Bool
     @Binding var isNotAuthenticated: Bool
+    @State private var isImagePickerPresented = false
     
     var body: some View {
         NavigationStack {
@@ -23,12 +24,25 @@ struct ProfileCreationView: View {
                 
                 Spacer()
                     .frame(height: 15)
-                Image(systemName: "person.circle.fill")
-                    .foregroundStyle(.gray)
-                    .font(.system(size: 85))
+                if let selectedImage = vm.selectedImage {
+                        Image(uiImage: selectedImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                            .shadow(radius: 5)
+                } else {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundStyle(.gray)
+                        .font(.system(size: 85))
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                        .shadow(radius: 5)
+                }
                 
                 Button {
-                    // Figure out how to do this
+                    isImagePickerPresented.toggle()
                 } label: {
                     Text("Upload profile picture")
                         .font(.caption)
@@ -69,27 +83,15 @@ struct ProfileCreationView: View {
                         }
                     }
                 })
-                
-//                Button {
-//                    Task {
-//                        do {
-//
-//                            isShowingProfileCreationView = false
-//                            isShowingSignInView = false
-//                            isShowingAccountCreationView = false
-//                        } catch {
-//                            print("Error saving user profile.")
-//                        }
-//                    }
-//                } label: {
-//                    Text("Save and Continue")
-//                        .padding()
-//                        .frame(width: 350)
-//                        .background(.black)
-//                        .clipShape(RoundedRectangle(cornerRadius: 10))
-//                        .foregroundStyle(.yellow)
-//                }
                 Spacer()
+            }
+            .photosPicker(isPresented: $isImagePickerPresented, selection: $vm.imageSelection, matching: .images)
+            .onChange(of: vm.imageSelection) { newSelection in
+                Task {
+                    if let image = try await vm.loadImage(from: newSelection) {
+                        vm.selectedImage = image
+                    }
+                }
             }
             .background(.yellow)
         }

@@ -53,6 +53,7 @@ struct MeetupDetailsView: View {
                 Text("\(meetup.title)")
                     .font(.headline)
                     .padding(.bottom)
+                    .frame(width: .infinity)
                 
                 Text("Meet At: \(meetup.meetSpot)")
                     .font(.subheadline)
@@ -99,7 +100,9 @@ struct MeetupDetailsView: View {
                 .navigationDestination(isPresented: $isShowingPersonalMessageView) {
                     ChatView(conversationId: viewModel.conversationId ?? "")
                 }
+                Spacer()
             }
+            .background(.yellow)
             .navigationTitle("Meetup Details")
         }
     }

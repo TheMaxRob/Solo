@@ -10,6 +10,7 @@ import SwiftUI
 struct WelcomeView: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var isNotAuthenticated: Bool
+    @Binding var isShowingWelcomeView: Bool
     let dismissAfter: TimeInterval = 2.0
     
     
@@ -32,6 +33,7 @@ struct WelcomeView: View {
             .background(Color.yellow)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + dismissAfter) {
+                    isShowingWelcomeView = false
                     isNotAuthenticated = false
                     // navigationPath.removeLast(navigationPath.count)
                     
@@ -42,5 +44,5 @@ struct WelcomeView: View {
 }
 
 #Preview {
-    WelcomeView(isNotAuthenticated: .constant(true))
+    WelcomeView(isNotAuthenticated: .constant(true), isShowingWelcomeView: .constant(true))
 }

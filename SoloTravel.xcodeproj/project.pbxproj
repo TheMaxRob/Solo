@@ -19,6 +19,10 @@
 		925B35F22BE2EBDF00DAF991 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35F12BE2EBDF00DAF991 /* SettingsView.swift */; };
 		925B35F42BE2EC3500DAF991 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35F32BE2EC3500DAF991 /* AuthenticationManager.swift */; };
 		926BC0382C0A9760001279CF /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 926BC0372C0A9760001279CF /* FirebaseFirestoreSwift */; };
+		928721332C287771004176B6 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 928721322C287771004176B6 /* FirebaseStorage */; };
+		928721362C29337E004176B6 /* MyMeetupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928721352C29337E004176B6 /* MyMeetupsView.swift */; };
+		928721382C293384004176B6 /* UpcomingMeetupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928721372C293384004176B6 /* UpcomingMeetupsView.swift */; };
+		9287213A2C29338A004176B6 /* BookmarkedMeetupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */; };
 		928CCCCD2BDEF6EE007831A9 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCCC2BDEF6EE007831A9 /* FirebaseAnalytics */; };
 		928CCCCF2BDEF6EE007831A9 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCCE2BDEF6EE007831A9 /* FirebaseAuth */; };
 		928CCCD12BDEF6EE007831A9 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCD02BDEF6EE007831A9 /* FirebaseCrashlytics */; };
@@ -87,6 +91,9 @@
 		925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInEmailView.swift; sourceTree = "<group>"; };
 		925B35F12BE2EBDF00DAF991 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		925B35F32BE2EC3500DAF991 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		928721352C29337E004176B6 /* MyMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupsView.swift; sourceTree = "<group>"; };
+		928721372C293384004176B6 /* UpcomingMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupsView.swift; sourceTree = "<group>"; };
+		928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkedMeetupsView.swift; sourceTree = "<group>"; };
 		92BD68292BE2F7B5000BACB3 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		92C479492BCEA94C0020EB10 /* SoloTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTabView.swift; sourceTree = "<group>"; };
 		92D2F8092BCE7DCB0057534B /* SoloTravel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloTravel.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +140,7 @@
 				92DC6B812BF6B0BF001B2680 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
 				926BC0382C0A9760001279CF /* FirebaseFirestoreSwift in Frameworks */,
 				928CCCCD2BDEF6EE007831A9 /* FirebaseAnalytics in Frameworks */,
+				928721332C287771004176B6 /* FirebaseStorage in Frameworks */,
 				928CCCCF2BDEF6EE007831A9 /* FirebaseAuth in Frameworks */,
 				92DC6B832BF6B0BF001B2680 /* FirebaseFirestore in Frameworks */,
 			);
@@ -186,7 +194,6 @@
 			children = (
 				92DC6B602BF64D46001B2680 /* UserManager.swift */,
 				925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */,
-				925180FC2C25F723003F8ACA /* Signup */,
 				92DC6B662BF64E69001B2680 /* Subviews */,
 			);
 			path = Authentication;
@@ -197,6 +204,16 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		928721342C293374004176B6 /* Subviews */ = {
+			isa = PBXGroup;
+			children = (
+				928721352C29337E004176B6 /* MyMeetupsView.swift */,
+				928721372C293384004176B6 /* UpcomingMeetupsView.swift */,
+				928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */,
+			);
+			path = Subviews;
 			sourceTree = "<group>";
 		};
 		92BD682F2BE2FAF1000BACB3 /* Messages */ = {
@@ -321,6 +338,7 @@
 		92DC6B662BF64E69001B2680 /* Subviews */ = {
 			isa = PBXGroup;
 			children = (
+				925180FC2C25F723003F8ACA /* Signup */,
 				92D732A22BE7FC2C005629CB /* SignInEmailViewModel.swift */,
 				925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */,
 			);
@@ -340,6 +358,7 @@
 			isa = PBXGroup;
 			children = (
 				92D732A52BE7FDA7005629CB /* ProfileView.swift */,
+				928721342C293374004176B6 /* Subviews */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -398,6 +417,7 @@
 				92DC6B802BF6B0BF001B2680 /* FirebaseAnalyticsOnDeviceConversion */,
 				92DC6B822BF6B0BF001B2680 /* FirebaseFirestore */,
 				926BC0372C0A9760001279CF /* FirebaseFirestoreSwift */,
+				928721322C287771004176B6 /* FirebaseStorage */,
 			);
 			productName = SoloTravel;
 			productReference = 92D2F8092BCE7DCB0057534B /* SoloTravel.app */;
@@ -519,11 +539,13 @@
 			files = (
 				92DA73552C23931B004D271A /* ProfileCreationView.swift in Sources */,
 				92D53E662C0E120D0085B3EF /* DataModels.swift in Sources */,
+				928721362C29337E004176B6 /* MyMeetupsView.swift in Sources */,
 				92DC6B712BF65041001B2680 /* MeetupsView.swift in Sources */,
 				92D53E6C2C0E146B0085B3EF /* MessagesViewModel.swift in Sources */,
 				92D2F8432BCE891A0057534B /* Alert.swift in Sources */,
 				92DA73532C239129004D271A /* CreateAccountViewModel.swift in Sources */,
 				92D2F80F2BCE7DCB0057534B /* HomeView.swift in Sources */,
+				928721382C293384004176B6 /* UpcomingMeetupsView.swift in Sources */,
 				925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */,
 				92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */,
 				92F4875E2C1A485D00E82EA3 /* ChatViewModel.swift in Sources */,
@@ -531,6 +553,7 @@
 				92D2F8372BCE82B90057534B /* HomeViewModel.swift in Sources */,
 				92DC6B7F2BF65428001B2680 /* MeetupDetailsView.swift in Sources */,
 				925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */,
+				9287213A2C29338A004176B6 /* BookmarkedMeetupsView.swift in Sources */,
 				92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */,
 				925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */,
 				920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */,
@@ -901,6 +924,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 928CCCCB2BDEF6EE007831A9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestoreSwift;
+		};
+		928721322C287771004176B6 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 928CCCCB2BDEF6EE007831A9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		928CCCCC2BDEF6EE007831A9 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -8,6 +8,10 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import FirebaseAuth
+import FirebaseStorage
+
+
 
 
 
@@ -18,6 +22,7 @@ final class UserManager {
     private init() { }
     
     private let userCollection = Firestore.firestore().collection("users")
+    private let storage = Storage.storage()
     
     
     private func userDocument(userId: String) -> DocumentReference {
@@ -43,7 +48,6 @@ final class UserManager {
     
     
     func getUser(userId: String) async throws -> DBUser {
-        print("getUser")
         return try await userDocument(userId: userId).getDocument(as: DBUser.self)
     }
     
@@ -116,7 +120,14 @@ final class UserManager {
     }
     
     
-    func createUserProfile(userId: String, firstName: String, lastName: String, country: String, bio: String, age: String) async throws {
+    func createUserProfile(userId: String,
+                           firstName: String,
+                           lastName: String,
+                           country: String,
+                           bio: String,
+                           age: String,
+                           photoURL: String)
+    async throws {
         let snapshot = try await userCollection.document(userId).getDocument()
         if snapshot.exists {
             let userProfile: [String: Any] = [
@@ -124,7 +135,8 @@ final class UserManager {
                 "last_name": lastName,
                 "home_country": country,
                 "bio": bio,
-                "age": age
+                "age": age,
+                "photo_url": photoURL
             ]
             try await userCollection.document(userId).updateData(userProfile)
         } else {
@@ -133,6 +145,45 @@ final class UserManager {
         }
     }
     
+    
+    func uploadImageToFirebase(_ image: UIImage) async throws -> String {
+        let fileName = UUID().uuidString
+        let storageRef = Storage.storage().reference().child("profile_pictures/\(fileName).jpg")
+        print("storageRef created")
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw NSError(domain: "ImageConversionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to convert image to data."])
+        }
+        do {
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            print("metadata")
+            
+            let _ = try await storageRef.putDataAsync(imageData, metadata: metadata)
+            print("putDataAsync")
+            let downloadURL = try await storageRef.downloadURL()
+            print("downloadURL")
+            return downloadURL.absoluteString
+        } catch {
+            print("Error uploading image: \(error)")
+            throw error
+        }
+    }
+    
+    
+    func loadImage(from url: String) async throws -> UIImage {
+        guard let imageURL = URL(string: url) else { return UIImage(systemName: "person.circle.fill")! }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: imageURL)
+            if let downloadedImage = UIImage(data: data) {
+                return downloadedImage
+            }
+        } catch {
+            print("Failed to download image: \(error)")
+            // Handle error, for example by setting a default image
+            return UIImage(systemName: "person.circle.fill")!
+        }
+        return UIImage(systemName: "person.circle.fill")!
+    }
 
     enum Error: Swift.Error {
         case tooManyMeetups

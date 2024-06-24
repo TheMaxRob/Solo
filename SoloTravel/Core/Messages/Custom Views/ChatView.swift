@@ -35,7 +35,6 @@ struct ChatView: View {
                         print("Task Entered")
                         if viewModel.user == nil {
                             print("User == nil")
-                            try await viewModel.loadCurrentUser()
                         }
                         
                         print("User Successfully Loaded")
@@ -63,6 +62,7 @@ struct ChatView: View {
         .navigationTitle("Chat")
         .onAppear {
             Task {
+                try await viewModel.loadCurrentUser()
                 try await viewModel.fetchMessages(conversationId: conversationId)
             }
         }

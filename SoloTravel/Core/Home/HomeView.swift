@@ -22,7 +22,7 @@ struct HomeView: View {
                     Text("Where are you staying?").bold()
                     HStack {
                         BottomLineTextField(placeholder: "City", text: $viewModel.selectedCity)
-                        BottomLineTextField(placeholder: "Hotel/Hostel", text: $viewModel.selectedStay)
+                        BottomLineTextField(placeholder: "Timeframe", text: $viewModel.selectedStay)
                     }
                     .padding(.bottom)
                     
