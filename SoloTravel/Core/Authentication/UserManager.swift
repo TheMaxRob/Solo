@@ -49,8 +49,6 @@ final class UserManager {
     
     func getUser(userId: String) async throws -> DBUser {
         let document = try await userDocument(userId: userId).getDocument()
-            // Print raw document data
-            print("Raw Firestore data: \(document.data() ?? [:])")
             
             let user = try document.data(as: DBUser.self, decoder: decoder)
             return user

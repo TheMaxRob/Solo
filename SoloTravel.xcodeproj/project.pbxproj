@@ -27,6 +27,7 @@
 		928CCCCF2BDEF6EE007831A9 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCCE2BDEF6EE007831A9 /* FirebaseAuth */; };
 		928CCCD12BDEF6EE007831A9 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCD02BDEF6EE007831A9 /* FirebaseCrashlytics */; };
 		928CCCD32BDEF6EE007831A9 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCD22BDEF6EE007831A9 /* FirebaseDatabaseSwift */; };
+		92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A5EEC22C2A4AEA00C611B5 /* PublicProfileView.swift */; };
 		92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BD68292BE2F7B5000BACB3 /* MessagesView.swift */; };
 		92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C479492BCEA94C0020EB10 /* SoloTabView.swift */; };
 		92D2F80D2BCE7DCB0057534B /* SoloTravelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */; };
@@ -94,6 +95,7 @@
 		928721352C29337E004176B6 /* MyMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupsView.swift; sourceTree = "<group>"; };
 		928721372C293384004176B6 /* UpcomingMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupsView.swift; sourceTree = "<group>"; };
 		928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkedMeetupsView.swift; sourceTree = "<group>"; };
+		92A5EEC22C2A4AEA00C611B5 /* PublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileView.swift; sourceTree = "<group>"; };
 		92BD68292BE2F7B5000BACB3 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		92C479492BCEA94C0020EB10 /* SoloTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTabView.swift; sourceTree = "<group>"; };
 		92D2F8092BCE7DCB0057534B /* SoloTravel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloTravel.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -210,6 +212,7 @@
 			isa = PBXGroup;
 			children = (
 				928721352C29337E004176B6 /* MyMeetupsView.swift */,
+				92A5EEC22C2A4AEA00C611B5 /* PublicProfileView.swift */,
 				928721372C293384004176B6 /* UpcomingMeetupsView.swift */,
 				928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */,
 			);
@@ -558,6 +561,7 @@
 				925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */,
 				920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */,
 				92DA73512C238370004D271A /* CreateAccountView.swift in Sources */,
+				92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */,
 				92DA73572C2396D0004D271A /* ProfileCreationViewModel.swift in Sources */,
 				92D53E6A2C0E12900085B3EF /* MessageManager.swift in Sources */,
 				92D732A32BE7FC2C005629CB /* SignInEmailViewModel.swift in Sources */,

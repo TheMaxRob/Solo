@@ -8,11 +8,8 @@ final class ProfileViewModel: ObservableObject {
     
     func loadCurrentUser() async throws {
         do {
-            print("Starting to load current user")
             let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            print("Authenticated user: \(authDataResult.uid)")
             self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
-            print("User data fetched: \(String(describing: self.user))")
         } catch {
             print("Error loading current user: \(error)")
             throw error
@@ -51,11 +48,12 @@ struct ProfileView: View {
                             .shadow(radius: 5)
                     }
                     
+                    
+                    
+                    Text("\(viewModel.user?.firstName ?? "") \(viewModel.user?.lastName ?? "")")
+                        .font(.title)
+                        .fontWeight(.bold)
                 }
-                
-                Text("\(viewModel.user?.firstName ?? "") \(viewModel.user?.lastName ?? "")")
-                    .font(.title)
-                    .fontWeight(.bold)
                 
                 VStack {
                     NavigationLink {
@@ -72,7 +70,12 @@ struct ProfileView: View {
                         BookmarkedMeetupsView(user: viewModel.user ?? DBUser(userId: ""))
                     } label: {
                         ProfileListItem(text: "Boomarked Meetups")
-                    }                             
+                    }               
+                    NavigationLink {
+                        PublicProfileView(userId: viewModel.user?.userId ?? "")
+                    } label: {
+                        ProfileListItem(text: "My Public Profile")
+                    }
                     Divider()
                         .padding(8)
                 }
