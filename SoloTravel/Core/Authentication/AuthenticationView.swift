@@ -37,7 +37,7 @@ struct AuthenticationView: View {
                 }
                 
                 NavigationLink {
-                    CreateAccountView( showCreateAccountView: $viewModel.showCreateAccountView, isNotAuthenticated: $isNotAuthenticated)
+                    CreateAccountView(showCreateAccountView: $viewModel.showCreateAccountView, isNotAuthenticated: $isNotAuthenticated)
                 } label: {
                     Text("Create Account")
                         .font(.headline)
@@ -51,8 +51,6 @@ struct AuthenticationView: View {
             .padding()
             .navigationTitle("Sign In")
         }
-        
-        
     }
 }
 

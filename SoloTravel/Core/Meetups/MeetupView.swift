@@ -20,13 +20,12 @@ final class MeetupViewModel: ObservableObject {
     }
     
     
-    func loadImage(from url: String) async throws {
-        profileImage = try await UserManager.shared.loadImage(from: url)
+    func getHost(userId: String) async throws {
+        host = try await UserManager.shared.getUser(userId: userId)
     }
     
-    
-    func getUser(userId: String) async throws {
-        host = try await UserManager.shared.getUser(userId: userId)
+    func loadImage(from url: String) async throws {
+        profileImage = try await UserManager.shared.loadImage(from: url)
     }
 }
 
@@ -42,14 +41,14 @@ struct MeetupView: View {
                     Image(uiImage: profileImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 100, height: 100)
+                        .frame(width: 80, height: 80)
                         .clipShape(Circle())
                         .overlay(Circle().stroke(Color.gray, lineWidth: 2))
                         .shadow(radius: 5)
                 } else {
                     Image(systemName: "person.circle.fill")
                         .foregroundStyle(.gray)
-                        .font(.system(size: 85))
+                        .font(.system(size: 80))
                         .clipShape(Circle())
                         .overlay(Circle().stroke(Color.gray, lineWidth: 2))
                         .shadow(radius: 5)
@@ -63,6 +62,7 @@ struct MeetupView: View {
             }
             .onAppear {
                 Task {
+                    try await viewModel.getHost(userId: meetup.organizerId)
                     try await viewModel.loadImage(from: viewModel.host?.photoURL ?? "")
                 }
             }

@@ -129,7 +129,7 @@ struct DBUser: Codable {
     let dateCreated: Date?
     let rsvpMeetups: [Meetup]?
     let createdMeetups: [Meetup]?
-    let conversations: [Conversation]?
+    let conversations: [String]?
     let homeCountry: String?
     let birthDate: Date?
     
@@ -156,7 +156,7 @@ struct DBUser: Codable {
         dateCreated: Date? = nil,
         rsvpMeetups: [Meetup]? = [],
         createdMeetups: [Meetup]? = [],
-        conversations: [Conversation]? = [],
+        conversations: [String]? = [],
         homeCountry: String? = nil,
         birthDate: Date? = nil
     ) {
@@ -204,7 +204,7 @@ struct DBUser: Codable {
         self.dateCreated = try container.decodeIfPresent(Date.self, forKey: .dateCreated)
         self.rsvpMeetups = try container.decodeIfPresent([Meetup].self, forKey: .rsvpMeetups)
         self.createdMeetups = try container.decodeIfPresent([Meetup].self, forKey: .createdMeetups)
-        self.conversations = try container.decodeIfPresent([Conversation].self, forKey: .conversations)
+        self.conversations = try container.decodeIfPresent([String].self, forKey: .conversations)
         self.homeCountry = try container.decodeIfPresent(String.self, forKey: .homeCountry)
         self.birthDate = try container.decodeIfPresent(Date.self, forKey: .birthDate)
     }

@@ -25,7 +25,6 @@ struct RootView: View {
         .fullScreenCover(isPresented: $isNotAuthenticated, content: {
             NavigationStack {
                 AuthenticationView(showAuthenticationView: $isNotAuthenticated, isNotAuthenticated: $isNotAuthenticated)
-
             }
         })
     }

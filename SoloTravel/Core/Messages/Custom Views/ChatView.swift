@@ -46,7 +46,6 @@ struct ChatView: View {
                                 senderId: viewModel.user?.userId ?? "",
                                 recipientId: conversation.users.filter { $0 != viewModel.user?.userId }.first!
                             )
-                            print("Message Sent - resetting messageText")
                             messageText = ""
                             try await viewModel.fetchMessages(conversationId: conversationId)
                         } else {
@@ -64,8 +63,8 @@ struct ChatView: View {
             Task {
                 try await viewModel.loadCurrentUser()
                 try await viewModel.fetchMessages(conversationId: conversationId)
+                print("UserId: \(String(describing: viewModel.user?.userId))")
             }
         }
     }
 }
-
