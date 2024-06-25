@@ -131,7 +131,8 @@ struct DBUser: Codable {
     let createdMeetups: [Meetup]?
     let conversations: [String]?
     let homeCountry: String?
-    let birthDate: Date?
+    let age: String?
+    let bio: String?
     
     init(auth: AuthDataResultModel) {
         self.userId = auth.uid
@@ -144,7 +145,8 @@ struct DBUser: Codable {
         self.createdMeetups = []
         self.conversations = []
         self.homeCountry = ""
-        self.birthDate = nil
+        self.age = ""
+        self.bio = ""
     }
     
     init(
@@ -158,7 +160,8 @@ struct DBUser: Codable {
         createdMeetups: [Meetup]? = [],
         conversations: [String]? = [],
         homeCountry: String? = nil,
-        birthDate: Date? = nil
+        age: String? = nil,
+        bio: String? = nil
     ) {
         self.userId = userId
         self.email = email
@@ -170,14 +173,9 @@ struct DBUser: Codable {
         self.createdMeetups = createdMeetups
         self.conversations = conversations
         self.homeCountry = homeCountry
-        self.birthDate = birthDate
+        self.age = age
+        self.bio = bio
     }
-    
-    
-//    mutating func togglePremiumStatus() {
-//        let currentValue = isPremium ?? false
-//        isPremium = !currentValue
-//    }
     
     enum CodingKeys: String, CodingKey {
         case userId = "user_id"
@@ -190,7 +188,8 @@ struct DBUser: Codable {
         case createdMeetups = "created_meetups"
         case conversations = "conversations"
         case homeCountry = "home_country"
-        case birthDate = "birth_date"
+        case age = "age"
+        case bio = "bio"
     }
     
     
@@ -206,7 +205,8 @@ struct DBUser: Codable {
         self.createdMeetups = try container.decodeIfPresent([Meetup].self, forKey: .createdMeetups)
         self.conversations = try container.decodeIfPresent([String].self, forKey: .conversations)
         self.homeCountry = try container.decodeIfPresent(String.self, forKey: .homeCountry)
-        self.birthDate = try container.decodeIfPresent(Date.self, forKey: .birthDate)
+        self.age = try container.decodeIfPresent(String.self, forKey: .age)
+        self.bio = try container.decodeIfPresent(String.self, forKey: .bio)
     }
     
     
@@ -222,7 +222,8 @@ struct DBUser: Codable {
         try container.encodeIfPresent(self.createdMeetups, forKey: .createdMeetups)
         try container.encodeIfPresent(self.conversations, forKey: .conversations)
         try container.encodeIfPresent(self.homeCountry, forKey: .homeCountry)
-        try container.encodeIfPresent(self.birthDate, forKey: .birthDate)
+        try container.encodeIfPresent(self.age, forKey: .age)
+        try container.encodeIfPresent(self.bio, forKey: .bio)
     }
     
 }
