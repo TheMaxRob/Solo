@@ -80,11 +80,18 @@ struct ProfileView: View {
                 
                 Spacer()
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: SettingsView(isNotAuthenticated: $isNotAuthenticated)) {
+                        Image(systemName: "gear")
+                            .font(.title3)
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
             .frame(width: 400)
             .background(.yellow)
-            
             .navigationTitle("Profile")
-            
             .onAppear {
                 Task {
                     do {
@@ -101,15 +108,7 @@ struct ProfileView: View {
                     }
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: SettingsView(isNotAuthenticated: $isNotAuthenticated)) {
-                        Image(systemName: "gear")
-                            .font(.title3)
-                            .foregroundColor(.blue)
-                    }
-                }
-            }
+            
         }
     }
 }
