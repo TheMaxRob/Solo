@@ -191,6 +191,12 @@ final class MessageManager {
             var newMessage = message
             newMessage.id = messageRef.documentID
             try messageRef.setData(from: newMessage)
+            let snapshot = try await conversationRef.getDocument()
+            if snapshot.exists {
+                try await conversationRef.updateData([
+                    "last_message" : message.content
+                ])
+            }
         } catch {
             throw error
         }

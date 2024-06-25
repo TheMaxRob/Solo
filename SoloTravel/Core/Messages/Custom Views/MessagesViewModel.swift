@@ -15,6 +15,7 @@ final class MessagesViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var selectedConversationId: String = ""
     @Published var user: DBUser?
+    @Published var userNames: [String] = []
     private var listener: ListenerRegistration?
 
     
@@ -36,14 +37,11 @@ final class MessagesViewModel: ObservableObject {
     func fetchMessages(conversationId: String) async throws {
         messages = try await MessageManager.shared.fetchMessages(conversationId: conversationId)
     }
-
-    func sendMessage(to conversationId: String, content: String, senderId: String, recipientId: String) async throws {
-        let message = Message(senderId: senderId, recipientId: recipientId, content: content, timestamp: Timestamp())
-        do {
-            try await MessageManager.shared.sendMessage(conversationId: conversationId, message: message)
-        } catch {
-            print("Failed to send message: \(error)")
-        }
+    
+    
+    func fetchUserNames(userIds: [String]) async throws {
+        let filteredUserIds = userIds.filter { $0 != user?.userId }
+        userNames = try await UserManager.shared.fetchUserNames(userIds: filteredUserIds)
     }
 
     deinit {

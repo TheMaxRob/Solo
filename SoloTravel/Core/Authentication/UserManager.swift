@@ -190,6 +190,17 @@ final class UserManager {
         return UIImage(systemName: "person.circle.fill")!
     }
 
+    
+    func fetchUserNames(userIds: [String]) async throws -> [String] {
+        var usernames: [String] = []
+        for userId in userIds {
+            let user = try await getUser(userId: userId)
+            usernames.append("\(user.firstName ?? "") \(user.lastName ?? "")")
+        }
+        return usernames
+    }
+    
+    
     enum Error: Swift.Error {
         case tooManyMeetups
     }

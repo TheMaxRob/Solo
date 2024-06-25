@@ -17,27 +17,33 @@ struct MessagesView: View {
             List(viewModel.conversations) { conversation in
                 HStack {
                     VStack(alignment: .leading) {
-                        Text(conversation.users.joined(separator: ", "))
-                            .font(.headline)
-                        Text(conversation.lastMessage ?? "")
+                        Text(viewModel.userNames.joined(separator: ", "))
+                            .bold()
+                            .font(.title3)
+                            .onAppear {
+                                Task {
+                                    try await viewModel.fetchUserNames(userIds: conversation.users)
+                                }
+                            }
+                        Text("\(conversation.lastMessage ?? "")")
                             .font(.subheadline)
-                            .foregroundColor(.gray)
                     }
-                    Spacer()
-                }
-                .onTapGesture {
-                    Task {
-                        viewModel.selectedConversationId = conversation.id
-                        try await viewModel.fetchMessages(conversationId: viewModel.selectedConversationId)
-                        isShowingChat = true
+                    .onTapGesture {
+                        Task {
+                            viewModel.selectedConversationId = conversation.id
+                            try await viewModel.fetchMessages(conversationId: viewModel.selectedConversationId)
+                            isShowingChat = true
+                        }
                     }
                 }
+                
             }
             .onAppear {
                 Task {
                     if let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
-                    try await viewModel.fetchConversations(for: userId)
-                }
+                        try await viewModel.loadCurrentUser()
+                        try await viewModel.fetchConversations(for: userId)
+                    }
                 
                 }
             }
