@@ -7,8 +7,16 @@ final class ProfileViewModel: ObservableObject {
     @Published var profileImage: UIImage? = nil
     
     func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        do {
+            print("Starting to load current user")
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            print("Authenticated user: \(authDataResult.uid)")
+            self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+            print("User data fetched: \(String(describing: self.user))")
+        } catch {
+            print("Error loading current user: \(error)")
+            throw error
+        }
     }
     
     
@@ -79,8 +87,18 @@ struct ProfileView: View {
             
             .onAppear {
                 Task {
-                    try await viewModel.loadCurrentUser()
-                    try await viewModel.loadImage(from: viewModel.user?.photoURL ?? "")
+                    do {
+                        try await viewModel.loadCurrentUser()
+                        print("User loaded")
+                        if let photoURL = viewModel.user?.photoURL, !photoURL.isEmpty {
+                            try await viewModel.loadImage(from: photoURL)
+                            print("Profile image loaded")
+                        } else {
+                            print("No photo URL available for user")
+                        }
+                    } catch {
+                        print("Error in onAppear: \(error)")
+                    }
                 }
             }
             .toolbar {

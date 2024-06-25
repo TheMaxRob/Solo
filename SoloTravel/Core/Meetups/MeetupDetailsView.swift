@@ -11,11 +11,13 @@ import SwiftUI
 final class MeetupDetailsViewModel: ObservableObject {
     @Published private(set) var user: DBUser? = nil
     @Published var conversationId: String?
+    @Published var host: DBUser? = nil
     
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
     }
+    
     
     func RSVPMeetup(meetup: Meetup) {
         guard let user else {
@@ -32,6 +34,7 @@ final class MeetupDetailsViewModel: ObservableObject {
         }
     }
     
+    
     func createConversation(with organizerId: String) async throws -> String? {
         guard let user else { return nil }
         
@@ -39,6 +42,12 @@ final class MeetupDetailsViewModel: ObservableObject {
         let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
         return conversationId
     }
+    
+    
+    func getHost(userId: String) async throws {
+        host = try await UserManager.shared.getUser(userId: userId)
+    }
+    
 }
 
 struct MeetupDetailsView: View {
@@ -53,7 +62,9 @@ struct MeetupDetailsView: View {
                 Text("\(meetup.title)")
                     .font(.headline)
                     .padding(.bottom)
-                    .frame(width: .infinity)
+                    .frame(width: 400)
+                
+                Text("Host: \(viewModel.host?.firstName ?? "Unknown") \(viewModel.host?.lastName ?? "")")
                 
                 Text("Meet At: \(meetup.meetSpot)")
                     .font(.subheadline)
@@ -80,12 +91,9 @@ struct MeetupDetailsView: View {
                     }
                     
                     Button {
-                        print("Button Pressed")
                         Task {
                             try await viewModel.loadCurrentUser()
-                            print("User Loaded")
                             viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId)
-                            print("conversationId: \(String(describing: viewModel.conversationId))")
                             isShowingPersonalMessageView = true    
                         }
                     } label: {
@@ -101,6 +109,11 @@ struct MeetupDetailsView: View {
                     ChatView(conversationId: viewModel.conversationId ?? "")
                 }
                 Spacer()
+            }
+            .onAppear {
+                Task {
+                    try await viewModel.getHost(userId: meetup.organizerId)
+                }
             }
             .background(.yellow)
             .navigationTitle("Meetup Details")

@@ -184,7 +184,6 @@ final class MessageManager {
     }
         
     func sendMessage(conversationId: String, message: Message) async throws {
-        print("sendMessage in Manager called!")
         let conversationRef = db.collection("conversations").document(conversationId)
         let messageRef = conversationRef.collection("messages").document()
         

@@ -49,16 +49,16 @@ struct MeetupsView: View {
                 .listStyle(PlainListStyle())
             }
             .navigationTitle("\(city) Meetups")
-            .overlay(alignment: .topTrailing) {
-                NavigationLink {
-                    MeetupCreationView()
-                } label: {
-                    Image(systemName: "plus")
-                        .tint(.blue)
-                        .padding()
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        MeetupCreationView()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+
                 }
             }
-            
         }
         .onAppear {
             Task {
