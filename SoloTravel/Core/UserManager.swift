@@ -66,18 +66,24 @@ final class UserManager {
                     "rsvp_meetups": FieldValue.arrayUnion([try encoder.encode(meetup)])
                 ])
                 print("updateData success")
+                
+                // try await MeetupManager.shared.addPendingUser(userId: String)
             } else {
                 try await docRef.setData([
                     "rsvp_meetups": [try encoder.encode(meetup)]
                 ])
                 print("create rsvp_meetups")
             }
+        
+        
     }
     
     
     func createMeetup(userId: String, meetup: Meetup) async throws {
         let docRef = userCollection.document(userId)
-                
+        
+        print("Creating Meetup: \(meetup)")
+        
         let documentSnapshot = try await docRef.getDocument()
         
         if documentSnapshot.exists {
