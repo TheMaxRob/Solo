@@ -11,7 +11,8 @@ import FirebaseFirestoreSwift
 
 final class MessageManager {
     static let shared = MessageManager()
-    private let db = Firestore.firestore()
+    private let conversationCollection = Firestore.firestore().collection("conversations")
+    private let userCollection = Firestore.firestore().collection("users")
     
     private init() { }
     
@@ -26,8 +27,7 @@ final class MessageManager {
     }()
     
     func fetchConversations(userId: String) async throws -> [Conversation] {
-        let ref = db.collection("conversations")
-        
+        let ref = conversationCollection
         let querySnapshot = try await ref.whereField("users", arrayContains: userId).getDocuments()
         
         var conversations: [Conversation] = []
@@ -60,7 +60,7 @@ final class MessageManager {
             
             let createdDate = timestamp.dateValue()
             
-            let conversation = Conversation(id: conversationId, userIds: userIds, lastMessage: lastMessage, createdDate: createdDate)
+            let conversation = Conversation(userIds: userIds, lastMessage: lastMessage, createdDate: createdDate)
             conversations.append(conversation)
         }
         return conversations
@@ -68,7 +68,7 @@ final class MessageManager {
     
     
     func fetchConversation(conversationId: String) async throws -> Conversation {
-        let conversationRef = db.collection("conversations").document(conversationId)
+        let conversationRef = conversationCollection.document(conversationId)
         do {
             let documentSnapshot = try await conversationRef.getDocument()
             if documentSnapshot.exists, let data = documentSnapshot.data() {
@@ -132,28 +132,27 @@ final class MessageManager {
     
     
     func createConversation(userIds: [String]) async throws -> String? {
+        
+        // Create conversation document
         if let existingId = try await conversationExistsId(for: userIds) {
             print("Conversation already exists.")
             return existingId
         } else {
             let newConversationId = UUID().uuidString
             let newConversation = Conversation(
-                id: newConversationId,
                 userIds: userIds,
                 lastMessage: "",
                 createdDate: Date()
             )
+            let conversationData = try encoder.encode(newConversation)
             
-            let conversationRef = db.collection("conversations").document(newConversationId)
-            try await conversationRef.setData([
-                "id": newConversation.id,
-                "users": newConversation.users,
-                "last_message": newConversation.lastMessage ?? "",
-                "timestamp": newConversation.timestamp ?? FieldValue.serverTimestamp()
-            ])
+            let conversationRef = conversationCollection.document(newConversationId)
+            try await conversationRef.setData(conversationData)
             
+            
+            // Set conversations in user documents
             for userId in userIds {
-                let userRef = db.collection("users").document(userId)
+                let userRef = userCollection.document(userId)
                 
                 let documentSnapshot = try await userRef.getDocument()
                 
@@ -174,7 +173,7 @@ final class MessageManager {
     func conversationExistsId(for userIds: [String]) async throws -> String? {
         if userIds[0].isEmpty { return nil }
         
-        let ref = db.collection("conversations")
+        let ref = conversationCollection
         
         let querySnapshot = try await ref.whereField("users", arrayContainsAny: userIds).getDocuments()
         
@@ -189,7 +188,7 @@ final class MessageManager {
     }
         
     func sendMessage(conversationId: String, message: Message) async throws {
-        let conversationRef = db.collection("conversations").document(conversationId)
+        let conversationRef = conversationCollection.document(conversationId)
         let messageRef = conversationRef.collection("messages").document()
         
         do {
@@ -209,7 +208,7 @@ final class MessageManager {
     
 
     func fetchMessages(conversationId: String) async throws -> [Message] {
-        let conversationDocRef = db.collection("conversations").document(conversationId)
+        let conversationDocRef = conversationCollection.document(conversationId)
         let messagesCollectionRef = conversationDocRef.collection("messages")
         
         do {
@@ -228,10 +227,36 @@ final class MessageManager {
     
     
     func deleteMessage(messageId: String) async throws {
-        try await db.collection("conversations").document(messageId).delete()
+        try await conversationCollection.document(messageId).delete()
     }
-
-}
+    
+    
+    func deleteConversation(conversationId: String) async throws {
+        print("deleteConversation called in manager!")
+        let convRef = conversationCollection.document(conversationId)
+            let convSnapshot = try await convRef.getDocument()
+            if convSnapshot.exists {
+                if let userIds = convSnapshot.data()?["users"] as? [String] {
+                    for userId in userIds {
+                        let userRef = userCollection.document(userId)
+                        let userSnapshot = try await userRef.getDocument()
+                        if userSnapshot.exists {
+                            try await userRef.updateData([
+                                "conversations" : FieldValue.arrayRemove([conversationId])
+                            ])
+                        } else {
+                            print("user document does not exist.")
+                        }
+                    }
+                }
+                
+                
+            } else {
+                print("No conversation doc found.")
+            }
+            try await convRef.delete()
+        }
+    }
 
 
 extension Encodable {

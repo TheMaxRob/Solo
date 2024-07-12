@@ -13,6 +13,7 @@ import FirebaseFirestoreSwift
 final class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var user: DBUser?
+    @Published var other: DBUser?
     
     func loadCurrentUser() async throws {
         print("loadCurrentUser")
@@ -24,7 +25,19 @@ final class ChatViewModel: ObservableObject {
     
     
     func fetchConversation(conversationId: String) async throws -> Conversation {
-        return try await MessageManager.shared.fetchConversation(conversationId: conversationId)
+        let conversation = try await MessageManager.shared.fetchConversation(conversationId: conversationId)
+        for id in conversation.users {
+            if (id != user?.userId) {
+                other = try await UserManager.shared.getUser(userId: id)
+                break
+            }
+        }
+        return conversation
+    }
+    
+    
+    func deleteConversation(conversationId: String) async throws {
+        try await MessageManager.shared.deleteConversation(conversationId: conversationId)
     }
 
     
@@ -54,6 +67,9 @@ final class ChatViewModel: ObservableObject {
     func deleteMessage(messageId: String) async throws {
         try await MessageManager.shared.deleteMessage(messageId: messageId)
     }
+    
+    
+    
     
 }
 

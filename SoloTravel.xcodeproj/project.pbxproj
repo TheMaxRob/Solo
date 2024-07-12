@@ -26,6 +26,7 @@
 		925181002C260149003F8ACA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FF2C260149003F8ACA /* WelcomeView.swift */; };
 		925AC4F52C41B41F001FC6CC /* ForgotPasswordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */; };
 		925AC4F72C41B4C1001FC6CC /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F62C41B4C1001FC6CC /* ForgotPasswordView.swift */; };
+		925AC4F92C41BDBE001FC6CC /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F82C41BDBE001FC6CC /* LoadingView.swift */; };
 		925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */; };
 		925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35ED2BE2EBCC00DAF991 /* RootView.swift */; };
 		925B35F02BE2EBD400DAF991 /* SignInEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */; };
@@ -129,6 +130,7 @@
 		925180FF2C260149003F8ACA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordButton.swift; sourceTree = "<group>"; };
 		925AC4F62C41B4C1001FC6CC /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		925AC4F82C41BDBE001FC6CC /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		925B35ED2BE2EBCC00DAF991 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInEmailView.swift; sourceTree = "<group>"; };
@@ -387,7 +389,7 @@
 				92D2F8462BCE89B50057534B /* Extensions */,
 				92D2F8452BCE89390057534B /* Alerts */,
 				92D53E652C0E120D0085B3EF /* DataModels.swift */,
-				923E94292C3E34EB002AE12B /* UserPFPView.swift */,
+				925AC4F82C41BDBE001FC6CC /* LoadingView.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -416,6 +418,7 @@
 				92A8FF8B2C3C40980025FAA9 /* CheckMarkButton.swift */,
 				92A8FF8D2C3C40AA0025FAA9 /* DeclineButton.swift */,
 				925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */,
+				923E94292C3E34EB002AE12B /* UserPFPView.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -676,6 +679,7 @@
 				92A8FF8C2C3C40980025FAA9 /* CheckMarkButton.swift in Sources */,
 				925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */,
 				920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */,
+				925AC4F92C41BDBE001FC6CC /* LoadingView.swift in Sources */,
 				92DA73512C238370004D271A /* CreateAccountView.swift in Sources */,
 				92A8FF842C3B852A0025FAA9 /* ItalyView.swift in Sources */,
 				92A8FF882C3B854B0025FAA9 /* GreeceView.swift in Sources */,
