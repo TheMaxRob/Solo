@@ -11,7 +11,7 @@ import SwiftUI
 final class MeetupViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
-    @Published private(set) var host: DBUser? = nil
+    @Published private(set) var host: DBUser = DBUser(userId: "")
     @Published var profileImage: UIImage? = nil
     
     func loadCurrentUser() async throws {
@@ -25,9 +25,11 @@ final class MeetupViewModel: ObservableObject {
     }
     
     func loadImage(from url: String) async throws {
+        print("loadImage")
         profileImage = try await UserManager.shared.loadImage(from: url)
     }
 }
+
 
 struct MeetupView: View {
     
@@ -36,34 +38,28 @@ struct MeetupView: View {
     
     var body: some View {
         NavigationStack {
-            HStack(spacing: 20) {
-                if let profileImage = viewModel.profileImage {
-                    Image(uiImage: profileImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 80, height: 80)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                        .shadow(radius: 5)
-                } else {
-                    Image(systemName: "person.circle.fill")
-                        .foregroundStyle(.gray)
-                        .font(.system(size: 80))
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                        .shadow(radius: 5)
+            HStack {
+                NavigationLink {
+                    PublicProfileView(userId: viewModel.host.userId)
+                } label: {
+                    UserPFPView(user: viewModel.host)
                 }
                 VStack {
                     Text("\(String(describing: meetup.title))")
                         .font(.headline)
-                    Text("\(formatDayAndTime(date: meetup.meetTime))")
-                    
+                    Text("\(formatDayAndTime(date: meetup.meetTime ?? Date()))")
                 }
             }
+            
+            .padding()
+            .frame(width: 400)
+            .background(.yellow)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .shadow(radius: 10, x: 3, y: 5)
             .onAppear {
                 Task {
-                    try await viewModel.getHost(userId: meetup.organizerId)
-                    try await viewModel.loadImage(from: viewModel.host?.photoURL ?? "")
+                    try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
+                    try await viewModel.loadImage(from: viewModel.host.photoURL ?? "")
                 }
             }
         }
@@ -82,5 +78,5 @@ struct MeetupView: View {
 }
 
 #Preview {
-    MeetupView(meetup: Meetup(id: "id", title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot"))
+    MeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", country: "France", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot", attendees: [], pendingUsers: []))
 }

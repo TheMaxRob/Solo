@@ -30,37 +30,61 @@ final class MeetupManager {
     
     
     func addMeetup(meetup: Meetup) async throws {
-        print("addMeetup in Manager called!")
-        let cityRef = db.collection("meetups").document(meetup.city)
+        let countryRef = db.collection("meetups").document(meetup.country ?? "")
+        let meetupRef = countryRef.collection(meetup.city ?? "").document(meetup.id)
+        let meetupData = try encoder.encode(meetup)
+        print("meetupData encoded")
         
-        let documentSnapshot = try await cityRef.getDocument()
+        try await meetupRef.setData(meetupData)
         
-        if documentSnapshot.exists {
-            try await cityRef.updateData([
-                "meetups": FieldValue.arrayUnion([try encoder.encode(meetup)])
-            ])
-        } else {
-            try await cityRef.setData([
-                "meetups": [try encoder.encode(meetup)]
-            ])
-        }
+        let indexRef = db.collection("meetup_index").document(meetup.id)
+        try await indexRef.setData([
+            "country" : meetup.country ?? "",
+            "city" : meetup.city ?? ""
+        ])
     }
     
-    func fetchMeetups(city: String) async throws -> [Meetup] {
-      let docRef = db.collection("meetups").document(city)
-      let documentSnapshot = try await docRef.getDocument()
-        guard let data = documentSnapshot.data() else {
-            print("Data does not exist")
+    
+    func fetchMeetups(country: String, city: String) async throws -> [Meetup] {
+        let docRef = db.collection("meetups").document(country).collection(city)
+        let snapshot = try await docRef.getDocuments()
+        do {
+            let meetups: [Meetup] = try snapshot.documents.compactMap { document in
+                return try document.data(as: Meetup.self)
+            }
+            return meetups
+        } catch {
+            print("Error decoding meetups: \(error)")
             return []
         }
-
-        guard let meetups = data["meetups"] else {
-            print("meetups not fetched from data.")
-            return []
-        }
-        let convertedMeetups = convertToMeetupObjects(meetupDicts: meetups as! [[String : Any]])
-        return convertedMeetups
+//      let documentSnapshot = try await docRef.getDocument()
+//        guard let data = documentSnapshot.data() else {
+//            print("Data does not exist")
+//            return []
+//        }
+//
+//        guard let meetups = data["meetups"] else {
+//            print("meetups not fetched from data.")
+//            return []
+//        }
+//        let convertedMeetups = convertToMeetupObjects(meetupDicts: meetups as! [[String : Any]])
+//        return convertedMeetups
     }
+    
+    
+    func filterMeetupsByTimeFrame(meetups: [Meetup], start: Date, end: Date) -> [Meetup] {
+        var filteredMeetups: [Meetup] = []
+        for meetup in meetups {
+            print("Start: \(start)")
+            print("meetTime: \(meetup.meetTime ?? Date.distantFuture)")
+            print("end: \(end)")
+            if meetup.meetTime ?? Date.distantFuture  >= start && meetup.meetTime ?? Date.distantFuture <= end {
+                filteredMeetups.append(meetup)
+            }
+        }
+        return filteredMeetups
+    }
+
     
     private func convertToMeetupObjects(meetupDicts: [[String: Any]]) -> [Meetup] {
         var meetups = [Meetup]()
@@ -73,10 +97,13 @@ final class MeetupManager {
                 let title = dict["title"] as? String,
                 let description = dict["description"] as? String?,
                 let city = dict["city"] as? String,
+                let country = dict["country"] as? String,
                 let organizerId = dict["organizerId"] as? String,
                 let meetSpot = dict["meetSpot"] as? String,
                 let createdDateTimestamp = dict["createdDate"] as? Timestamp,
-                let meetTimeTimestamp = dict["meetTime"] as? Timestamp
+                let meetTimeTimestamp = dict["meetTime"] as? Timestamp,
+                let attendees = dict["attendees"] as? [String]?,
+                let pendingUsers = dict["pending_users"] as? [String]?
             else {
                 // Handle missing or incorrect data
                 print("Data parsing error for dict: \(dict)")
@@ -89,20 +116,305 @@ final class MeetupManager {
             
             // Initialize Meetup object
             let meetup = Meetup(
-                id: id,
                 title: title,
                 description: description,
                 meetTime: meetTime,
                 city: city,
+                country: country,
                 createdDate: createdDate,
                 organizerId: organizerId,
-                meetSpot: meetSpot
+                meetSpot: meetSpot,
+                attendees: attendees,
+                pendingUsers: pendingUsers
             )
             
             meetups.append(meetup)
         }
         return meetups
     }
+    
+    func getMeetupRefByIndex(meetupId: String) async throws -> DocumentReference? {
+        print("meetupId: \(meetupId)")
+        let indexRef = db.collection("meetup_index").document(meetupId)
+        print("indexRef retrieved ")
+        let indexSnapshot = try await indexRef.getDocument()
+        print("indexSnapshot retrieved")
+        if let indexData = indexSnapshot.data() {
+            if let country = indexData["country"] as? String,
+               let city = indexData["city"] as? String {
+                print("country & city retrieved")
+                return db.collection("meetups").document(country)
+                    .collection(city).document(meetupId)
+            } else {
+                print("returned nil – country or city failed")
+            }
+        } else {
+            print("returned nil – indexData failed")
+        }
+        return nil
+    }
 
+    
+    
+    func getMeetup(meetupId: String) async throws -> Meetup? {
+        print("getMeetupId: \(meetupId)")
+        let indexRef = db.collection("meetup_index").document(meetupId)
+        let indexSnapshot = try await indexRef.getDocument()
+        if let data = indexSnapshot.data() {
+            if let country = data["country"] as? String,
+               let city = data["city"] as? String {
+                let snapshot = try await db.collection("meetups").document(country).collection(city).document(meetupId).getDocument()
+                if let dict = snapshot.data() {
+                    if let meetup = try? decoder.decode(Meetup.self, from: dict) {
+                        return meetup
+                    }
+                    guard
+                        let _ = dict["id"] as? String,
+                        let title = dict["title"] as? String,
+                        let description = dict["description"] as? String?,
+                        let city = dict["city"] as? String,
+                        let country = dict["country"] as? String,
+                        let organizerId = dict["organizerId"] as? String,
+                        let meetSpot = dict["meetSpot"] as? String,
+                        let createdDateTimestamp = dict["createdDate"] as? Timestamp,
+                        let meetTimeTimestamp = dict["meetTime"] as? Timestamp,
+                        let attendees = dict["attendees"] as? [String]?,
+                        let pendingUsers = dict["pending_users"] as? [String]?
+                    else {
+                        print("Data parsing error for dict: \(dict)")
+                        return nil
+                    }
+                    let createdDate = createdDateTimestamp.dateValue()
+                    let meetTime = meetTimeTimestamp.dateValue()
+                    
+                    let meetup = Meetup(
+                        title: title,
+                        description: description,
+                        meetTime: meetTime,
+                        city: city,
+                        country: country,
+                        createdDate: createdDate,
+                        organizerId: organizerId,
+                        meetSpot: meetSpot,
+                        attendees: attendees,
+                        pendingUsers: pendingUsers
+                    )
+                    return meetup
+            }
+               
+            
+        }
+        
+        }
+        else { return nil }
+        return nil
+    }
+    
+    
+//    func getMeetupRef(meetupId: String) async throws -> DocumentReference? {
+//        let ref = db.collection("meetupIndex").document(meetupId)
+//        let snapshot = try await ref.getDocument()
+//        
+//        if let data = snapshot.data() {
+//            do {
+//                let country = data["country"] as? String
+//                let city = data["city"] as? String
+//                print("data exists for getMeetupRef")
+//                return db.collection("meetups").document(country)
+//                    .collection(city).document(meetupId)
+//            } catch {
+//                print("Error: \(error)")
+//                return nil
+//            }
+//        }
+//    }
+    
+    
+    func acceptUserToMeetup(meetupId: String, userId: String) async throws {
+        print("acceptUserToMeetup")
+        // Move user from pending to accepted
+        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+            let meetupSnapshot = try await meetupRef.getDocument()
+            if meetupSnapshot.exists {
+                try await meetupRef.updateData([
+                    "pending_users" : FieldValue.arrayRemove([userId]),
+                    "attendees": FieldValue.arrayUnion([userId])
+                ])
+            } else {
+                print("meetupRef does not exist – acceptUserToMeetup()")
+            }
+        }
+        
+        
+        // Move meetup from requested to upcoming
+        let userRef = db.collection("users").document(userId)
+        let userSnapshot = try await userRef.getDocument()
+        if userSnapshot.exists {
+            try await userRef.updateData([
+                "rsvp_requests" : FieldValue.arrayRemove([meetupId]),
+                "rsvp_meetups" : FieldValue.arrayUnion([meetupId])
+            ])
+        } else {
+            print("userRef does not exist – acceptUserToMeetup()")
+        }
+    }
+    
+    
+    func declineUserToMeetup(meetupId: String, userId: String) async throws {
+        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+            let meetupSnapshot = try await meetupRef.getDocument()
+            if meetupSnapshot.exists {
+                try await meetupRef.updateData([
+                    "pending_users" : FieldValue.arrayRemove([userId]),
+                ])
+                print("userId removed from pending_users")
+            } else {
+                print("meetupSnapshot does not exist – declineUserToMeetup()")
+            }
+        }
+        
+        let userRef = db.collection("meetups").document(userId)
+        let userSnapshot = try await userRef.getDocument()
+        if userSnapshot.exists {
+            try await userRef.updateData([
+                "rsvp_requests" : FieldValue.arrayRemove([meetupId])
+            ])
+            print("meetup removed from rsvp_requests")
+        } else {
+            print("userRef does not exist – declineUserToMeetup()")
+        }
+    }
+    
+    
+    func removeUserFromMeetup(meetupId: String, userId: String) async throws {
+        print("removeUserFromMeetup")
+        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+            let meetupSnapshot = try await meetupRef.getDocument()
+            if meetupSnapshot.exists {
+                try await meetupRef.updateData([
+                    "attendees" : FieldValue.arrayRemove([userId])
+                ])
+            } else {
+                print("meetupSnapshot does not exist – removeUserFromMeetup")
+            }
+        }
+        
+        let userRef = db.collection("meetups").document(userId)
+        let userSnapshot = try await userRef.getDocument()
+        if userSnapshot.exists {
+            try await userRef.updateData([
+                "rsvp_meetups" : FieldValue.arrayRemove([meetupId])
+            ])
+        } else {
+            print("userRef does not exist – declineUserToMeetup() \(userId)")
+        }
+        
+    }
 
+    
+    
+    func addPendingUser(meetupId: String, userId: String) async throws {
+        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+            let snapshot = try await meetupRef.getDocument()
+            if snapshot.exists {
+                try await meetupRef.updateData([
+                    "pending_users": FieldValue.arrayUnion([userId])
+                ])
+            } else {
+                print("Could not addPendingUser.")
+            }
+        }
+    }
+    
+    
+    func deleteMeetup(meetupId: String) async throws {
+        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+            try await db.collection("meetup_index").document(meetupId).delete()
+            let snapshot = try await meetupRef.getDocument()
+            if snapshot.exists {
+                // remove meetupId from the "rsvp_meetups" field of all attending users
+                if let attendeeIds = snapshot.data()?["attendees"] as? [String] {
+                    for attendeeId in attendeeIds {
+                        let attendeeRef = UserManager.shared.userDocument(userId: attendeeId)
+                        let attendeeSnapshot = try await attendeeRef.getDocument()
+                        if attendeeSnapshot.exists {
+                            try await attendeeRef.updateData([
+                                "rsvp_meetups" : FieldValue.arrayRemove([meetupId])
+                            ])
+                        }
+                    }
+                }
+                
+                // remove meetupId from the "rsvp_requests" of all pending users
+                if let pendingUserIds = snapshot.data()?["pending_users"] as? [String] {
+                    for pendingId in pendingUserIds {
+                        let pendingRef = UserManager.shared.userDocument(userId: pendingId)
+                        let pendingSnapshot = try await pendingRef.getDocument()
+                        if pendingSnapshot.exists {
+                            try await pendingRef.updateData([
+                                "rsvp_requests" : FieldValue.arrayRemove([meetupId])
+                            ])
+                        }
+                    }
+                }
+                
+                
+                // remove meetupId frmo the "created_meetups" of the organizer, whose id is found in "organizer_id" of the meetup document
+                if let organizerId = snapshot.data()?["organizer_id"] as? String {
+                    let organizerRef = UserManager.shared.userDocument(userId: organizerId)
+                    let organizerSnapshot = try await organizerRef.getDocument()
+                    if organizerSnapshot.exists {
+                        try await organizerRef.updateData([
+                            "created_meetups" : FieldValue.arrayRemove([meetupId])
+                        ])
+                    }
+                    
+                }
+                
+            }
+            try await meetupRef.delete()
+        }
+        
+    }
+    
+    func unRSVP(meetupId: String, userId: String) async throws {
+        print("unRSVP. meetupId: \(meetupId) userId: \(userId)")
+        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+            let meetupSnapshot = try await meetupRef.getDocument()
+            if meetupSnapshot.exists {
+                try await meetupRef.updateData([
+                    "attendees" : FieldValue.arrayRemove([userId])
+                ])
+            }
+        }
+        
+        let userRef = UserManager.shared.userDocument(userId: userId)
+        let userSnapshot = try await userRef.getDocument()
+        if userSnapshot.exists {
+            try await userRef.updateData([
+                "rsvp_meetups" : FieldValue.arrayRemove([meetupId])
+            ])
+        }
+    }
+    
+    
+    func unRequest(meetupId: String, userId: String) async throws {
+        print("unRequest – meetupId: \(meetupId) userId: \(userId)")
+        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+            let meetupSnapshot = try await meetupRef.getDocument()
+            if meetupSnapshot.exists {
+                try await meetupRef.updateData([
+                    "pending_users" : FieldValue.arrayRemove([userId])
+                ])
+            }
+        }
+        
+        let userRef = UserManager.shared.userDocument(userId: userId)
+        let userSnapshot = try await userRef.getDocument()
+        if userSnapshot.exists {
+            try await userRef.updateData([
+                "rsvp_requests" : FieldValue.arrayRemove([meetupId])
+            ])
+        }
+    }
 }

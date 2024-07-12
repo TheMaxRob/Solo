@@ -20,30 +20,33 @@ final class MeetupsViewModel: ObservableObject {
     }
     
     
-    func fetchMeetups(city: String) async throws {
-        meetups = try await MeetupManager.shared.fetchMeetups(city: city)
+    func fetchMeetups(country: String, city: String, start: Date, end: Date) async throws {
+        print("fetching meetups")
+        var unFilteredMeetups = try await MeetupManager.shared.fetchMeetups(country: country, city: city)
+        meetups = MeetupManager.shared.filterMeetupsByTimeFrame(meetups: unFilteredMeetups, start: start, end: end)
+        print("Meetups: \(meetups)")
     }
 }
 
 
 struct MeetupsView: View {
-    
-    @Binding var isShowingMeetups: Bool
     @StateObject private var viewModel = MeetupsViewModel()
     var city: String
+    var country: String
+    var start: Date
+    var end: Date
     
     var body: some View {
         NavigationStack {
             VStack {
-                List {
-                    ForEach(viewModel.meetups) { meetup in
-                        NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
-                            VStack {
-                                MeetupView(meetup: meetup)
-                            }
+                ForEach(viewModel.meetups) { meetup in
+                    NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
+                        VStack {
+                            MeetupView(meetup: meetup)
                         }
                     }
                 }
+                
                 .scrollContentBackground(.hidden)
                 .background(.yellow)
                 .listStyle(PlainListStyle())
@@ -62,12 +65,12 @@ struct MeetupsView: View {
         }
         .onAppear {
             Task {
-                try await viewModel.fetchMeetups(city: city)
+                try await viewModel.fetchMeetups(country: country, city: city, start: start, end: end)
             }
         }
     }
 }
 
 #Preview {
-    MeetupsView(isShowingMeetups: .constant(true), city: "Sevilla")
+    MeetupsView(city: "Barcelona", country: "Spain", start: Date(), end: Date())
 }

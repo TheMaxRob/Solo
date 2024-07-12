@@ -61,7 +61,7 @@ struct ProfileCreationView: View {
                 }
                 
                 NavigationLink {
-                    ProfilePicturesCreationView(isNotAuthenticated: $isNotAuthenticated)
+                    WelcomeView(isNotAuthenticated: $isNotAuthenticated, isShowingWelcomeView: $vm.isShowingWelcomeView)                
                 } label: {
                     Text("Save and Continue")
                         .padding()

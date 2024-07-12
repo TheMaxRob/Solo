@@ -84,46 +84,51 @@ final class MessageManager {
 
     
     
-    private func convertToMeetupObjects(meetupDicts: [[String: Any]]) -> [Meetup] {
-        var meetups = [Meetup]()
-        
-        // Manually decoding because this is making me pull my hair out
-        for dict in meetupDicts {
-            guard
-                let id = dict["id"] as? String,
-                let title = dict["title"] as? String,
-                let description = dict["description"] as? String?,
-                let city = dict["city"] as? String,
-                let organizerId = dict["organizerId"] as? String,
-                let meetSpot = dict["meetSpot"] as? String,
-                let createdDateTimestamp = dict["createdDate"] as? Timestamp,
-                let meetTimeTimestamp = dict["meetTime"] as? Timestamp
-            else {
-                // Handle missing or incorrect data
-                print("Data parsing error for dict: \(dict)")
-                continue
-            }
-            
-            // Convert FIRTimestamp to Date
-            let createdDate = createdDateTimestamp.dateValue()
-            let meetTime = meetTimeTimestamp.dateValue()
-            
-            // Initialize Meetup object
-            let meetup = Meetup(
-                id: id,
-                title: title,
-                description: description,
-                meetTime: meetTime,
-                city: city,
-                createdDate: createdDate,
-                organizerId: organizerId,
-                meetSpot: meetSpot
-            )
-            
-            meetups.append(meetup)
-        }
-        return meetups
-    }
+//    private func convertToMeetupObjects(meetupDicts: [[String: Any]]) -> [Meetup] {
+//        var meetups = [Meetup]()
+//        
+//        // Manually decoding because this is making me pull my hair out
+//        for dict in meetupDicts {
+//            guard
+//                let _ = dict["id"] as? String,
+//                let title = dict["title"] as? String,
+//                let description = dict["description"] as? String?,
+//                let city = dict["city"] as? String,
+//                let country = dict["country"] as? String,
+//                let organizerId = dict["organizer_id"] as? String,
+//                let meetSpot = dict["meet_spot"] as? String,
+//                let createdDateTimestamp = dict["created_date"] as? Timestamp,
+//                let meetTimeTimestamp = dict["meet_time"] as? Timestamp,
+//                let attendees = dict["attendees"] as? [String]?,
+//                let pendingUsers = dict["pending_users"] as? [String]?
+//            else {
+//                // Handle missing or incorrect data
+//                print("Data parsing error for dict: \(dict)")
+//                continue
+//            }
+//            
+//            // Convert FIRTimestamp to Date
+//            let createdDate = createdDateTimestamp.dateValue()
+//            let meetTime = meetTimeTimestamp.dateValue()
+//            
+//            // Initialize Meetup object
+//            let meetup = Meetup(
+//                title: title,
+//                description: description,
+//                meetTime: meetTime,
+//                city: city,
+//                country: country,
+//                createdDate: createdDate,
+//                organizerId: organizerId,
+//                meetSpot: meetSpot,
+//                attendees: attendees,
+//                pendingUsers: pendingUsers
+//            )
+//            
+//            meetups.append(meetup)
+//        }
+//        return meetups
+//    }
     
     
     func createConversation(userIds: [String]) async throws -> String? {

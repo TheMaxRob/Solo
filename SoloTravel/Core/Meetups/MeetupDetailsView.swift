@@ -19,14 +19,14 @@ final class MeetupDetailsViewModel: ObservableObject {
     }
     
     
-    func RSVPMeetup(meetup: Meetup) {
+    func requestRSVP(meetup: Meetup) {
         guard let user else {
             print("No user found.")
             return
         }
         Task {
             do {
-                try await UserManager.shared.RSVPMeetup(userId: user.userId, meetup: meetup)
+                try await UserManager.shared.requestRSVP(userId: user.userId, meetupId: meetup.id)
                 
             } catch {
                 print("Error RSVPing to Meetup!")
@@ -66,10 +66,10 @@ struct MeetupDetailsView: View {
                 
                 Text("Host: \(viewModel.host?.firstName ?? "Unknown") \(viewModel.host?.lastName ?? "")")
                 
-                Text("Meet At: \(meetup.meetSpot)")
+                Text("Meet At: \(meetup.meetSpot ?? "")")
                     .font(.subheadline)
                 
-                Text("\(meetup.meetTime)")
+                Text("\(meetup.meetTime ?? Date())")
                     .font(.subheadline)
                     .padding(.bottom)
                 
@@ -80,7 +80,7 @@ struct MeetupDetailsView: View {
                     Button {
                         Task {
                             try await viewModel.loadCurrentUser()
-                            viewModel.RSVPMeetup(meetup: meetup)
+                            viewModel.requestRSVP(meetup: meetup)
                         }
                     } label: {
                         Text("RSVP")
@@ -93,8 +93,8 @@ struct MeetupDetailsView: View {
                     Button {
                         Task {
                             try await viewModel.loadCurrentUser()
-                            viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId)
-                            isShowingPersonalMessageView = true    
+                            viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId ?? "")
+                            isShowingPersonalMessageView = true
                         }
                     } label: {
                         Text("Message")
@@ -112,7 +112,7 @@ struct MeetupDetailsView: View {
             }
             .onAppear {
                 Task {
-                    try await viewModel.getHost(userId: meetup.organizerId)
+                    try await viewModel.getHost(userId: meetup.organizerId ?? "")
                 }
             }
             .background(.yellow)

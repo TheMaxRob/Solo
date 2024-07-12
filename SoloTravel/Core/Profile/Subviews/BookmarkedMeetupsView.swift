@@ -26,5 +26,5 @@ struct BookmarkedMeetupsView: View {
 }
 
 #Preview {
-    BookmarkedMeetupsView(user: DBUser(userId: ""))
+    BookmarkedMeetupsView(user: DBUser(userId: "12345"))
 }
