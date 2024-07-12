@@ -118,22 +118,38 @@ struct Conversation: Codable, Identifiable {
     let timestamp: Date?
 
     enum CodingKeys: String, CodingKey {
-        case id
-        case users
+        case id = "id"
+        case users = "users"
         case lastMessage = "last_message"
-        case timestamp
+        case timestamp = "timestamp"
     }
     
     init(
-        id: String,
         userIds: [String],
         lastMessage: String,
         createdDate: Date
     ) {
-        self.id = id
+        self.id = UUID().uuidString
         self.users = userIds
         self.lastMessage = lastMessage
         self.timestamp = createdDate
+    }
+    
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.users = try container.decode([String].self, forKey: .users)
+        self.lastMessage = try container.decodeIfPresent(String.self, forKey: .lastMessage)
+        self.timestamp = try container.decodeIfPresent(Date.self, forKey: .timestamp)
+    }
+    
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.id, forKey: .id)
+        try container.encode(self.users, forKey: .users)
+        try container.encodeIfPresent(self.lastMessage, forKey: .lastMessage)
+        try container.encodeIfPresent(self.timestamp, forKey: .timestamp)
     }
 }
 

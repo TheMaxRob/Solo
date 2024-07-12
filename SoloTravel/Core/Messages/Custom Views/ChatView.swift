@@ -14,6 +14,10 @@ struct ChatView: View {
     
     var body: some View {
         VStack {
+            
+           
+            UserPFPView(user: viewModel.other ?? DBUser(userId: ""))
+            
             ScrollView {
                 VStack {
                     ForEach(viewModel.messages) { message in
@@ -63,7 +67,11 @@ struct ChatView: View {
             Task {
                 try await viewModel.loadCurrentUser()
                 try await viewModel.fetchMessages(conversationId: conversationId)
-                print("UserId: \(String(describing: viewModel.user?.userId))")
+            }
+        }
+        .onDisappear {
+            if (viewModel.messages.isEmpty) {
+                Task { try await viewModel.deleteConversation(conversationId: conversationId) }
             }
         }
     }
