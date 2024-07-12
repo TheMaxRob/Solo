@@ -60,6 +60,8 @@ struct PublicProfileView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
+                Text("Member since \(viewModel.profileUser?.dateCreated ?? Date())")
+                
                 Text("Home Country: \(viewModel.profileUser?.homeCountry ?? "Unknown")")
                     .padding(30)
                 Text("\(viewModel.profileUser?.age ?? "Unknown Age") years old")

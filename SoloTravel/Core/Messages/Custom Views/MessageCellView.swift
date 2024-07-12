@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct MessageCellView: View {
-    
-    
-    
     var body: some View {
         HStack {
             Image(systemName: "person.crop.circle")

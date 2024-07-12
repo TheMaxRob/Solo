@@ -53,6 +53,8 @@ struct SignInEmailView: View {
                     Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
                 }
                 
+                ForgotPasswordButton()
+                    .padding()
                 Spacer()
             }
             .padding()

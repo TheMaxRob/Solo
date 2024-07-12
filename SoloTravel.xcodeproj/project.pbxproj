@@ -11,8 +11,21 @@
 		920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920D08582BDAC55000B2466C /* MessageBubbleView.swift */; };
 		920E50312C0C144400368677 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 920E50302C0C144400368677 /* GoogleService-Info.plist */; };
 		920E50332C0C18F500368677 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920E50322C0C18F500368677 /* SettingsViewModel.swift */; };
+		923C894D2C3B7928007810D9 /* CountryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923C894C2C3B7928007810D9 /* CountryView.swift */; };
+		923E94282C3E2F58002AE12B /* RequestedMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */; };
+		923E942A2C3E34EB002AE12B /* UserPFPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94292C3E34EB002AE12B /* UserPFPView.swift */; };
+		923E94312C3F135B002AE12B /* SpainCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94302C3F135B002AE12B /* SpainCardView.swift */; };
+		923E94332C3F1361002AE12B /* FranceCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94322C3F1361002AE12B /* FranceCardView.swift */; };
+		923E94352C3F1366002AE12B /* UKCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94342C3F1366002AE12B /* UKCardView.swift */; };
+		923E94372C3F1369002AE12B /* ItalyCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94362C3F1369002AE12B /* ItalyCardView.swift */; };
+		923E94392C3F136E002AE12B /* GermanyCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94382C3F136E002AE12B /* GermanyCardView.swift */; };
+		923E943B2C3F1372002AE12B /* GreeceCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E943A2C3F1372002AE12B /* GreeceCardView.swift */; };
+		923E943D2C3F1691002AE12B /* CountryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E943C2C3F1691002AE12B /* CountryCardView.swift */; };
+		923E943F2C3F1911002AE12B /* TimeFrameModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E943E2C3F1911002AE12B /* TimeFrameModalView.swift */; };
 		925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */; };
 		925181002C260149003F8ACA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FF2C260149003F8ACA /* WelcomeView.swift */; };
+		925AC4F52C41B41F001FC6CC /* ForgotPasswordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */; };
+		925AC4F72C41B4C1001FC6CC /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F62C41B4C1001FC6CC /* ForgotPasswordView.swift */; };
 		925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */; };
 		925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35ED2BE2EBCC00DAF991 /* RootView.swift */; };
 		925B35F02BE2EBD400DAF991 /* SignInEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */; };
@@ -28,6 +41,20 @@
 		928CCCD12BDEF6EE007831A9 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCD02BDEF6EE007831A9 /* FirebaseCrashlytics */; };
 		928CCCD32BDEF6EE007831A9 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 928CCCD22BDEF6EE007831A9 /* FirebaseDatabaseSwift */; };
 		92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A5EEC22C2A4AEA00C611B5 /* PublicProfileView.swift */; };
+		92A8FF7E2C3B84FE0025FAA9 /* SpainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF7D2C3B84FE0025FAA9 /* SpainView.swift */; };
+		92A8FF802C3B85060025FAA9 /* FranceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF7F2C3B85060025FAA9 /* FranceView.swift */; };
+		92A8FF822C3B850E0025FAA9 /* UKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF812C3B850E0025FAA9 /* UKView.swift */; };
+		92A8FF842C3B852A0025FAA9 /* ItalyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF832C3B852A0025FAA9 /* ItalyView.swift */; };
+		92A8FF862C3B85320025FAA9 /* GermanyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF852C3B85320025FAA9 /* GermanyView.swift */; };
+		92A8FF882C3B854B0025FAA9 /* GreeceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF872C3B854B0025FAA9 /* GreeceView.swift */; };
+		92A8FF8A2C3B894D0025FAA9 /* CityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF892C3B894D0025FAA9 /* CityView.swift */; };
+		92A8FF8C2C3C40980025FAA9 /* CheckMarkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF8B2C3C40980025FAA9 /* CheckMarkButton.swift */; };
+		92A8FF8E2C3C40AA0025FAA9 /* DeclineButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF8D2C3C40AA0025FAA9 /* DeclineButton.swift */; };
+		92A8FF902C3CD7210025FAA9 /* PendingUserCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF8F2C3CD7210025FAA9 /* PendingUserCellView.swift */; };
+		92A8FF922C3CD7540025FAA9 /* AcceptedUserCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF912C3CD7540025FAA9 /* AcceptedUserCellView.swift */; };
+		92A8FF942C3CDEF20025FAA9 /* EditUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF932C3CDEF20025FAA9 /* EditUserProfileView.swift */; };
+		92A8FF982C3DD3400025FAA9 /* MyOwnMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */; };
+		92A8FF9A2C3E1A410025FAA9 /* UpcomingMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */; };
 		92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BD68292BE2F7B5000BACB3 /* MessagesView.swift */; };
 		92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C479492BCEA94C0020EB10 /* SoloTabView.swift */; };
 		92D2F80D2BCE7DCB0057534B /* SoloTravelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */; };
@@ -57,6 +84,8 @@
 		92DC6B7F2BF65428001B2680 /* MeetupDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */; };
 		92DC6B812BF6B0BF001B2680 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 92DC6B802BF6B0BF001B2680 /* FirebaseAnalyticsOnDeviceConversion */; };
 		92DC6B832BF6B0BF001B2680 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 92DC6B822BF6B0BF001B2680 /* FirebaseFirestore */; };
+		92E3AE002C3B32C2004BC645 /* MyMeetupsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */; };
+		92E3AE022C3B350D004BC645 /* MyMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3AE012C3B350D004BC645 /* MyMeetupView.swift */; };
 		92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */; };
 		92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */; };
 		92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F4875B2C1A422A00E82EA3 /* ChatView.swift */; };
@@ -85,8 +114,21 @@
 		920D08582BDAC55000B2466C /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
 		920E50302C0C144400368677 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		920E50322C0C18F500368677 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		923C894C2C3B7928007810D9 /* CountryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryView.swift; sourceTree = "<group>"; };
+		923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestedMeetupView.swift; sourceTree = "<group>"; };
+		923E94292C3E34EB002AE12B /* UserPFPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPFPView.swift; sourceTree = "<group>"; };
+		923E94302C3F135B002AE12B /* SpainCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpainCardView.swift; sourceTree = "<group>"; };
+		923E94322C3F1361002AE12B /* FranceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FranceCardView.swift; sourceTree = "<group>"; };
+		923E94342C3F1366002AE12B /* UKCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UKCardView.swift; sourceTree = "<group>"; };
+		923E94362C3F1369002AE12B /* ItalyCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItalyCardView.swift; sourceTree = "<group>"; };
+		923E94382C3F136E002AE12B /* GermanyCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GermanyCardView.swift; sourceTree = "<group>"; };
+		923E943A2C3F1372002AE12B /* GreeceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreeceCardView.swift; sourceTree = "<group>"; };
+		923E943C2C3F1691002AE12B /* CountryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryCardView.swift; sourceTree = "<group>"; };
+		923E943E2C3F1911002AE12B /* TimeFrameModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFrameModalView.swift; sourceTree = "<group>"; };
 		925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicturesCreationView.swift; sourceTree = "<group>"; };
 		925180FF2C260149003F8ACA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordButton.swift; sourceTree = "<group>"; };
+		925AC4F62C41B4C1001FC6CC /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		925B35ED2BE2EBCC00DAF991 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInEmailView.swift; sourceTree = "<group>"; };
@@ -96,6 +138,20 @@
 		928721372C293384004176B6 /* UpcomingMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupsView.swift; sourceTree = "<group>"; };
 		928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkedMeetupsView.swift; sourceTree = "<group>"; };
 		92A5EEC22C2A4AEA00C611B5 /* PublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileView.swift; sourceTree = "<group>"; };
+		92A8FF7D2C3B84FE0025FAA9 /* SpainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpainView.swift; sourceTree = "<group>"; };
+		92A8FF7F2C3B85060025FAA9 /* FranceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FranceView.swift; sourceTree = "<group>"; };
+		92A8FF812C3B850E0025FAA9 /* UKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UKView.swift; sourceTree = "<group>"; };
+		92A8FF832C3B852A0025FAA9 /* ItalyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItalyView.swift; sourceTree = "<group>"; };
+		92A8FF852C3B85320025FAA9 /* GermanyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GermanyView.swift; sourceTree = "<group>"; };
+		92A8FF872C3B854B0025FAA9 /* GreeceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreeceView.swift; sourceTree = "<group>"; };
+		92A8FF892C3B894D0025FAA9 /* CityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityView.swift; sourceTree = "<group>"; };
+		92A8FF8B2C3C40980025FAA9 /* CheckMarkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMarkButton.swift; sourceTree = "<group>"; };
+		92A8FF8D2C3C40AA0025FAA9 /* DeclineButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeclineButton.swift; sourceTree = "<group>"; };
+		92A8FF8F2C3CD7210025FAA9 /* PendingUserCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUserCellView.swift; sourceTree = "<group>"; };
+		92A8FF912C3CD7540025FAA9 /* AcceptedUserCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcceptedUserCellView.swift; sourceTree = "<group>"; };
+		92A8FF932C3CDEF20025FAA9 /* EditUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserProfileView.swift; sourceTree = "<group>"; };
+		92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyOwnMeetupView.swift; sourceTree = "<group>"; };
+		92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupView.swift; sourceTree = "<group>"; };
 		92BD68292BE2F7B5000BACB3 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		92C479492BCEA94C0020EB10 /* SoloTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTabView.swift; sourceTree = "<group>"; };
 		92D2F8092BCE7DCB0057534B /* SoloTravel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloTravel.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -126,6 +182,8 @@
 		92DC6B702BF65041001B2680 /* MeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupsView.swift; sourceTree = "<group>"; };
 		92DC6B7A2BF651B8001B2680 /* MeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupView.swift; sourceTree = "<group>"; };
 		92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupDetailsView.swift; sourceTree = "<group>"; };
+		92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupsViewModel.swift; sourceTree = "<group>"; };
+		92E3AE012C3B350D004BC645 /* MyMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupView.swift; sourceTree = "<group>"; };
 		92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupCreationView.swift; sourceTree = "<group>"; };
 		92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupManager.swift; sourceTree = "<group>"; };
 		92F4875B2C1A422A00E82EA3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
@@ -178,6 +236,19 @@
 			path = "Custom Views";
 			sourceTree = "<group>";
 		};
+		923E942F2C3F1355002AE12B /* CardViews */ = {
+			isa = PBXGroup;
+			children = (
+				923E94302C3F135B002AE12B /* SpainCardView.swift */,
+				923E94322C3F1361002AE12B /* FranceCardView.swift */,
+				923E94342C3F1366002AE12B /* UKCardView.swift */,
+				923E94362C3F1369002AE12B /* ItalyCardView.swift */,
+				923E94382C3F136E002AE12B /* GermanyCardView.swift */,
+				923E943A2C3F1372002AE12B /* GreeceCardView.swift */,
+			);
+			path = CardViews;
+			sourceTree = "<group>";
+		};
 		925180FC2C25F723003F8ACA /* Signup */ = {
 			isa = PBXGroup;
 			children = (
@@ -187,6 +258,7 @@
 				92DA73502C23836F004D271A /* CreateAccountView.swift */,
 				925180FF2C260149003F8ACA /* WelcomeView.swift */,
 				925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */,
+				925AC4F62C41B4C1001FC6CC /* ForgotPasswordView.swift */,
 			);
 			path = Signup;
 			sourceTree = "<group>";
@@ -194,7 +266,6 @@
 		925B35EA2BE2EBAE00DAF991 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
-				92DC6B602BF64D46001B2680 /* UserManager.swift */,
 				925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */,
 				92DC6B662BF64E69001B2680 /* Subviews */,
 			);
@@ -212,11 +283,33 @@
 			isa = PBXGroup;
 			children = (
 				928721352C29337E004176B6 /* MyMeetupsView.swift */,
+				92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */,
 				92A5EEC22C2A4AEA00C611B5 /* PublicProfileView.swift */,
 				928721372C293384004176B6 /* UpcomingMeetupsView.swift */,
+				923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */,
+				92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */,
 				928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */,
+				92E3AE012C3B350D004BC645 /* MyMeetupView.swift */,
+				92A8FF912C3CD7540025FAA9 /* AcceptedUserCellView.swift */,
+				92A8FF8F2C3CD7210025FAA9 /* PendingUserCellView.swift */,
+				92A8FF932C3CDEF20025FAA9 /* EditUserProfileView.swift */,
 			);
 			path = Subviews;
+			sourceTree = "<group>";
+		};
+		92A8FF7C2C3B84F70025FAA9 /* Countries */ = {
+			isa = PBXGroup;
+			children = (
+				92A8FF7D2C3B84FE0025FAA9 /* SpainView.swift */,
+				92A8FF7F2C3B85060025FAA9 /* FranceView.swift */,
+				92A8FF812C3B850E0025FAA9 /* UKView.swift */,
+				92A8FF832C3B852A0025FAA9 /* ItalyView.swift */,
+				92A8FF852C3B85320025FAA9 /* GermanyView.swift */,
+				92A8FF872C3B854B0025FAA9 /* GreeceView.swift */,
+				92A8FF892C3B894D0025FAA9 /* CityView.swift */,
+				923E942F2C3F1355002AE12B /* CardViews */,
+			);
+			path = Countries;
 			sourceTree = "<group>";
 		};
 		92BD682F2BE2FAF1000BACB3 /* Messages */ = {
@@ -294,6 +387,7 @@
 				92D2F8462BCE89B50057534B /* Extensions */,
 				92D2F8452BCE89390057534B /* Alerts */,
 				92D53E652C0E120D0085B3EF /* DataModels.swift */,
+				923E94292C3E34EB002AE12B /* UserPFPView.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -319,6 +413,9 @@
 			isa = PBXGroup;
 			children = (
 				92D2F8382BCE85140057534B /* AccountButton.swift */,
+				92A8FF8B2C3C40980025FAA9 /* CheckMarkButton.swift */,
+				92A8FF8D2C3C40AA0025FAA9 /* DeclineButton.swift */,
+				925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -327,9 +424,11 @@
 			isa = PBXGroup;
 			children = (
 				92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */,
+				92DC6B602BF64D46001B2680 /* UserManager.swift */,
 				925B35ED2BE2EBCC00DAF991 /* RootView.swift */,
 				925B35EA2BE2EBAE00DAF991 /* Authentication */,
 				92DC6B6A2BF64F36001B2680 /* Home */,
+				92A8FF7C2C3B84F70025FAA9 /* Countries */,
 				92DC6B6F2BF65014001B2680 /* Meetups */,
 				92BD682F2BE2FAF1000BACB3 /* Messages */,
 				92DC6B682BF64EEE001B2680 /* Profile */,
@@ -379,6 +478,9 @@
 			children = (
 				92C479492BCEA94C0020EB10 /* SoloTabView.swift */,
 				92D2F80E2BCE7DCB0057534B /* HomeView.swift */,
+				923E943E2C3F1911002AE12B /* TimeFrameModalView.swift */,
+				923C894C2C3B7928007810D9 /* CountryView.swift */,
+				923E943C2C3F1691002AE12B /* CountryCardView.swift */,
 				92D2F8362BCE82B90057534B /* HomeViewModel.swift */,
 			);
 			path = Home;
@@ -392,6 +494,7 @@
 				92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */,
 				92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */,
 				92DC6B7A2BF651B8001B2680 /* MeetupView.swift */,
+				92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */,
 			);
 			path = Meetups;
 			sourceTree = "<group>";
@@ -541,45 +644,74 @@
 			buildActionMask = 2147483647;
 			files = (
 				92DA73552C23931B004D271A /* ProfileCreationView.swift in Sources */,
+				92A8FF802C3B85060025FAA9 /* FranceView.swift in Sources */,
+				923E94312C3F135B002AE12B /* SpainCardView.swift in Sources */,
 				92D53E662C0E120D0085B3EF /* DataModels.swift in Sources */,
 				928721362C29337E004176B6 /* MyMeetupsView.swift in Sources */,
+				925AC4F52C41B41F001FC6CC /* ForgotPasswordButton.swift in Sources */,
 				92DC6B712BF65041001B2680 /* MeetupsView.swift in Sources */,
+				92A8FF8E2C3C40AA0025FAA9 /* DeclineButton.swift in Sources */,
 				92D53E6C2C0E146B0085B3EF /* MessagesViewModel.swift in Sources */,
 				92D2F8432BCE891A0057534B /* Alert.swift in Sources */,
+				92E3AE022C3B350D004BC645 /* MyMeetupView.swift in Sources */,
 				92DA73532C239129004D271A /* CreateAccountViewModel.swift in Sources */,
 				92D2F80F2BCE7DCB0057534B /* HomeView.swift in Sources */,
+				925AC4F72C41B4C1001FC6CC /* ForgotPasswordView.swift in Sources */,
 				928721382C293384004176B6 /* UpcomingMeetupsView.swift in Sources */,
+				92A8FF9A2C3E1A410025FAA9 /* UpcomingMeetupView.swift in Sources */,
 				925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */,
 				92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */,
 				92F4875E2C1A485D00E82EA3 /* ChatViewModel.swift in Sources */,
+				923E943B2C3F1372002AE12B /* GreeceCardView.swift in Sources */,
+				923E943F2C3F1911002AE12B /* TimeFrameModalView.swift in Sources */,
 				92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */,
 				92D2F8372BCE82B90057534B /* HomeViewModel.swift in Sources */,
 				92DC6B7F2BF65428001B2680 /* MeetupDetailsView.swift in Sources */,
 				925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */,
 				9287213A2C29338A004176B6 /* BookmarkedMeetupsView.swift in Sources */,
+				92A8FF7E2C3B84FE0025FAA9 /* SpainView.swift in Sources */,
+				923E94372C3F1369002AE12B /* ItalyCardView.swift in Sources */,
+				923E94392C3F136E002AE12B /* GermanyCardView.swift in Sources */,
 				92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */,
+				92A8FF8C2C3C40980025FAA9 /* CheckMarkButton.swift in Sources */,
 				925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */,
 				920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */,
 				92DA73512C238370004D271A /* CreateAccountView.swift in Sources */,
+				92A8FF842C3B852A0025FAA9 /* ItalyView.swift in Sources */,
+				92A8FF882C3B854B0025FAA9 /* GreeceView.swift in Sources */,
+				923E943D2C3F1691002AE12B /* CountryCardView.swift in Sources */,
 				92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */,
+				923E942A2C3E34EB002AE12B /* UserPFPView.swift in Sources */,
+				923E94352C3F1366002AE12B /* UKCardView.swift in Sources */,
 				92DA73572C2396D0004D271A /* ProfileCreationViewModel.swift in Sources */,
+				92A8FF922C3CD7540025FAA9 /* AcceptedUserCellView.swift in Sources */,
 				92D53E6A2C0E12900085B3EF /* MessageManager.swift in Sources */,
 				92D732A32BE7FC2C005629CB /* SignInEmailViewModel.swift in Sources */,
 				92D2F80D2BCE7DCB0057534B /* SoloTravelApp.swift in Sources */,
 				92D2F8392BCE85140057534B /* AccountButton.swift in Sources */,
+				92A8FF902C3CD7210025FAA9 /* PendingUserCellView.swift in Sources */,
+				92A8FF942C3CDEF20025FAA9 /* EditUserProfileView.swift in Sources */,
 				92DC6B7B2BF651B8001B2680 /* MeetupView.swift in Sources */,
+				923E94332C3F1361002AE12B /* FranceCardView.swift in Sources */,
 				920D08532BDABCE400B2466C /* MessageCellView.swift in Sources */,
+				92A8FF862C3B85320025FAA9 /* GermanyView.swift in Sources */,
 				92D2F8412BCE88FF0057534B /* TravelError.swift in Sources */,
+				92A8FF8A2C3B894D0025FAA9 /* CityView.swift in Sources */,
 				925B35F02BE2EBD400DAF991 /* SignInEmailView.swift in Sources */,
 				92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */,
+				923E94282C3E2F58002AE12B /* RequestedMeetupView.swift in Sources */,
 				92D2F8482BCE89C30057534B /* String+Ext.swift in Sources */,
 				920E50332C0C18F500368677 /* SettingsViewModel.swift in Sources */,
+				92A8FF982C3DD3400025FAA9 /* MyOwnMeetupView.swift in Sources */,
+				92E3AE002C3B32C2004BC645 /* MyMeetupsViewModel.swift in Sources */,
 				925B35F42BE2EC3500DAF991 /* AuthenticationManager.swift in Sources */,
 				925181002C260149003F8ACA /* WelcomeView.swift in Sources */,
 				92D732A62BE7FDA7005629CB /* ProfileView.swift in Sources */,
 				92DC6B612BF64D46001B2680 /* UserManager.swift in Sources */,
+				92A8FF822C3B850E0025FAA9 /* UKView.swift in Sources */,
 				925B35F22BE2EBDF00DAF991 /* SettingsView.swift in Sources */,
 				92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */,
+				923C894D2C3B7928007810D9 /* CountryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

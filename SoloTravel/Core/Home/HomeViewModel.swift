@@ -9,7 +9,12 @@ import SwiftUI
 import Firebase
 
 final class HomeViewModel: ObservableObject {
-    //@Published var emptyClass: Class = Class(name: "", professor: "", location: "", color: CodableColor(Color(.systemBackground)))
-    @Published var selectedCity: String = ""
-    @Published var selectedStay: String = ""
+    let columns = [
+            GridItem(.flexible()),
+            GridItem(.flexible()),
+            GridItem(.flexible())
+        ]
+    let countries = ["France", "Germany", "Greece", "Italy", "Spain", "United Kingdom"]
+    @Published var selectedCountry: String = ""
+    @Published var selectedStay: Date = Date()
 }

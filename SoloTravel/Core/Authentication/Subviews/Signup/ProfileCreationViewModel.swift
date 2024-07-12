@@ -11,15 +11,16 @@ import _PhotosUI_SwiftUI
 @MainActor
 final class ProfileCreationViewModel: ObservableObject {
     @Published var user: DBUser? = nil
-    @Published var isShowingProfilePictureCreationView: Bool = false
+    // @Published var isShowingProfilePictureCreationView: Bool = false
     
     var firstName: String = ""
     var lastName: String = ""
     var homeCountry: String = ""
     var age: String = ""
     var bio: String = "Tell us about yourself!"
-    var selectedImage: UIImage? = nil
+    @Published var selectedImage: UIImage? = nil
     @Published var imageSelection: PhotosPickerItem? = nil
+    @Published var isShowingWelcomeView: Bool = false
     
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()

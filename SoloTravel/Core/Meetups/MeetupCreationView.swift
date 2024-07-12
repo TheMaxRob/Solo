@@ -15,6 +15,7 @@ final class MeetupCreationViewModel: ObservableObject {
     var createdDate: Date = Date()
     var meetSpot: String = ""
     var city: String = ""
+    var country: String = ""
     
     @Published private(set) var user: DBUser? = nil
     
@@ -50,6 +51,7 @@ struct MeetupCreationView: View {
                 HStack {
                     BottomLineTextField(placeholder: "City", text: $viewModel.city)
                     BottomLineTextField(placeholder: "Meeting Spot", text: $viewModel.meetSpot)
+                    BottomLineTextField(placeholder: "Country", text: $viewModel.country)
                 }
                 DatePicker("Meet Time:", selection: $viewModel.meetTime, displayedComponents: [.date, .hourAndMinute])
                     .padding()
@@ -69,7 +71,7 @@ struct MeetupCreationView: View {
                         do {
                             try await viewModel.loadCurrentUser()
                             
-                            let newMeetup = Meetup(id: UUID().uuidString, title: viewModel.meetupTitle, description: viewModel.meetupDescription, meetTime: viewModel.meetTime, city: viewModel.city, createdDate: Date(), organizerId: viewModel.user?.userId ?? "", meetSpot: viewModel.meetSpot)
+                            let newMeetup = Meetup(title: viewModel.meetupTitle, description: viewModel.meetupDescription, meetTime: viewModel.meetTime, city: viewModel.city, country: viewModel.country, createdDate: Date(), organizerId: viewModel.user?.userId ?? "", meetSpot: viewModel.meetSpot, attendees: [], pendingUsers: [])
                             
                             try await viewModel.createMeetup(userId: viewModel.user?.userId ?? "", meetup: newMeetup)
                             dismiss()

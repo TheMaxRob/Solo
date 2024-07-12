@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct HomeView: View {
-    
     @StateObject var viewModel = HomeViewModel()
     @Binding var isNotAuthenticated: Bool
-    @State var isShowingMeetups: Bool = false
+    @State private var selectedCountry: String?
+    @State private var isShowingTimeFrameModal = false
     
     var body: some View {
         ZStack {
@@ -16,32 +16,50 @@ struct HomeView: View {
                     Text("Connect with other travelers")
                         .bold()
                     
-                    Spacer()
-                        .frame(height: 175)
-                    
-                    Text("Where are you staying?").bold()
-                    HStack {
-                        BottomLineTextField(placeholder: "City", text: $viewModel.selectedCity)
-                        BottomLineTextField(placeholder: "Timeframe", text: $viewModel.selectedStay)
-                    }
-                    .padding(.bottom)
-                    
-                    NavigationLink {
-                        MeetupsView(isShowingMeetups: $isShowingMeetups, city: viewModel.selectedCity)
-                            .zIndex(1)
-                    } label: {
-                        Text("Connect")
-                            .padding()
-                            .background(viewModel.selectedCity.isEmpty ? Color.gray : Color.blue)
-                            .foregroundColor(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 30))
-                    }
-                    .disabled(viewModel.selectedCity.isEmpty)
+                    Spacer().frame(height: 100)
+                    LazyVGrid(columns: viewModel.columns, spacing: 20, content: {
+                        ForEach(viewModel.countries, id: \.self) { country in
+                            CountryCardView(country: country)
+                                .onTapGesture {
+                                    selectedCountry = country
+                                    isShowingTimeFrameModal = true
+                                }
+                        }
+                    })
                     Spacer()
                 }
-                
                 .padding(.horizontal)
-                .background(.yellow)
+                .background(Color.yellow)
+            }
+            
+            if isShowingTimeFrameModal, let country = selectedCountry {
+                ZStack {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            isShowingTimeFrameModal = false
+                        }
+                    
+                    VStack {
+                        TimeFrameModalView(isShowingModal: $isShowingTimeFrameModal, country: country)
+                            .frame(width: 350, height: 400)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .shadow(radius: 10)
+                            .overlay(
+                                Button(action: {
+                                    isShowingTimeFrameModal = false
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.gray)
+                                        .padding()
+                                },
+                                alignment: .topTrailing
+                            )
+                    }
+                    
+                }
+                .transition(.opacity)
+                .animation(.easeInOut, value: isShowingTimeFrameModal)
             }
         }
     }

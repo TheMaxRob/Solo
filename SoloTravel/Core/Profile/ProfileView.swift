@@ -78,8 +78,19 @@ struct ProfileView: View {
                     }
                     Divider()
                         .padding(8)
+                    
+                    NavigationLink {
+                        if viewModel.user != nil {
+                            EditUserProfileView(user: viewModel.user!)
+                        }
+                        
+                    } label: {
+                        Label("Edit Profile", systemImage: "square.and.pencil")
+                    }
+                    .padding(.top, 20)
                 }
                 .padding(.horizontal)
+                
                 
                 Spacer()
             }

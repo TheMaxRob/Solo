@@ -8,22 +8,20 @@
 import SwiftUI
 
 struct MyMeetupsView: View {
-    
+    @StateObject var viewModel = MyMeetupsViewModel()
     var user: DBUser
     
     var body: some View {
         NavigationStack {
             VStack {
-                Spacer()
-                    .background(.yellow)
-                if (user.createdMeetups?.count ?? 0 > 0) {
-                    List {
-                        ForEach(user.createdMeetups ?? []) { meetup in
-                            MeetupView(meetup: meetup)
+                if (viewModel.meetups.count > 0 || user.createdMeetups?.count ?? 0 > 0) {
+                    ForEach(viewModel.meetups) { meetup in
+                        NavigationLink {
+                            MyMeetupView(meetup: meetup)
+                        } label: {
+                            MyOwnMeetupView(meetup: meetup)
                         }
                     }
-                    .background(.yellow)
-                    
                 } else {
                     Text("You haven't created any meetups yet.")
                         .frame(width: 400)
@@ -45,7 +43,11 @@ struct MyMeetupsView: View {
             }
             .background(.yellow)
             .navigationTitle("My Meetups")
-           
+            .onAppear {
+                Task {
+                    try await viewModel.loadMeetups(userId: user.userId)
+                }
+            }
         }
         
         
