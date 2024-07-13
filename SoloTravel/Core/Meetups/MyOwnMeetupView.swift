@@ -7,17 +7,7 @@
 
 import SwiftUI
 
-@MainActor
-final class MyOwnMeetupViewModel: ObservableObject {
-    
-    func deleteMeetup(meetupId: String) async throws {
-        try await MeetupManager.shared.deleteMeetup(meetupId: meetupId)
-    }
-}
-
 struct MyOwnMeetupView: View {
-    
-    @StateObject var viewModel = MyOwnMeetupViewModel()
     var meetup: Meetup
     
     var body: some View {
@@ -32,14 +22,6 @@ struct MyOwnMeetupView: View {
             .background(.yellow)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .shadow(radius: 10, x: 3, y: 5)
-            .overlay(Button {
-                    Task { try await viewModel.deleteMeetup(meetupId: meetup.id) }
-                } label: {
-                    Image(systemName: "trash")
-                        .foregroundStyle(.red)
-                }.padding(), alignment: .topTrailing)
-            
-            
         }
     }
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MyMeetupsView: View {
-    @StateObject var viewModel = MyMeetupsViewModel()
+    @StateObject private var viewModel = MyMeetupsViewModel()
     var user: DBUser
     
     var body: some View {
@@ -20,6 +20,12 @@ struct MyMeetupsView: View {
                             MyMeetupView(meetup: meetup)
                         } label: {
                             MyOwnMeetupView(meetup: meetup)
+                                .overlay(Button {
+                                        Task { try await viewModel.deleteMeetup(meetupId: meetup.id) }
+                                    } label: {
+                                        Image(systemName: "trash")
+                                            .foregroundStyle(.red)
+                                    }.padding(), alignment: .topTrailing)
                         }
                     }
                 } else {

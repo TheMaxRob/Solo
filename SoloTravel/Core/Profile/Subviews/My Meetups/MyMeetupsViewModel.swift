@@ -19,6 +19,7 @@ final class MyMeetupsViewModel: ObservableObject {
     
     func deleteMeetup(meetupId: String) async throws {
         try await MeetupManager.shared.deleteMeetup(meetupId: meetupId)
+        meetups.removeAll(where: { $0.id == meetupId })
     }
 }
 

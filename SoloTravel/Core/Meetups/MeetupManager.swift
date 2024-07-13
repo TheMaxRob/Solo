@@ -134,15 +134,11 @@ final class MeetupManager {
     }
     
     func getMeetupRefByIndex(meetupId: String) async throws -> DocumentReference? {
-        print("meetupId: \(meetupId)")
         let indexRef = db.collection("meetup_index").document(meetupId)
-        print("indexRef retrieved ")
         let indexSnapshot = try await indexRef.getDocument()
-        print("indexSnapshot retrieved")
         if let indexData = indexSnapshot.data() {
             if let country = indexData["country"] as? String,
                let city = indexData["city"] as? String {
-                print("country & city retrieved")
                 return db.collection("meetups").document(country)
                     .collection(city).document(meetupId)
             } else {
@@ -267,19 +263,17 @@ final class MeetupManager {
                 try await meetupRef.updateData([
                     "pending_users" : FieldValue.arrayRemove([userId]),
                 ])
-                print("userId removed from pending_users")
             } else {
                 print("meetupSnapshot does not exist – declineUserToMeetup()")
             }
         }
         
-        let userRef = db.collection("meetups").document(userId)
+        let userRef = db.collection("users").document(userId)
         let userSnapshot = try await userRef.getDocument()
         if userSnapshot.exists {
             try await userRef.updateData([
                 "rsvp_requests" : FieldValue.arrayRemove([meetupId])
             ])
-            print("meetup removed from rsvp_requests")
         } else {
             print("userRef does not exist – declineUserToMeetup()")
         }
@@ -299,14 +293,14 @@ final class MeetupManager {
             }
         }
         
-        let userRef = db.collection("meetups").document(userId)
+        let userRef = db.collection("users").document(userId)
         let userSnapshot = try await userRef.getDocument()
         if userSnapshot.exists {
             try await userRef.updateData([
                 "rsvp_meetups" : FieldValue.arrayRemove([meetupId])
             ])
         } else {
-            print("userRef does not exist – declineUserToMeetup() \(userId)")
+            print("userRef does not exist – removeUserFromMeetup() \(userId)")
         }
         
     }

@@ -1,17 +1,18 @@
 //
-//  AcceptedUserCellView.swift
+//  OtherUserCellView.swift
 //  SoloTravel
 //
-//  Created by Max Roberts on 7/8/24.
+//  Created by Max Roberts on 7/12/24.
 //
 
 import SwiftUI
 
 @MainActor
-final class AcceptedUserCellViewModel: ObservableObject {
+final class OtherUserCellViewModel: ObservableObject {
     @Published var profileImage: UIImage? = nil
     
     func loadImage(from url: String) async throws {
+        print("loadImage OtherUserCellViewModel")
         profileImage = try await UserManager.shared.loadImage(from: url)
     }
     
@@ -22,11 +23,10 @@ final class AcceptedUserCellViewModel: ObservableObject {
 }
 
 
-struct AcceptedUserCellView: View {
+struct OtherUserCellView: View {
     
-    @StateObject var viewModel = AcceptedUserCellViewModel()
+    @StateObject var viewModel = OtherUserCellViewModel()
     var user: DBUser
-    var meetupId: String
     
     var body: some View {
         NavigationStack {
@@ -51,20 +51,13 @@ struct AcceptedUserCellView: View {
             .background(.yellow)
             .shadow(radius: 5, x: 3, y: 3)
             .onAppear {
+                print("Other User Cell View Appeared!")
                 Task { try await viewModel.loadImage(from: user.photoURL ?? "") }
             }
-            .overlay(Button {
-                Task {
-                    print("userId being passed to removeUser() \(user.userId)")
-                    try await viewModel.removeUser(meetupId: meetupId, userId: user.userId)
-                }
-            } label: {
-                Image(systemName: "xmark")
-            }.padding(5), alignment: .topTrailing)
         }
     }
 }
 
 #Preview {
-    AcceptedUserCellView(user: DBUser(userId: "12345", firstName: "Max", lastName: "Roberts"), meetupId: "12345")
+    OtherUserCellView(user: DBUser(userId: "12345", firstName: "Max", lastName: "Roberts"))
 }

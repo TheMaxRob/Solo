@@ -7,37 +7,10 @@
 
 import SwiftUI
 
-@MainActor
-final class RequestedMeetupViewModel: ObservableObject {
-    
-    @Published private(set) var user: DBUser? = nil
-    @Published private(set) var host: DBUser = DBUser(userId: "")
-    @Published var profileImage: UIImage? = nil
-    
-    func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
-    }
-    
-    
-    func getHost(userId: String) async throws {
-        host = try await UserManager.shared.getUser(userId: userId)
-    }
-    
-    func loadImage(from url: String) async throws {
-        profileImage = try await UserManager.shared.loadImage(from: url)
-    }
-    
-    
-    func unRequest(meetupId: String, userId: String) async throws {
-        try await MeetupManager.shared.unRequest(meetupId: meetupId, userId: userId)
-    }
-}
-
 
 struct RequestedMeetupView: View {
     
-    @StateObject var viewModel = RequestedMeetupViewModel()
+    var viewModel: UpcomingMeetupsViewModel
     var meetup: Meetup
     
     var body: some View {
@@ -87,11 +60,4 @@ struct RequestedMeetupView: View {
         
         return formatter.string(from: date)
     }
-    
-    
-    
-}
-
-#Preview {
-    RequestedMeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", country: "France", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot", attendees: [], pendingUsers: []))
 }

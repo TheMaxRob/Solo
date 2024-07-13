@@ -71,16 +71,24 @@ final class UserManager {
     func requestRSVP(userId: String, meetupId: String) async throws {
         let userRef = userCollection.document(userId)
         let documentSnapshot = try await userRef.getDocument()
-            if documentSnapshot.exists {
+        
+        if documentSnapshot.exists {
+            var rsvpRequests = documentSnapshot.data()?["rsvp_requests"] as? [String] ?? []
+            var rsvpMeetups = documentSnapshot.data()?["rsvp_meetups"] as? [String] ?? []
+            if !rsvpRequests.contains(meetupId) && !rsvpMeetups.contains(meetupId) {
+                rsvpRequests.append(meetupId)
                 try await userRef.updateData([
-                    "rsvp_requests": FieldValue.arrayUnion([meetupId])
+                    "rsvp_requests" : rsvpRequests
                 ])
                 try await MeetupManager.shared.addPendingUser(meetupId: meetupId, userId: userId)
             } else {
-                try await userRef.setData([
-                    "rsvp_requests": [meetupId]
-                ])
+                print("User already requested RSVP for meetup \(meetupId)")
             }
+        } else {
+            try await userRef.setData([
+                "rsvp_requests": [meetupId]
+            ])
+        }
     }
     
     
@@ -98,17 +106,15 @@ final class UserManager {
     func createMeetup(userId: String, meetup: Meetup) async throws {
         let docRef = userCollection.document(userId)
         
-        print("Creating Meetup: \(meetup)")
-        
         let documentSnapshot = try await docRef.getDocument()
         
         if documentSnapshot.exists {
             try await docRef.updateData([
-                "created_meetups": FieldValue.arrayUnion([meetup.id])
+                "created_meetups" : FieldValue.arrayUnion([meetup.id])
             ])
         } else {
             try await docRef.setData([
-                "created_meetups": [meetup.id]
+                "created_meetups" : [meetup.id]
             ])
         }
         
@@ -234,15 +240,15 @@ final class UserManager {
     
     
     func loadImage(from url: String) async throws -> UIImage {
-        guard let imageURL = URL(string: url) else { return UIImage(systemName: "person.circle.fill")! }
+        guard let imageURL = URL(string: url) else {
+            return UIImage(systemName: "person.circle.fill")!
+        }
         do {
             let (data, _) = try await URLSession.shared.data(from: imageURL)
             if let downloadedImage = UIImage(data: data) {
                 return downloadedImage
             }
         } catch {
-            print("Failed to download image: \(error)")
-            // Handle error, for example by setting a default image
             return UIImage(systemName: "person.circle.fill")!
         }
         return UIImage(systemName: "person.circle.fill")!

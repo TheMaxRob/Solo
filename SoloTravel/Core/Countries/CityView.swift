@@ -13,16 +13,10 @@ final class CityViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isShowingMeetups: Bool = false
     
-    
-    
-    
-    
-    
     func loadCityMeetupsCount(country: String, city: String, start: Date, end: Date) async {
         isLoading = true
         do {
             let meetups = try await MeetupManager.shared.fetchMeetups(country: country, city: city)
-            print("unfiltered meetups count for \(city): \(meetups.count)")
             meetupCount = MeetupManager.shared.filterMeetupsByTimeFrame(meetups: meetups, start: start, end: end).count
             
         } catch {
