@@ -27,6 +27,8 @@
 		925AC4F52C41B41F001FC6CC /* ForgotPasswordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */; };
 		925AC4F72C41B4C1001FC6CC /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F62C41B4C1001FC6CC /* ForgotPasswordView.swift */; };
 		925AC4F92C41BDBE001FC6CC /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F82C41BDBE001FC6CC /* LoadingView.swift */; };
+		925AC4FB2C41F28F001FC6CC /* OtherAttendeesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4FA2C41F28F001FC6CC /* OtherAttendeesView.swift */; };
+		925AC5002C41F481001FC6CC /* OtherUserCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4FF2C41F481001FC6CC /* OtherUserCellView.swift */; };
 		925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */; };
 		925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35ED2BE2EBCC00DAF991 /* RootView.swift */; };
 		925B35F02BE2EBD400DAF991 /* SignInEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */; };
@@ -51,8 +53,6 @@
 		92A8FF8A2C3B894D0025FAA9 /* CityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF892C3B894D0025FAA9 /* CityView.swift */; };
 		92A8FF8C2C3C40980025FAA9 /* CheckMarkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF8B2C3C40980025FAA9 /* CheckMarkButton.swift */; };
 		92A8FF8E2C3C40AA0025FAA9 /* DeclineButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF8D2C3C40AA0025FAA9 /* DeclineButton.swift */; };
-		92A8FF902C3CD7210025FAA9 /* PendingUserCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF8F2C3CD7210025FAA9 /* PendingUserCellView.swift */; };
-		92A8FF922C3CD7540025FAA9 /* AcceptedUserCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF912C3CD7540025FAA9 /* AcceptedUserCellView.swift */; };
 		92A8FF942C3CDEF20025FAA9 /* EditUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF932C3CDEF20025FAA9 /* EditUserProfileView.swift */; };
 		92A8FF982C3DD3400025FAA9 /* MyOwnMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */; };
 		92A8FF9A2C3E1A410025FAA9 /* UpcomingMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */; };
@@ -87,6 +87,7 @@
 		92DC6B832BF6B0BF001B2680 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 92DC6B822BF6B0BF001B2680 /* FirebaseFirestore */; };
 		92E3AE002C3B32C2004BC645 /* MyMeetupsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */; };
 		92E3AE022C3B350D004BC645 /* MyMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3AE012C3B350D004BC645 /* MyMeetupView.swift */; };
+		92E5A8422C423B7400C6AD77 /* MyMeetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E5A8412C423B7400C6AD77 /* MyMeetupViewModel.swift */; };
 		92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */; };
 		92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */; };
 		92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F4875B2C1A422A00E82EA3 /* ChatView.swift */; };
@@ -131,6 +132,8 @@
 		925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordButton.swift; sourceTree = "<group>"; };
 		925AC4F62C41B4C1001FC6CC /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		925AC4F82C41BDBE001FC6CC /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		925AC4FA2C41F28F001FC6CC /* OtherAttendeesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherAttendeesView.swift; sourceTree = "<group>"; };
+		925AC4FF2C41F481001FC6CC /* OtherUserCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherUserCellView.swift; sourceTree = "<group>"; };
 		925B35EB2BE2EBC200DAF991 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		925B35ED2BE2EBCC00DAF991 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInEmailView.swift; sourceTree = "<group>"; };
@@ -149,8 +152,6 @@
 		92A8FF892C3B894D0025FAA9 /* CityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityView.swift; sourceTree = "<group>"; };
 		92A8FF8B2C3C40980025FAA9 /* CheckMarkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMarkButton.swift; sourceTree = "<group>"; };
 		92A8FF8D2C3C40AA0025FAA9 /* DeclineButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeclineButton.swift; sourceTree = "<group>"; };
-		92A8FF8F2C3CD7210025FAA9 /* PendingUserCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUserCellView.swift; sourceTree = "<group>"; };
-		92A8FF912C3CD7540025FAA9 /* AcceptedUserCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcceptedUserCellView.swift; sourceTree = "<group>"; };
 		92A8FF932C3CDEF20025FAA9 /* EditUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserProfileView.swift; sourceTree = "<group>"; };
 		92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyOwnMeetupView.swift; sourceTree = "<group>"; };
 		92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupView.swift; sourceTree = "<group>"; };
@@ -186,6 +187,7 @@
 		92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupDetailsView.swift; sourceTree = "<group>"; };
 		92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupsViewModel.swift; sourceTree = "<group>"; };
 		92E3AE012C3B350D004BC645 /* MyMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupView.swift; sourceTree = "<group>"; };
+		92E5A8412C423B7400C6AD77 /* MyMeetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupViewModel.swift; sourceTree = "<group>"; };
 		92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupCreationView.swift; sourceTree = "<group>"; };
 		92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupManager.swift; sourceTree = "<group>"; };
 		92F4875B2C1A422A00E82EA3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
@@ -265,6 +267,29 @@
 			path = Signup;
 			sourceTree = "<group>";
 		};
+		925AC4FC2C41F2D8001FC6CC /* My Meetups */ = {
+			isa = PBXGroup;
+			children = (
+				92E3AE012C3B350D004BC645 /* MyMeetupView.swift */,
+				92E5A8412C423B7400C6AD77 /* MyMeetupViewModel.swift */,
+				92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */,
+				928721352C29337E004176B6 /* MyMeetupsView.swift */,
+			);
+			path = "My Meetups";
+			sourceTree = "<group>";
+		};
+		925AC4FE2C41F2F2001FC6CC /* My Upcoming */ = {
+			isa = PBXGroup;
+			children = (
+				928721372C293384004176B6 /* UpcomingMeetupsView.swift */,
+				92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */,
+				923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */,
+				925AC4FA2C41F28F001FC6CC /* OtherAttendeesView.swift */,
+				925AC4FF2C41F481001FC6CC /* OtherUserCellView.swift */,
+			);
+			path = "My Upcoming";
+			sourceTree = "<group>";
+		};
 		925B35EA2BE2EBAE00DAF991 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
@@ -284,16 +309,10 @@
 		928721342C293374004176B6 /* Subviews */ = {
 			isa = PBXGroup;
 			children = (
-				928721352C29337E004176B6 /* MyMeetupsView.swift */,
-				92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */,
+				925AC4FE2C41F2F2001FC6CC /* My Upcoming */,
+				925AC4FC2C41F2D8001FC6CC /* My Meetups */,
 				92A5EEC22C2A4AEA00C611B5 /* PublicProfileView.swift */,
-				928721372C293384004176B6 /* UpcomingMeetupsView.swift */,
-				923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */,
-				92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */,
 				928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */,
-				92E3AE012C3B350D004BC645 /* MyMeetupView.swift */,
-				92A8FF912C3CD7540025FAA9 /* AcceptedUserCellView.swift */,
-				92A8FF8F2C3CD7210025FAA9 /* PendingUserCellView.swift */,
 				92A8FF932C3CDEF20025FAA9 /* EditUserProfileView.swift */,
 			);
 			path = Subviews;
@@ -663,10 +682,12 @@
 				928721382C293384004176B6 /* UpcomingMeetupsView.swift in Sources */,
 				92A8FF9A2C3E1A410025FAA9 /* UpcomingMeetupView.swift in Sources */,
 				925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */,
+				925AC4FB2C41F28F001FC6CC /* OtherAttendeesView.swift in Sources */,
 				92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */,
 				92F4875E2C1A485D00E82EA3 /* ChatViewModel.swift in Sources */,
 				923E943B2C3F1372002AE12B /* GreeceCardView.swift in Sources */,
 				923E943F2C3F1911002AE12B /* TimeFrameModalView.swift in Sources */,
+				925AC5002C41F481001FC6CC /* OtherUserCellView.swift in Sources */,
 				92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */,
 				92D2F8372BCE82B90057534B /* HomeViewModel.swift in Sources */,
 				92DC6B7F2BF65428001B2680 /* MeetupDetailsView.swift in Sources */,
@@ -688,12 +709,10 @@
 				923E942A2C3E34EB002AE12B /* UserPFPView.swift in Sources */,
 				923E94352C3F1366002AE12B /* UKCardView.swift in Sources */,
 				92DA73572C2396D0004D271A /* ProfileCreationViewModel.swift in Sources */,
-				92A8FF922C3CD7540025FAA9 /* AcceptedUserCellView.swift in Sources */,
 				92D53E6A2C0E12900085B3EF /* MessageManager.swift in Sources */,
 				92D732A32BE7FC2C005629CB /* SignInEmailViewModel.swift in Sources */,
 				92D2F80D2BCE7DCB0057534B /* SoloTravelApp.swift in Sources */,
 				92D2F8392BCE85140057534B /* AccountButton.swift in Sources */,
-				92A8FF902C3CD7210025FAA9 /* PendingUserCellView.swift in Sources */,
 				92A8FF942C3CDEF20025FAA9 /* EditUserProfileView.swift in Sources */,
 				92DC6B7B2BF651B8001B2680 /* MeetupView.swift in Sources */,
 				923E94332C3F1361002AE12B /* FranceCardView.swift in Sources */,
@@ -705,6 +724,7 @@
 				92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */,
 				923E94282C3E2F58002AE12B /* RequestedMeetupView.swift in Sources */,
 				92D2F8482BCE89C30057534B /* String+Ext.swift in Sources */,
+				92E5A8422C423B7400C6AD77 /* MyMeetupViewModel.swift in Sources */,
 				920E50332C0C18F500368677 /* SettingsViewModel.swift in Sources */,
 				92A8FF982C3DD3400025FAA9 /* MyOwnMeetupView.swift in Sources */,
 				92E3AE002C3B32C2004BC645 /* MyMeetupsViewModel.swift in Sources */,

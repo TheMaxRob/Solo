@@ -10,10 +10,46 @@ import SwiftUI
 @MainActor
 final class UpcomingMeetupsViewModel: ObservableObject {
     
-    var acceptedMeetups: [Meetup] = []
-    var requestedMeetups: [Meetup] = []
+    
     @Published var isShowingUpcoming = true
     @Published var isShowingRequested = false
+    @Published private(set) var user: DBUser? = nil
+    @Published private(set) var host: DBUser = DBUser(userId: "")
+    @Published var profileImage: UIImage? = nil
+    @Published var acceptedMeetups: [Meetup] = []
+    @Published var requestedMeetups: [Meetup] = []
+    
+    func loadCurrentUser() async throws {
+        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+    }
+    
+    
+    func getHost(userId: String) async throws {
+        host = try await UserManager.shared.getUser(userId: userId)
+    }
+    
+    
+    func loadImage(from url: String) async throws {
+        profileImage = try await UserManager.shared.loadImage(from: url)
+    }
+    
+    
+    func unRequest(meetupId: String, userId: String) async throws {
+        try await MeetupManager.shared.unRequest(meetupId: meetupId, userId: userId)
+        if let index = requestedMeetups.firstIndex(where: { $0.id == meetupId }) {
+            requestedMeetups.remove(at: index)
+        }
+    }
+    
+    
+    func unRSVP(meetupId: String, userId: String) async throws {
+        print("unRSVP")
+        try await MeetupManager.shared.unRSVP(meetupId: meetupId, userId: userId)
+        if let index = acceptedMeetups.firstIndex(where: { $0.id == meetupId }) {
+            acceptedMeetups.remove(at: index)
+        }
+    }
     
     
     func getRequestedMeetups(meetupIds: [String]) async throws {
@@ -80,7 +116,11 @@ struct UpcomingMeetupsView: View {
                 if viewModel.isShowingUpcoming {
                     if viewModel.acceptedMeetups.count > 0 {
                         ForEach(viewModel.acceptedMeetups) { meetup in
-                            UpcomingMeetupView(meetup: meetup)
+                            NavigationLink {
+                                OtherAttendeesView(meetup: meetup)
+                            } label: {
+                                UpcomingMeetupView(viewModel: viewModel, meetup: meetup)
+                            }
                         }
                     } else {
                         Spacer()
@@ -90,8 +130,7 @@ struct UpcomingMeetupsView: View {
                 } else if viewModel.isShowingRequested {
                 if viewModel.requestedMeetups.count > 0 {
                     ForEach(viewModel.requestedMeetups) { meetup in
-                    RequestedMeetupView(meetup: meetup)
-                
+                        RequestedMeetupView(viewModel: viewModel, meetup: meetup)
                     }
                 } else {
                         Spacer()

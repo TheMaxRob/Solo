@@ -138,7 +138,6 @@ final class MessageManager {
             print("Conversation already exists.")
             return existingId
         } else {
-            let newConversationId = UUID().uuidString
             let newConversation = Conversation(
                 userIds: userIds,
                 lastMessage: "",
@@ -146,7 +145,7 @@ final class MessageManager {
             )
             let conversationData = try encoder.encode(newConversation)
             
-            let conversationRef = conversationCollection.document(newConversationId)
+            let conversationRef = conversationCollection.document(newConversation.id)
             try await conversationRef.setData(conversationData)
             
             
@@ -158,15 +157,15 @@ final class MessageManager {
                 
                 if documentSnapshot.exists {
                     try await userRef.updateData([
-                        "conversations": FieldValue.arrayUnion([newConversationId])
+                        "conversations": FieldValue.arrayUnion([newConversation.id])
                     ])
                 } else {
                     try await userRef.setData([
-                        "conversations": [newConversationId]
+                        "conversations": [newConversation.id]
                     ])
                 }
             }
-            return newConversationId
+            return newConversation.id
         }
     }
         

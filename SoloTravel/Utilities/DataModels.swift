@@ -25,7 +25,7 @@ struct Message: Codable, Identifiable {
 }
 
 
-struct Meetup: Identifiable, Codable {
+struct Meetup: Identifiable, Codable, Equatable {
     let id: String
     let title: String
     let description: String?
@@ -112,7 +112,7 @@ struct Meetup: Identifiable, Codable {
 
 
 struct Conversation: Codable, Identifiable {
-    var id = UUID().uuidString
+    var id: String
     let users: [String]
     let lastMessage: String?
     let timestamp: Date?

@@ -14,25 +14,43 @@ final class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var user: DBUser?
     @Published var other: DBUser?
+    @Published var profileImage: UIImage? = nil
     
-    func loadCurrentUser() async throws {
-        print("loadCurrentUser")
+    @Published var isLoadingUsers: Bool = true
+    
+    func loadUsers(conversationId: String) async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        print("authDataResult created")
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
-        print("self.user assigned - Returning")
-    }
-    
-    
-    func fetchConversation(conversationId: String) async throws -> Conversation {
+        
         let conversation = try await MessageManager.shared.fetchConversation(conversationId: conversationId)
-        for id in conversation.users {
-            if (id != user?.userId) {
-                other = try await UserManager.shared.getUser(userId: id)
+        for userId in conversation.users {
+            if userId != self.user?.userId {
+                print("Assigning other")
+                other = try await UserManager.shared.getUser(userId: userId)
+                print("other photoURL: \(other?.photoURL)")
                 break
             }
         }
-        return conversation
+        
+        
+        self.isLoadingUsers = false
+    }
+    
+    
+    func fetchConversation(conversationId: String) async throws -> Conversation? {
+        do {
+            let conversation = try await MessageManager.shared.fetchConversation(conversationId: conversationId)
+            
+            for id in conversation.users {
+                if (id != user?.userId) {
+                    break
+                }
+            }
+            return conversation
+        } catch {
+            print("Error: \(error)")
+            return nil
+        }
     }
     
     

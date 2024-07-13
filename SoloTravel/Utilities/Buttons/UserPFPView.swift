@@ -29,13 +29,13 @@ struct UserPFPView: View {
                     Image(uiImage: selectedImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 100, height: 100)
+                        .frame(width: 50, height: 50)
                         .clipShape(Circle())
                         .shadow(radius: 5)
             } else {
                 Image(systemName: "person.circle.fill")
                     .foregroundStyle(.gray)
-                    .font(.system(size: 85))
+                    .font(.system(size: 30))
                     .clipShape(Circle())
                     .shadow(radius: 5)
             }
