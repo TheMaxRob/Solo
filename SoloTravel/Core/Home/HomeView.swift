@@ -29,7 +29,7 @@ struct HomeView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-                .background(Color.yellow)
+                //.background(Color.yellow)
             }
             
             if isShowingTimeFrameModal, let country = selectedCountry {

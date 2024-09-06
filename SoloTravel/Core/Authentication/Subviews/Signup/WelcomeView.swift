@@ -30,13 +30,10 @@ struct WelcomeView: View {
                 
                 Spacer()
             }
-            .background(Color.yellow)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + dismissAfter) {
                     isShowingWelcomeView = false
                     isNotAuthenticated = false
-                    // navigationPath.removeLast(navigationPath.count)
-                    
                 }
             }
         }

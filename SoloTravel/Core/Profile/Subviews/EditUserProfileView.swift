@@ -10,11 +10,11 @@ import _PhotosUI_SwiftUI
 
 @MainActor
 final class EditUserProfileViewModel: ObservableObject {
-    @Published var firstName: String = ""
-    @Published var lastName: String = ""
-    @Published var email: String = ""
-    @Published var homeCountry: String = ""
-    @Published var bio: String = ""
+    var firstName: String = ""
+    var lastName: String = ""
+    var email: String = ""
+    var homeCountry: String = ""
+    var bio: String = ""
     @Published var imageSelection: PhotosPickerItem? = nil
     @Published var selectedImage: UIImage? = nil
 
@@ -34,7 +34,7 @@ final class EditUserProfileViewModel: ObservableObject {
     func saveChanges(userId: String) async throws {
         var updateFields = [String: Any]()
                
-        if !firstName.isEmpty {
+                if !firstName.isEmpty {
                     updateFields[DBUser.CodingKeys.firstName.rawValue] = firstName
                 }
                 if !lastName.isEmpty {
@@ -54,13 +54,17 @@ final class EditUserProfileViewModel: ObservableObject {
                     let imageURL = try await UserManager.shared.uploadImageToFirebase(image)
                     updateFields[DBUser.CodingKeys.photoURL.rawValue] = imageURL
                 }
-
                 if !updateFields.isEmpty {
                     try await UserManager.shared.updateUserInformation(userId: userId, fields: updateFields)
                 } else {
                     print("No fields have been edited.")
                 }
         
+    }
+    
+    
+    func setBio(bio: String) {
+        self.bio = bio
     }
 }
 
@@ -74,7 +78,22 @@ struct EditUserProfileView: View {
     var body: some View {
         NavigationStack {
             VStack {
-               UserPFPView(user: user)
+                if let selectedImage = viewModel.selectedImage {
+                        Image(uiImage: selectedImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                            .shadow(radius: 5)
+                } else {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundStyle(.gray)
+                        .font(.system(size: 85))
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                        .shadow(radius: 5)
+                }
                 
                 Button {
                     isImagePickerPresented.toggle()
@@ -109,15 +128,18 @@ struct EditUserProfileView: View {
                 Spacer()
                 .navigationTitle("Edit Profile")
             }
+            .onAppear {
+                viewModel.setBio(bio: user.bio ?? "")
+            }
             .photosPicker(isPresented: $isImagePickerPresented, selection: $viewModel.imageSelection, matching: .images)
-            .onChange(of: viewModel.imageSelection) { newSelection in
+            .onChange(of: viewModel.imageSelection) { _, newSelection in
                 Task {
                     if let image = try await viewModel.loadImage(from: newSelection) {
                         viewModel.selectedImage = image
                     }
                 }
             }
-            .background(.yellow)
+            //.background(.yellow)
         }
     }
 }

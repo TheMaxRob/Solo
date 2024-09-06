@@ -21,10 +21,8 @@ final class MeetupsViewModel: ObservableObject {
     
     
     func fetchMeetups(country: String, city: String, start: Date, end: Date) async throws {
-        print("fetching meetups")
-        var unFilteredMeetups = try await MeetupManager.shared.fetchMeetups(country: country, city: city)
+        let unFilteredMeetups = try await MeetupManager.shared.fetchMeetups(country: country, city: city)
         meetups = MeetupManager.shared.filterMeetupsByTimeFrame(meetups: unFilteredMeetups, start: start, end: end)
-        print("Meetups: \(meetups)")
     }
 }
 
@@ -39,23 +37,24 @@ struct MeetupsView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                Divider()
                 ForEach(viewModel.meetups) { meetup in
                     NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
                         VStack {
                             MeetupView(meetup: meetup)
+                            Divider()
                         }
+                       
                     }
                 }
-                
                 .scrollContentBackground(.hidden)
-                .background(.yellow)
                 .listStyle(PlainListStyle())
             }
             .navigationTitle("\(city) Meetups")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
-                        MeetupCreationView()
+                        MeetupCreationView(city: city, country: country)
                     } label: {
                         Image(systemName: "plus")
                     }

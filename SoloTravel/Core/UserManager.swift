@@ -74,7 +74,7 @@ final class UserManager {
         
         if documentSnapshot.exists {
             var rsvpRequests = documentSnapshot.data()?["rsvp_requests"] as? [String] ?? []
-            var rsvpMeetups = documentSnapshot.data()?["rsvp_meetups"] as? [String] ?? []
+            let rsvpMeetups = documentSnapshot.data()?["rsvp_meetups"] as? [String] ?? []
             if !rsvpRequests.contains(meetupId) && !rsvpMeetups.contains(meetupId) {
                 rsvpRequests.append(meetupId)
                 try await userRef.updateData([
@@ -118,6 +118,7 @@ final class UserManager {
             ])
         }
         
+        print("meetup sent to MeetupManager addMeetup: \(meetup)")
         try await MeetupManager.shared.addMeetup(meetup: meetup)
     }
 
@@ -240,6 +241,7 @@ final class UserManager {
     
     
     func loadImage(from url: String) async throws -> UIImage {
+        print("imageURL: \(url)")
         guard let imageURL = URL(string: url) else {
             return UIImage(systemName: "person.circle.fill")!
         }
@@ -267,10 +269,6 @@ final class UserManager {
     
     func updateUserInformation(userId: String, fields: [String : Any]) async throws {
         let userRef = userCollection.document(userId)
-        
-//        if let oldPhotoURL = fields["photo_url"] as? String {
-//            try await deleteStorageImage(url: oldPhotoURL)
-//        }
         try await userRef.updateData(fields)
         
     }
@@ -281,9 +279,24 @@ final class UserManager {
 //    }
     
     
-    
-    
-    
+    func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
+        let userMeetups = try await getCreatedUserMeetups(userId: userId)
+            for userMeetup in userMeetups {
+                if userMeetup.title == meetupTitle && userMeetup.city == meetupCity {
+                    return true
+                }
+            }
+            return false
+    }
+    private func fetchUserMeetupNames(userId: String) async throws -> [String] {
+        let userRef = userCollection.document(userId)
+        let snapshot = try await userRef.getDocument()
+        if snapshot.exists {
+            var meetupNames: [String] = []
+            meetupNames = snapshot.data()?["created_meetups"] as? [String] ?? []
+            return meetupNames
+        } else { return [] }
+    }
     
     
     

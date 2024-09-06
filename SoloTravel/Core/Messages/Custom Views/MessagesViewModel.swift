@@ -33,6 +33,7 @@ final class MessagesViewModel: ObservableObject {
     func fetchConversation(conversationId: String) async throws -> Conversation {
         return try await MessageManager.shared.fetchConversation(conversationId: conversationId)
     }
+    
 
     func fetchMessages(conversationId: String) async throws {
         messages = try await MessageManager.shared.fetchMessages(conversationId: conversationId)
@@ -41,6 +42,7 @@ final class MessagesViewModel: ObservableObject {
     
     func fetchUserNames(userIds: [String]) async throws {
         let filteredUserIds = userIds.filter { $0 != user?.userId }
+        print("filteredUserIds: ", filteredUserIds)
         userNames = try await UserManager.shared.fetchUserNames(userIds: filteredUserIds)
     }
 

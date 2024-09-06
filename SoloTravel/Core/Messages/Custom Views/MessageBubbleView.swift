@@ -23,14 +23,14 @@ struct MessageBubbleView: View {
                 .background(isCurrentUser ? Color.blue : Color.gray.opacity(0.3))
                 .foregroundColor(isCurrentUser ? .white : .black)
                 .cornerRadius(15)
-                .frame(maxWidth: 150, alignment: isCurrentUser ? .trailing : .leading)
+                .frame(maxWidth: 250, alignment: isCurrentUser ? .trailing : .leading)
             
             if !isCurrentUser {
                 Spacer()
             }
         }
-        .padding(isCurrentUser ? .trailing : .leading, 16)
-        .padding(.vertical, 4)
+        .padding(isCurrentUser ? .trailing : .leading, 1)
+        .padding(.vertical, 2)
     }
 }
 

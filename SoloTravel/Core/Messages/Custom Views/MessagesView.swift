@@ -15,28 +15,47 @@ struct MessagesView: View {
     var body: some View {
         NavigationView {
             List(viewModel.conversations) { conversation in
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(viewModel.userNames.joined(separator: ", "))
-                            .bold()
-                            .font(.title3)
-                            .onAppear {
-                                Task {
-                                    try await viewModel.fetchUserNames(userIds: conversation.users)
+                NavigationLink {
+                    ChatView(conversationId: conversation.id)
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            
+                            Text(viewModel.userNames.joined(separator: ", "))
+                                .bold()
+                                .font(.title3)
+                                .onAppear {
+                                    Task {
+                                        try await viewModel.fetchUserNames(userIds: conversation.users)
+                                    }
                                 }
-                            }
-                        Text("\(conversation.lastMessage ?? "")")
-                            .font(.subheadline)
+                                .padding(.bottom, 6)
+                            
+                            Text("\(conversation.lastMessage ?? "")")
+                                .font(.subheadline)
+                                .fontWeight(conversation.hasUnreadMessage ? .bold : .regular)
+                        }
+                       
+                        Spacer()
+                        if conversation.hasUnreadMessage {
+                                    Circle()
+                                        .fill(Color.blue)
+                                        .frame(width: 10, height: 10)
+                        }
                     }
                     .onTapGesture {
+                        print("onTapGesture")
                         Task {
                             viewModel.selectedConversationId = conversation.id
+                            print("conversationId: ", conversation.id)
                             try await viewModel.fetchMessages(conversationId: viewModel.selectedConversationId)
+                            print("fetchMessages executed")
                             isShowingChat = true
+                            print("isShowingChat: ", isShowingChat)
                         }
                     }
                 }
-                
+
             }
             .onAppear {
                 Task {
@@ -48,12 +67,7 @@ struct MessagesView: View {
                 }
             }
             .navigationTitle("Messages")
-            .background(
-                NavigationLink(destination: ChatView(conversationId: viewModel.selectedConversationId), isActive: $isShowingChat) {
-                    EmptyView()
-                }
-                
-            )
+            
         }
     }
 }

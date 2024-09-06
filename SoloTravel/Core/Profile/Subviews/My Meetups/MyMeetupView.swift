@@ -50,9 +50,19 @@ struct MyMeetupView: View {
                 
                 if viewModel.isShowingAttendeesView {
                     if viewModel.attendees.count > 0 {
-                        List {
+                        VStack {
                             ForEach(viewModel.attendees) { attendee in
                                 AcceptedUserCellView(viewModel: viewModel, user: attendee, meetupId: meetup.id)
+                                    .overlay(Button {
+                                        Task {
+                                            try await viewModel.removeUser(meetupId: meetup.id, userId: attendee.userId)
+                                        }
+                                    } label: {
+                                        Image(systemName: "xmark")
+                                    }
+                                    .padding(5)
+                                    .buttonStyle(BorderlessButtonStyle()),
+                                    alignment: .topTrailing)
                             }
                         }
                     } else {
@@ -76,8 +86,9 @@ struct MyMeetupView: View {
                 }
                    
             }
-            .frame(width: 400)
-            .background(Color.yellow.edgesIgnoringSafeArea(.all))
+            
+            .frame(width: 350)
+            // .background(Color.yellow.edgesIgnoringSafeArea(.all))
             .onAppear {
                 Task {
                     try await viewModel.loadAttendees(userIds: meetup.attendees ?? [])
@@ -99,7 +110,8 @@ struct MyMeetupView: View {
         organizerId: "organizerId",
         meetSpot: "Spot",
         attendees: [],
-        pendingUsers: []
+        pendingUsers: [],
+        imageURL: ""
     ))
 }
 
@@ -159,7 +171,7 @@ struct PendingUserCellView: View {
         }
         .padding()
         .frame(width: 345, height: 180)
-        .background(Color.yellow)
+        //.background(Color.yellow)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .shadow(radius: 10, x: 3, y: 5)
         .onAppear {
@@ -180,36 +192,30 @@ struct AcceptedUserCellView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                ZStack(alignment: .topLeading) {
-                    VStack(alignment: .center) {
-                        NavigationLink {
-                            PublicProfileView(userId: user.userId)
-                        } label: {
-                            UserPFPView(user: user)
-                        }
-                        Text("\(user.firstName ?? "") \(user.lastName ?? "")")
-                            .bold()
-                            .font(.title2)
-                            .foregroundStyle(.black)
+                VStack(alignment: .center) {
+                    NavigationLink {
+                        PublicProfileView(userId: user.userId)
+                    } label: {
+                        UserPFPView(user: user)
                     }
+                    Text("\(user.firstName ?? "") \(user.lastName ?? "")")
+                        .bold()
+                        .font(.title2)
+                        .foregroundStyle(.black)
                 }
-                
             }
             .padding()
             .frame(width: 345, height: 130)
-            .background(.yellow)
+            //.background(.yellow)
             .shadow(radius: 5, x: 3, y: 3)
             .onAppear {
                 Task { try await viewModel.loadImage(from: user.photoURL ?? "") }
             }
-            .overlay(Button {
-                Task {
-                    print("userId being passed to removeUser() \(user.userId)")
-                    try await viewModel.removeUser(meetupId: meetupId, userId: user.userId)
-                }
-            } label: {
-                Image(systemName: "xmark")
-            }.padding(5), alignment: .topTrailing)
+            
         }
     }
 }
+
+#Preview(body: {
+    AcceptedUserCellView(viewModel: MyMeetupViewModel(), user: DBUser(userId: ""), meetupId: "")
+})

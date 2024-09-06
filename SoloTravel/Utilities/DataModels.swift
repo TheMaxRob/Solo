@@ -13,16 +13,29 @@ struct Message: Codable, Identifiable {
     let senderId: String
     let recipientId: String
     let content: String
-    let timestamp: Timestamp
+    let timestamp: Date
 
     enum CodingKeys: String, CodingKey {
-        case id = "id"
+        case id
         case senderId = "sender_id"
         case recipientId = "recipient_id"
-        case content = "content"
-        case timestamp = "timestamp"
+        case content
+        case timestamp
+    }
+    
+    init(
+        senderId: String,
+        recipientId: String,
+        content: String,
+        timestamp: Date
+    ) {
+        self.senderId = senderId
+        self.recipientId = recipientId
+        self.content = content
+        self.timestamp = timestamp
     }
 }
+
 
 
 struct Meetup: Identifiable, Codable, Equatable {
@@ -37,6 +50,7 @@ struct Meetup: Identifiable, Codable, Equatable {
     let meetSpot: String?
     let attendees: [String]?
     let pendingUsers: [String]?
+    let imageURL: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -50,6 +64,7 @@ struct Meetup: Identifiable, Codable, Equatable {
         case meetSpot = "meet_spot"
         case attendees = "attendees"
         case pendingUsers = "pending_users"
+        case imageURL = "image_url"
     }
     
     init(title: String?,
@@ -61,7 +76,8 @@ struct Meetup: Identifiable, Codable, Equatable {
          organizerId: String?,
          meetSpot: String?,
          attendees: [String]?,
-         pendingUsers: [String]?
+         pendingUsers: [String]?,
+         imageURL: String?
     )
     
     {
@@ -76,6 +92,7 @@ struct Meetup: Identifiable, Codable, Equatable {
         self.meetSpot = meetSpot ?? ""
         self.attendees = []
         self.pendingUsers = []
+        self.imageURL = imageURL ?? ""
     }
     
     init(from decoder: Decoder) throws {
@@ -91,6 +108,7 @@ struct Meetup: Identifiable, Codable, Equatable {
         self.meetSpot = try container.decodeIfPresent(String.self, forKey: .meetSpot)
         self.attendees = try container.decodeIfPresent([String].self, forKey: .attendees)
         self.pendingUsers = try container.decodeIfPresent([String].self, forKey: .pendingUsers)
+        self.imageURL = try container.decodeIfPresent(String.self, forKey: .imageURL)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -105,6 +123,7 @@ struct Meetup: Identifiable, Codable, Equatable {
         try container.encodeIfPresent(meetSpot, forKey: .meetSpot)
         try container.encodeIfPresent(attendees, forKey: .attendees)
         try container.encodeIfPresent(pendingUsers, forKey: .pendingUsers)
+        try container.encodeIfPresent(imageURL, forKey: .imageURL)
     }
 }
 
@@ -114,14 +133,18 @@ struct Meetup: Identifiable, Codable, Equatable {
 struct Conversation: Codable, Identifiable {
     var id: String
     let users: [String]
-    let lastMessage: String?
+    var lastMessage: String?
     let timestamp: Date?
+    var messages: [Message]?
+    var hasUnreadMessage: Bool
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case users = "users"
         case lastMessage = "last_message"
         case timestamp = "timestamp"
+        case messages = "messages"
+        case hasUnreadMessage = "has_unread_message"
     }
     
     init(
@@ -133,6 +156,8 @@ struct Conversation: Codable, Identifiable {
         self.users = userIds
         self.lastMessage = lastMessage
         self.timestamp = createdDate
+        self.messages = []
+        self.hasUnreadMessage = false
     }
     
     
@@ -142,6 +167,8 @@ struct Conversation: Codable, Identifiable {
         self.users = try container.decode([String].self, forKey: .users)
         self.lastMessage = try container.decodeIfPresent(String.self, forKey: .lastMessage)
         self.timestamp = try container.decodeIfPresent(Date.self, forKey: .timestamp)
+        self.messages = try container.decodeIfPresent([Message].self, forKey: .messages)
+        self.hasUnreadMessage = try container.decode(Bool.self, forKey: .hasUnreadMessage)
     }
     
     func encode(to encoder: any Encoder) throws {
@@ -150,6 +177,8 @@ struct Conversation: Codable, Identifiable {
         try container.encode(self.users, forKey: .users)
         try container.encodeIfPresent(self.lastMessage, forKey: .lastMessage)
         try container.encodeIfPresent(self.timestamp, forKey: .timestamp)
+        try container.encodeIfPresent(self.messages, forKey: .messages)
+        try container.encode(self.hasUnreadMessage, forKey: .hasUnreadMessage)
     }
 }
 

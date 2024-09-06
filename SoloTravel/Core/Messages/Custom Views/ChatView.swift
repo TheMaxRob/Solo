@@ -19,7 +19,7 @@ struct ChatView: View {
 
                     ScrollView {
                         VStack {
-                            ForEach(viewModel.messages) { message in
+                            ForEach(viewModel.conversation.messages ?? []) { message in
                                 MessageBubbleView(
                                     text: message.content,
                                     isCurrentUser: message.senderId == viewModel.user?.userId
@@ -35,54 +35,48 @@ struct ChatView: View {
                         
                         Button("Send") {
                             Task {
-                                print("Task Entered")
                                 if viewModel.user == nil {
                                     print("User == nil")
+                                    try await viewModel.loadCurrentUser()
+                                    
                                 }
-                                
-                                print("User Successfully Loaded")
-                                print("conversationId: \(conversationId)")
-                                if let conversation = try? await viewModel.fetchConversation(conversationId: conversationId) {
-                                    print("Conversation successfully created")
-                                    try await viewModel.sendMessage(
-                                        to: conversationId,
-                                        content: messageText,
-                                        senderId: viewModel.user?.userId ?? "",
-                                        recipientId: conversation.users.filter { $0 != viewModel.user?.userId }.first!
-                                    )
-                                    messageText = ""
-                                    try await viewModel.fetchMessages(conversationId: conversationId)
-                                } else {
-                                    print("Error sending message.")
-                                }
+                                try await viewModel.sendMessage(
+                                    to: conversationId,
+                                    content: messageText,
+                                    senderId: viewModel.user?.userId ?? "",
+                                    recipientId: viewModel.conversation.users.filter { $0 != viewModel.user?.userId }.first ?? ""
+                                )
+                                print("viewModel.sendMessage successful")
+                                messageText = ""
+                                try await viewModel.fetchMessages(conversationId: conversationId)
                             }
                         }
                         .padding(.leading, 8)
                     }
                     .padding()
-                    .background(Color(.systemGray6))
+                    
                 }
             .padding(.top, 45)
             }
             .onAppear {
                 Task {
-                    try await viewModel.loadUsers(conversationId: conversationId)
+                    try await viewModel.loadCurrentUser()
+                    print("conversationId on load: \(conversationId)")
+                    viewModel.conversation = try await viewModel.fetchConversation(conversationId: conversationId) ?? Conversation(userIds: [], lastMessage: "", createdDate: Date())
                     try await viewModel.fetchMessages(conversationId: conversationId)
                 }
             }
             .onDisappear {
-                if (viewModel.messages.isEmpty) {
+                if (viewModel.conversation.messages == nil) {
                     Task { try await viewModel.deleteConversation(conversationId: conversationId) }
                 }
+                Task { try await viewModel.setMessagesRead(conversationId: conversationId) }
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
 
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    if viewModel.isLoadingUsers {
-                        ProgressView("Loading...")
-                    } else {
                         VStack(alignment: .center) {
                             if let otherUser = viewModel.other {
                                 UserPFPView(user: otherUser)
@@ -94,7 +88,7 @@ struct ChatView: View {
             }
         }
     }
-}
+
 
 #Preview {
     ChatView(conversationId: "")
