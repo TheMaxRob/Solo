@@ -30,7 +30,7 @@ struct UpcomingMeetupView: View {
             }
             .padding()
             .frame(width: 400)
-            .background(.yellow)
+            //.background(.yellow)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .shadow(radius: 10, x: 3, y: 5)
             .onAppear {

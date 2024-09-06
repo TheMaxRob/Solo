@@ -22,7 +22,17 @@ struct AuthenticationView: View {
     
     var body: some View {
         NavigationStack {
+            
             VStack {
+                
+                Image("EiffelTower 1")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 550)
+                    .padding(.top, 30)
+                    .padding(.bottom, 5)
+                    
+                
                 
                 NavigationLink {
                     SignInEmailView(isNotAuthenticated: $isNotAuthenticated, showSignInView: $viewModel.showSignInView)

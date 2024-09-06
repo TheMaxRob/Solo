@@ -17,9 +17,10 @@ struct MyOwnMeetupView: View {
                     .font(.headline)
                 Text("\(formatDayAndTime(date: meetup.meetTime ?? Date()))")
             }
-            .padding()
-            .frame(width: 400)
-            .background(.yellow)
+            .padding(.horizontal, 50)
+            .padding(.vertical)
+            .frame(width: 350)
+            //.background(.yellow)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .shadow(radius: 10, x: 3, y: 5)
         }
@@ -34,5 +35,5 @@ private func formatDayAndTime(date: Date) -> String {
 }
 
 #Preview {
-    MeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", country: "France", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot", attendees: [], pendingUsers: []))
+    MyOwnMeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", country: "France", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot", attendees: [], pendingUsers: [], imageURL: ""))
 }

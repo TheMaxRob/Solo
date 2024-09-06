@@ -14,6 +14,10 @@ final class MeetupManager {
     static let shared = MeetupManager()
     private let db = Firestore.firestore()
     
+    static let cities = [
+        "Barcelona, Spain", "Florence, Italy", "Lisbon, Portugal", "London, United Kingdom", "Madrid, Spain", "Nice, France", "Paris, Frace", "Porto, Lisbon,", "Rome, Italy", "Sevilla, Spain", "Valencia, Spain", "Venice, Italy"
+    ]
+    
     private init() { }
     
     private let encoder: Firestore.Encoder = {
@@ -30,10 +34,11 @@ final class MeetupManager {
     
     
     func addMeetup(meetup: Meetup) async throws {
+        print("meetup received by addMeetup in MeetupManager: \(meetup)")
         let countryRef = db.collection("meetups").document(meetup.country ?? "")
         let meetupRef = countryRef.collection(meetup.city ?? "").document(meetup.id)
         let meetupData = try encoder.encode(meetup)
-        print("meetupData encoded")
+        print("meetupData encoded: \(meetup)")
         
         try await meetupRef.setData(meetupData)
         
@@ -93,7 +98,6 @@ final class MeetupManager {
         // Manually decoding because this is making me pull my hair out
         for dict in meetupDicts {
             guard
-                let id = dict["id"] as? String,
                 let title = dict["title"] as? String,
                 let description = dict["description"] as? String?,
                 let city = dict["city"] as? String,
@@ -125,7 +129,8 @@ final class MeetupManager {
                 organizerId: organizerId,
                 meetSpot: meetSpot,
                 attendees: attendees,
-                pendingUsers: pendingUsers
+                pendingUsers: pendingUsers,
+                imageURL: ""
             )
             
             meetups.append(meetup)
@@ -193,7 +198,8 @@ final class MeetupManager {
                         organizerId: organizerId,
                         meetSpot: meetSpot,
                         attendees: attendees,
-                        pendingUsers: pendingUsers
+                        pendingUsers: pendingUsers,
+                        imageURL: ""
                     )
                     return meetup
             }

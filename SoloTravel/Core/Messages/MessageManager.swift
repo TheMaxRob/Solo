@@ -13,6 +13,7 @@ final class MessageManager {
     static let shared = MessageManager()
     private let conversationCollection = Firestore.firestore().collection("conversations")
     private let userCollection = Firestore.firestore().collection("users")
+    static var unreadConversations = 0
     
     private init() { }
     
@@ -26,10 +27,11 @@ final class MessageManager {
         return decoder
     }()
     
+    
+    // Return all conversations a user is part of
+    
     func fetchConversations(userId: String) async throws -> [Conversation] {
-        let ref = conversationCollection
-        let querySnapshot = try await ref.whereField("users", arrayContains: userId).getDocuments()
-        
+        let querySnapshot = try await conversationCollection.whereField("users", arrayContains: userId).getDocuments()
         var conversations: [Conversation] = []
         
         for document in querySnapshot.documents {
@@ -42,93 +44,25 @@ final class MessageManager {
         return conversations
     }
     
-    private func convertToConversationObjects(conversationDicts: [[String:Any]]) -> [Conversation] {
-        var conversations = [Conversation]()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-        
-        for dict in conversationDicts {
-            guard
-                let conversationId = dict["id"] as? String,
-                let userIds = dict["users"] as? [String],
-                let lastMessage = dict["last_message"] as? String,
-                let timestamp = dict["timestamp"] as? Timestamp
-            else {
-                print("Data parsing error for dict: \(dict)")
-                continue
-            }
-            
-            let createdDate = timestamp.dateValue()
-            
-            let conversation = Conversation(userIds: userIds, lastMessage: lastMessage, createdDate: createdDate)
-            conversations.append(conversation)
-        }
-        return conversations
-    }
     
+    // return a conversation object corresponding to a conversation id
     
     func fetchConversation(conversationId: String) async throws -> Conversation {
+        print("fetching conversation with id \(conversationId)")
         let conversationRef = conversationCollection.document(conversationId)
         do {
             let documentSnapshot = try await conversationRef.getDocument()
-            if documentSnapshot.exists, let data = documentSnapshot.data() {
+            if documentSnapshot.exists {
                 let conversation = try documentSnapshot.data(as: Conversation.self)
                 return conversation
             } else {
-                throw NSError(domain: "com.yourdomain.app", code: 404, userInfo: [NSLocalizedDescriptionKey: "Conversation not found"])
+                throw NSError(domain: "com.MaxRoberts.app", code: 404, userInfo: [NSLocalizedDescriptionKey: "Conversation not found"])
             }
         } catch {
             throw error
         }
     }
-
     
-    
-//    private func convertToMeetupObjects(meetupDicts: [[String: Any]]) -> [Meetup] {
-//        var meetups = [Meetup]()
-//        
-//        // Manually decoding because this is making me pull my hair out
-//        for dict in meetupDicts {
-//            guard
-//                let _ = dict["id"] as? String,
-//                let title = dict["title"] as? String,
-//                let description = dict["description"] as? String?,
-//                let city = dict["city"] as? String,
-//                let country = dict["country"] as? String,
-//                let organizerId = dict["organizer_id"] as? String,
-//                let meetSpot = dict["meet_spot"] as? String,
-//                let createdDateTimestamp = dict["created_date"] as? Timestamp,
-//                let meetTimeTimestamp = dict["meet_time"] as? Timestamp,
-//                let attendees = dict["attendees"] as? [String]?,
-//                let pendingUsers = dict["pending_users"] as? [String]?
-//            else {
-//                // Handle missing or incorrect data
-//                print("Data parsing error for dict: \(dict)")
-//                continue
-//            }
-//            
-//            // Convert FIRTimestamp to Date
-//            let createdDate = createdDateTimestamp.dateValue()
-//            let meetTime = meetTimeTimestamp.dateValue()
-//            
-//            // Initialize Meetup object
-//            let meetup = Meetup(
-//                title: title,
-//                description: description,
-//                meetTime: meetTime,
-//                city: city,
-//                country: country,
-//                createdDate: createdDate,
-//                organizerId: organizerId,
-//                meetSpot: meetSpot,
-//                attendees: attendees,
-//                pendingUsers: pendingUsers
-//            )
-//            
-//            meetups.append(meetup)
-//        }
-//        return meetups
-//    }
     
     
     func createConversation(userIds: [String]) async throws -> String? {
@@ -143,8 +77,8 @@ final class MessageManager {
                 lastMessage: "",
                 createdDate: Date()
             )
+            print("new conversation with id \(newConversation.id)")
             let conversationData = try encoder.encode(newConversation)
-            
             let conversationRef = conversationCollection.document(newConversation.id)
             try await conversationRef.setData(conversationData)
             
@@ -172,9 +106,7 @@ final class MessageManager {
     func conversationExistsId(for userIds: [String]) async throws -> String? {
         if userIds[0].isEmpty { return nil }
         
-        let ref = conversationCollection
-        
-        let querySnapshot = try await ref.whereField("users", arrayContainsAny: userIds).getDocuments()
+        let querySnapshot = try await conversationCollection.whereField("users", arrayContainsAny: userIds).getDocuments()
         
         for document in querySnapshot.documents {
             if let conversation = try? document.data(as: Conversation.self) {
@@ -185,42 +117,78 @@ final class MessageManager {
         }
         return nil
     }
-        
+    
+    
+    // sends message and designates the conversation as having unread messages
+    
     func sendMessage(conversationId: String, message: Message) async throws {
         let conversationRef = conversationCollection.document(conversationId)
-        let messageRef = conversationRef.collection("messages").document()
         
-        do {
-            var newMessage = message
-            newMessage.id = messageRef.documentID
-            try messageRef.setData(from: newMessage)
-            let snapshot = try await conversationRef.getDocument()
-            if snapshot.exists {
-                try await conversationRef.updateData([
-                    "last_message" : message.content
-                ])
-            }
-        } catch {
-            throw error
-        }
+        let messagesRef = conversationRef.collection("messages")
+        
+        // Add the message document to the messages subcollection
+        try await messagesRef.addDocument(data: [
+            Message.CodingKeys.senderId.rawValue : message.senderId,
+            Message.CodingKeys.recipientId.rawValue : message.recipientId,
+            "content": message.content,
+            "timestamp": message.timestamp
+            
+        ])
+        
+        // Update the conversation document with the latest message information
+        try await conversationRef.updateData([
+            "hasUnreadMessage": true,
+            "lastMessage": message.content
+        ])
     }
+
     
 
+    // fetch all messages for a given conversation id
     func fetchMessages(conversationId: String) async throws -> [Message] {
-        let conversationDocRef = conversationCollection.document(conversationId)
-        let messagesCollectionRef = conversationDocRef.collection("messages")
+        print("conversationId in fetchMessages Manager: \(conversationId)")
+        if conversationId.isEmpty {
+            print("Cannot find conversationId – fetchMessages")
+            return []
+        }
+        
+        let conversationRef = conversationCollection.document(conversationId)
+        let messagesRef = conversationRef.collection("messages")
         
         do {
-            let querySnapshot = try await messagesCollectionRef.order(by: "timestamp", descending: false).getDocuments()
-            let messages = try querySnapshot.documents.compactMap { document in
-                try document.data(as: Message.self)
+            // Fetch messages from the subcollection
+            let querySnapshot = try await messagesRef.order(by: "timestamp").getDocuments()
+            
+            var messages: [Message] = []
+            for document in querySnapshot.documents {
+                // Decode the message from the document snapshot
+                do {
+                    let message = try document.data(as: Message.self)
+                    messages.append(message)
+                    
+                } catch {
+                    print("Error decoding message document \(document.documentID): \(error)")
+                }
+               
             }
             
             return messages
-            
         } catch {
             print("Error fetching messages: \(error)")
             throw error
+        }
+    }
+
+
+    
+    
+    func setMessagesRead(conversationId: String) async throws {
+        let conversationRef = conversationCollection.document(conversationId)
+        let snapshot = try await conversationRef.getDocument()
+        if snapshot.exists {
+            try await conversationRef.updateData([
+                "has_unread_message" : false
+            ])
         }
     }
     
@@ -231,7 +199,6 @@ final class MessageManager {
     
     
     func deleteConversation(conversationId: String) async throws {
-        print("deleteConversation called in manager!")
         let convRef = conversationCollection.document(conversationId)
             let convSnapshot = try await convRef.getDocument()
             if convSnapshot.exists {
@@ -248,22 +215,9 @@ final class MessageManager {
                         }
                     }
                 }
-                
-                
             } else {
                 print("No conversation doc found.")
             }
             try await convRef.delete()
         }
-    }
-
-
-extension Encodable {
-    func toDictionary() -> [String: Any] {
-        guard let data = try? JSONEncoder().encode(self),
-              let dictionary = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
-            return [:]
-        }
-        return dictionary
-    }
 }

@@ -39,7 +39,7 @@ struct ProfilePicturesCreationView: View {
                 .navigationBarBackButtonHidden()
                 Spacer()
             }
-            .background(.yellow)
+            // .background(.yellow)
             .fullScreenCover(isPresented: $viewModel.isShowingWelcomeView, content: {
                 WelcomeView(isNotAuthenticated: $isNotAuthenticated, isShowingWelcomeView: $viewModel.isShowingWelcomeView)
             })

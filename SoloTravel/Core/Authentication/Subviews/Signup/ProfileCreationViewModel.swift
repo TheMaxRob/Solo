@@ -10,7 +10,7 @@ import _PhotosUI_SwiftUI
 
 @MainActor
 final class ProfileCreationViewModel: ObservableObject {
-    @Published var user: DBUser? = nil
+    @Published var user: DBUser = DBUser(userId: "")
     // @Published var isShowingProfilePictureCreationView: Bool = false
     
     var firstName: String = ""
@@ -32,7 +32,7 @@ final class ProfileCreationViewModel: ObservableObject {
     func saveUserProfile() async throws {
         let photoURL = try await UserManager.shared.uploadImageToFirebase((selectedImage ?? UIImage(systemName: "person.circle")!))
         print("uploadImagetoFirebase successful")
-        try await UserManager.shared.createUserProfile(userId: user?.userId ?? "", firstName: firstName, lastName: lastName, country: homeCountry, bio: bio, age: age, photoURL: photoURL)
+        try await UserManager.shared.createUserProfile(userId: user.userId, firstName: firstName, lastName: lastName, country: homeCountry, bio: bio, age: age, photoURL: photoURL)
     }
     
     

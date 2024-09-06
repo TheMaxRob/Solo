@@ -7,74 +7,41 @@
 
 import SwiftUI
 
-@MainActor
-final class MeetupDetailsViewModel: ObservableObject {
-    @Published private(set) var user: DBUser? = nil
-    @Published var conversationId: String?
-    @Published var host: DBUser? = nil
-    
-    func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
-    }
-    
-    
-    func requestRSVP(meetup: Meetup) {
-        guard let user else {
-            print("No user found.")
-            return
-        }
-        Task {
-            do {
-                try await UserManager.shared.requestRSVP(userId: user.userId, meetupId: meetup.id)
-                
-            } catch {
-                print("Error RSVPing to Meetup!")
-            }
-        }
-    }
-    
-    
-    func createConversation(with organizerId: String) async throws -> String? {
-        guard let user else { return nil }
-        
-        let userIds = [user.userId, organizerId]
-        let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
-        return conversationId
-    }
-    
-    
-    func getHost(userId: String) async throws {
-        host = try await UserManager.shared.getUser(userId: userId)
-    }
-    
-}
-
 struct MeetupDetailsView: View {
-    @StateObject var viewModel = MeetupDetailsViewModel()
-    @State private var isShowingPersonalMessageView = false
     
+    @StateObject private var viewModel = MeetupDetailsViewModel()
     var meetup: Meetup
     
     var body: some View {
         NavigationStack {
             VStack {
+                if let meetupImage = viewModel.image {
+                    Image(uiImage: meetupImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(minHeight: 400)
+                }
+                    
                 Text("\(meetup.title)")
-                    .font(.headline)
-                    .padding(.bottom)
-                    .frame(width: 400)
+                    .font(.title)
+                    .bold()
+                    .padding()
                 
-                Text("Host: \(viewModel.host?.firstName ?? "Unknown") \(viewModel.host?.lastName ?? "")")
-                
-                Text("Meet At: \(meetup.meetSpot ?? "")")
-                    .font(.subheadline)
-                
-                Text("\(meetup.meetTime ?? Date())")
-                    .font(.subheadline)
+                Text("Created by: \(viewModel.host?.firstName ?? "Unknown") \(viewModel.host?.lastName ?? "")")
                     .padding(.bottom)
                 
-                Text("\(String(describing: meetup.description))")
-                    .font(.caption)
+                Text("Meet At \(meetup.meetSpot ?? "")")
+                    .bold()
+                    .font(.subheadline)
+                
+                Text("\(meetup.meetTime?.formatted(date: .abbreviated, time: .shortened) ?? Date().formatted(date: .abbreviated, time: .shortened))")
+                    .font(.subheadline)
+                    .padding(.bottom)
+                    .bold()
+                
+                Text("\(meetup.description ?? "")")
+                    .font(.footnote)
+                    .padding()
                 
                 HStack {
                     Button {
@@ -85,38 +52,47 @@ struct MeetupDetailsView: View {
                     } label: {
                         Text("RSVP")
                             .frame(width: 90, height: 45)
-                            .background(.green)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.green, lineWidth: 1)
+                            )
+                            .foregroundStyle(.green)
                         // Animate into checkmark, popup to show you requested RSVP
                     }
+                    
+                    Spacer()
                     
                     Button {
                         Task {
                             try await viewModel.loadCurrentUser()
                             viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId ?? "")
-                            isShowingPersonalMessageView = true
                         }
                     } label: {
                         Text("Message")
-                            .tint(.black)
-                            .fontWeight(.light)
                             .frame(width: 90, height: 45)
-                            .background(.blue)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(.blue, lineWidth: 1)
+                            )
+                            .foregroundStyle(.blue)
                     }
                 }
-                .navigationDestination(isPresented: $isShowingPersonalMessageView) {
+                .padding(.horizontal, 50)
+                .navigationDestination(isPresented: $viewModel.isShowingPersonalMessageView) {
                     ChatView(conversationId: viewModel.conversationId ?? "")
                 }
                 Spacer()
+                    .navigationTitle("Meetup Details")
             }
             .onAppear {
                 Task {
                     try await viewModel.getHost(userId: meetup.organizerId ?? "")
+                    try await viewModel.loadImage(from: meetup.imageURL ?? "")
                 }
+            
             }
-            .background(.yellow)
-            .navigationTitle("Meetup Details")
         }
     }
 }

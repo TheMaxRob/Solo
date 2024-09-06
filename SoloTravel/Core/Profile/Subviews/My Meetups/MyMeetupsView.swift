@@ -28,26 +28,27 @@ struct MyMeetupsView: View {
                                     }.padding(), alignment: .topTrailing)
                         }
                     }
+                    
                 } else {
                     Text("You haven't created any meetups yet.")
                         .frame(width: 400)
-                        .background(.yellow)
+                        //.background(.yellow)
                     
                     NavigationLink {
                         MeetupCreationView()
                     } label: {
                         Text("Create a Meetup")
                             .foregroundStyle(.white)
-                            .frame(width: 300)
-                            .padding()
+                            .padding(.horizontal, 50)
+                            .frame(width: 300, height: 45)
                             .background(.black)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                 }
                 Spacer()
-                    .background(.yellow)
+                    //.background(.yellow)
             }
-            .background(.yellow)
+            //.background(.yellow)
             .navigationTitle("My Meetups")
             .onAppear {
                 Task {
@@ -55,7 +56,7 @@ struct MyMeetupsView: View {
                 }
             }
         }
-        
+
         
     }
 }

@@ -20,38 +20,38 @@ struct CreateAccountView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 17) {
-                    TextField("Email", text: $viewModel.email)
-                        .padding(13)
-                        .background(Color(.gray).opacity(0.4))
-                        .cornerRadius(10)
-                    
-                    SecureField("Password", text: $viewModel.password)
-                        .padding(13)
-                        .background(Color(.gray).opacity(0.4))
-                        .cornerRadius(10)
-                    
-                    Button(action: {
-                        Task {
-                            do {
-                                try await viewModel.signUp()
-                                isShowingProfileCreationView = true
-                            } catch {
-                                showAlert = true
-                                alertMessage = "Failed to sign in: \(error.localizedDescription)"
-                            }
+                TextField("Email", text: $viewModel.email)
+                    .padding(13)
+                    .background(Color(.gray).opacity(0.4))
+                    .cornerRadius(10)
+                
+                SecureField("Password", text: $viewModel.password)
+                    .padding(13)
+                    .background(Color(.gray).opacity(0.4))
+                    .cornerRadius(10)
+                
+                Button(action: {
+                    Task {
+                        do {
+                            try await viewModel.signUp()
+                            isShowingProfileCreationView = true
+                        } catch {
+                            showAlert = true
+                            alertMessage = "Failed to sign in: \(error.localizedDescription)"
                         }
-                    }, label: {
-                        Text("Create Account")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(height: 55)
-                            .frame(maxWidth: .infinity)
-                            .background(Color.blue)
-                            .cornerRadius(10)
-                    })
-                    .alert(isPresented: $showAlert) {
-                        Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
                     }
+                }, label: {
+                    Text("Create Account")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(height: 55)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                })
+                .alert(isPresented: $showAlert) {
+                    Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+                }
                 .navigationTitle("Create Your Account")
                 Spacer()
             }

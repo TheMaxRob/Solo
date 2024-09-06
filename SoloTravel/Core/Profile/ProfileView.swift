@@ -104,7 +104,7 @@ struct ProfileView: View {
                 }
             }
             .frame(width: 400)
-            .background(.yellow)
+            //.background(.yellow)
             .navigationTitle("Profile")
             .onAppear {
                 Task {

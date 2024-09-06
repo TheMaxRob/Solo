@@ -15,10 +15,10 @@ struct BookmarkedMeetupsView: View {
                 Spacer()
                 Text("Bookmarked Meetups (not implemented)")
                     .frame(width: 400)
-                    .background(.yellow)
+                    //.background(.yellow)
                 Spacer()
             }
-            .background(.yellow)
+            //.background(.yellow)
             .navigationTitle("Saved Meetups")
         }
         

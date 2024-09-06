@@ -48,7 +48,7 @@ struct OtherUserCellView: View {
             }
             .padding()
             .frame(width: 345, height: 130)
-            .background(.yellow)
+            //.background(.yellow)
             .shadow(radius: 5, x: 3, y: 3)
             .onAppear {
                 print("Other User Cell View Appeared!")

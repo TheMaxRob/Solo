@@ -12,10 +12,11 @@ struct SpainCardView: View {
         ZStack {
             Image("SpainMap")
                 .resizable()
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 .frame(width: 100, height: 130)
                 
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .foregroundStyle(.gray.opacity(0.6))
         .shadow(radius: 10)
     }
 }

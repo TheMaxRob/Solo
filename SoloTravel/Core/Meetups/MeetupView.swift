@@ -25,8 +25,8 @@ final class MeetupViewModel: ObservableObject {
     }
     
     func loadImage(from url: String) async throws {
-        print("loadImage")
         profileImage = try await UserManager.shared.loadImage(from: url)
+        print("loaded Image")
     }
 }
 
@@ -44,17 +44,18 @@ struct MeetupView: View {
                 } label: {
                     UserPFPView(user: viewModel.host)
                 }
+                Spacer()
                 VStack {
                     Text("\(String(describing: meetup.title))")
                         .font(.headline)
                     Text("\(formatDayAndTime(date: meetup.meetTime ?? Date()))")
                 }
+                
             }
-            
-            .padding()
-            .frame(width: 400)
-            .background(.yellow)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, 30)
+            .padding(.vertical)
+           .frame(width: 350)
+            .clipShape(RoundedRectangle(cornerRadius: 15))
             .shadow(radius: 10, x: 3, y: 5)
             .onAppear {
                 Task {
@@ -78,5 +79,5 @@ struct MeetupView: View {
 }
 
 #Preview {
-    MeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", country: "France", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot", attendees: [], pendingUsers: []))
+    MeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", country: "France", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot", attendees: [], pendingUsers: [], imageURL: ""))
 }

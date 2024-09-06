@@ -15,7 +15,6 @@ final class OtherAttendeesViewModel: ObservableObject {
         print("UserIds: \(userIds)")
         for userId in userIds {
             attendees.append(try await UserManager.shared.getUser(userId: userId))
-            print("Appended \(attendees.last)")
         }
     }
 }
@@ -26,13 +25,16 @@ struct OtherAttendeesView: View {
     var meetup: Meetup
     
     var body: some View {
-        VStack {
-            ForEach(viewModel.attendees) { attendee in
-                OtherUserCellView(user: attendee)
+        NavigationStack {
+            VStack {
+                ForEach(viewModel.attendees) { attendee in
+                    OtherUserCellView(user: attendee)
+                }
             }
-        }
-        .onAppear {
-            Task { try await viewModel.getOtherAttendees(userIds: meetup.attendees ?? []) }
+            .onAppear {
+                Task { try await viewModel.getOtherAttendees(userIds: meetup.attendees ?? []) }
+            }
+            .navigationTitle("All Attendees")
         }
     }
 }

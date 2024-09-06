@@ -35,6 +35,8 @@
 		925B35F22BE2EBDF00DAF991 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35F12BE2EBDF00DAF991 /* SettingsView.swift */; };
 		925B35F42BE2EC3500DAF991 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925B35F32BE2EC3500DAF991 /* AuthenticationManager.swift */; };
 		926BC0382C0A9760001279CF /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 926BC0372C0A9760001279CF /* FirebaseFirestoreSwift */; };
+		92736A212C4308B900D8266C /* MeetupCreationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92736A202C4308B900D8266C /* MeetupCreationViewModel.swift */; };
+		92736A232C43125200D8266C /* MeetupDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92736A222C43125200D8266C /* MeetupDetailsViewModel.swift */; };
 		928721332C287771004176B6 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 928721322C287771004176B6 /* FirebaseStorage */; };
 		928721362C29337E004176B6 /* MyMeetupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928721352C29337E004176B6 /* MyMeetupsView.swift */; };
 		928721382C293384004176B6 /* UpcomingMeetupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928721372C293384004176B6 /* UpcomingMeetupsView.swift */; };
@@ -58,6 +60,8 @@
 		92A8FF9A2C3E1A410025FAA9 /* UpcomingMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */; };
 		92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BD68292BE2F7B5000BACB3 /* MessagesView.swift */; };
 		92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C479492BCEA94C0020EB10 /* SoloTabView.swift */; };
+		92C87E252C45DF8100254F99 /* PublicProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C87E242C45DF8100254F99 /* PublicProfileViewModel.swift */; };
+		92C87E272C45E87900254F99 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C87E262C45E87900254F99 /* TestView.swift */; };
 		92D2F80D2BCE7DCB0057534B /* SoloTravelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */; };
 		92D2F80F2BCE7DCB0057534B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D2F80E2BCE7DCB0057534B /* HomeView.swift */; };
 		92D2F8112BCE7DCD0057534B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92D2F8102BCE7DCD0057534B /* Assets.xcassets */; };
@@ -88,6 +92,7 @@
 		92E3AE002C3B32C2004BC645 /* MyMeetupsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */; };
 		92E3AE022C3B350D004BC645 /* MyMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3AE012C3B350D004BC645 /* MyMeetupView.swift */; };
 		92E5A8422C423B7400C6AD77 /* MyMeetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E5A8412C423B7400C6AD77 /* MyMeetupViewModel.swift */; };
+		92E87A052C6066D6009759A3 /* UpcomingMeetupsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E87A042C6066D6009759A3 /* UpcomingMeetupsViewModel.swift */; };
 		92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */; };
 		92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */; };
 		92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F4875B2C1A422A00E82EA3 /* ChatView.swift */; };
@@ -139,6 +144,8 @@
 		925B35EF2BE2EBD400DAF991 /* SignInEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInEmailView.swift; sourceTree = "<group>"; };
 		925B35F12BE2EBDF00DAF991 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		925B35F32BE2EC3500DAF991 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		92736A202C4308B900D8266C /* MeetupCreationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupCreationViewModel.swift; sourceTree = "<group>"; };
+		92736A222C43125200D8266C /* MeetupDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupDetailsViewModel.swift; sourceTree = "<group>"; };
 		928721352C29337E004176B6 /* MyMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupsView.swift; sourceTree = "<group>"; };
 		928721372C293384004176B6 /* UpcomingMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupsView.swift; sourceTree = "<group>"; };
 		928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkedMeetupsView.swift; sourceTree = "<group>"; };
@@ -157,6 +164,8 @@
 		92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupView.swift; sourceTree = "<group>"; };
 		92BD68292BE2F7B5000BACB3 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		92C479492BCEA94C0020EB10 /* SoloTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTabView.swift; sourceTree = "<group>"; };
+		92C87E242C45DF8100254F99 /* PublicProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileViewModel.swift; sourceTree = "<group>"; };
+		92C87E262C45E87900254F99 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		92D2F8092BCE7DCB0057534B /* SoloTravel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloTravel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTravelApp.swift; sourceTree = "<group>"; };
 		92D2F80E2BCE7DCB0057534B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -188,6 +197,7 @@
 		92E3ADFF2C3B32C2004BC645 /* MyMeetupsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupsViewModel.swift; sourceTree = "<group>"; };
 		92E3AE012C3B350D004BC645 /* MyMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupView.swift; sourceTree = "<group>"; };
 		92E5A8412C423B7400C6AD77 /* MyMeetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupViewModel.swift; sourceTree = "<group>"; };
+		92E87A042C6066D6009759A3 /* UpcomingMeetupsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupsViewModel.swift; sourceTree = "<group>"; };
 		92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupCreationView.swift; sourceTree = "<group>"; };
 		92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupManager.swift; sourceTree = "<group>"; };
 		92F4875B2C1A422A00E82EA3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
@@ -282,6 +292,7 @@
 			isa = PBXGroup;
 			children = (
 				928721372C293384004176B6 /* UpcomingMeetupsView.swift */,
+				92E87A042C6066D6009759A3 /* UpcomingMeetupsViewModel.swift */,
 				92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */,
 				923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */,
 				925AC4FA2C41F28F001FC6CC /* OtherAttendeesView.swift */,
@@ -312,6 +323,8 @@
 				925AC4FE2C41F2F2001FC6CC /* My Upcoming */,
 				925AC4FC2C41F2D8001FC6CC /* My Meetups */,
 				92A5EEC22C2A4AEA00C611B5 /* PublicProfileView.swift */,
+				92C87E262C45E87900254F99 /* TestView.swift */,
+				92C87E242C45DF8100254F99 /* PublicProfileViewModel.swift */,
 				928721392C29338A004176B6 /* BookmarkedMeetupsView.swift */,
 				92A8FF932C3CDEF20025FAA9 /* EditUserProfileView.swift */,
 			);
@@ -514,7 +527,9 @@
 				92DC6B702BF65041001B2680 /* MeetupsView.swift */,
 				92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */,
 				92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */,
+				92736A222C43125200D8266C /* MeetupDetailsViewModel.swift */,
 				92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */,
+				92736A202C4308B900D8266C /* MeetupCreationViewModel.swift */,
 				92DC6B7A2BF651B8001B2680 /* MeetupView.swift */,
 				92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */,
 			);
@@ -674,6 +689,7 @@
 				92DC6B712BF65041001B2680 /* MeetupsView.swift in Sources */,
 				92A8FF8E2C3C40AA0025FAA9 /* DeclineButton.swift in Sources */,
 				92D53E6C2C0E146B0085B3EF /* MessagesViewModel.swift in Sources */,
+				92736A212C4308B900D8266C /* MeetupCreationViewModel.swift in Sources */,
 				92D2F8432BCE891A0057534B /* Alert.swift in Sources */,
 				92E3AE022C3B350D004BC645 /* MyMeetupView.swift in Sources */,
 				92DA73532C239129004D271A /* CreateAccountViewModel.swift in Sources */,
@@ -694,6 +710,7 @@
 				925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */,
 				9287213A2C29338A004176B6 /* BookmarkedMeetupsView.swift in Sources */,
 				92A8FF7E2C3B84FE0025FAA9 /* SpainView.swift in Sources */,
+				92736A232C43125200D8266C /* MeetupDetailsViewModel.swift in Sources */,
 				923E94372C3F1369002AE12B /* ItalyCardView.swift in Sources */,
 				923E94392C3F136E002AE12B /* GermanyCardView.swift in Sources */,
 				92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */,
@@ -705,6 +722,7 @@
 				92A8FF842C3B852A0025FAA9 /* ItalyView.swift in Sources */,
 				92A8FF882C3B854B0025FAA9 /* GreeceView.swift in Sources */,
 				923E943D2C3F1691002AE12B /* CountryCardView.swift in Sources */,
+				92E87A052C6066D6009759A3 /* UpcomingMeetupsViewModel.swift in Sources */,
 				92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */,
 				923E942A2C3E34EB002AE12B /* UserPFPView.swift in Sources */,
 				923E94352C3F1366002AE12B /* UKCardView.swift in Sources */,
@@ -714,6 +732,7 @@
 				92D2F80D2BCE7DCB0057534B /* SoloTravelApp.swift in Sources */,
 				92D2F8392BCE85140057534B /* AccountButton.swift in Sources */,
 				92A8FF942C3CDEF20025FAA9 /* EditUserProfileView.swift in Sources */,
+				92C87E272C45E87900254F99 /* TestView.swift in Sources */,
 				92DC6B7B2BF651B8001B2680 /* MeetupView.swift in Sources */,
 				923E94332C3F1361002AE12B /* FranceCardView.swift in Sources */,
 				920D08532BDABCE400B2466C /* MessageCellView.swift in Sources */,
@@ -734,6 +753,7 @@
 				92DC6B612BF64D46001B2680 /* UserManager.swift in Sources */,
 				92A8FF822C3B850E0025FAA9 /* UKView.swift in Sources */,
 				925B35F22BE2EBDF00DAF991 /* SettingsView.swift in Sources */,
+				92C87E252C45DF8100254F99 /* PublicProfileViewModel.swift in Sources */,
 				92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */,
 				923C894D2C3B7928007810D9 /* CountryView.swift in Sources */,
 			);
