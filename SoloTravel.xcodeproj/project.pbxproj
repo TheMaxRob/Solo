@@ -461,6 +461,7 @@
 				92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */,
 				92DC6B602BF64D46001B2680 /* UserManager.swift */,
 				925B35ED2BE2EBCC00DAF991 /* RootView.swift */,
+				92C479492BCEA94C0020EB10 /* SoloTabView.swift */,
 				925B35EA2BE2EBAE00DAF991 /* Authentication */,
 				92DC6B6A2BF64F36001B2680 /* Home */,
 				92A8FF7C2C3B84F70025FAA9 /* Countries */,
@@ -511,7 +512,6 @@
 		92DC6B6A2BF64F36001B2680 /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				92C479492BCEA94C0020EB10 /* SoloTabView.swift */,
 				92D2F80E2BCE7DCB0057534B /* HomeView.swift */,
 				923E943E2C3F1911002AE12B /* TimeFrameModalView.swift */,
 				923C894C2C3B7928007810D9 /* CountryView.swift */,

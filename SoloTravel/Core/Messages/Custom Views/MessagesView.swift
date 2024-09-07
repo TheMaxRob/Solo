@@ -9,8 +9,6 @@ import SwiftUI
 
 struct MessagesView: View {
     @StateObject var viewModel = MessagesViewModel()
-    @State private var isShowingChat = false
-    
     
     var body: some View {
         NavigationView {
@@ -33,11 +31,11 @@ struct MessagesView: View {
                             
                             Text("\(conversation.lastMessage ?? "")")
                                 .font(.subheadline)
-                                .fontWeight(conversation.hasUnreadMessage ? .bold : .regular)
+                                .fontWeight(conversation.hasUnreadMessages && viewModel.user?.userId != conversation.mostRecentSenderId ? .bold : .regular)
                         }
                        
                         Spacer()
-                        if conversation.hasUnreadMessage {
+                        if conversation.hasUnreadMessages && viewModel.user?.userId != conversation.mostRecentSenderId {
                                     Circle()
                                         .fill(Color.blue)
                                         .frame(width: 10, height: 10)
@@ -50,8 +48,6 @@ struct MessagesView: View {
                             print("conversationId: ", conversation.id)
                             try await viewModel.fetchMessages(conversationId: viewModel.selectedConversationId)
                             print("fetchMessages executed")
-                            isShowingChat = true
-                            print("isShowingChat: ", isShowingChat)
                         }
                     }
                 }
@@ -62,8 +58,8 @@ struct MessagesView: View {
                     if let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
                         try await viewModel.loadCurrentUser()
                         try await viewModel.fetchConversations(for: userId)
+                        try await viewModel.setUserMessagesRead(userId: userId)
                     }
-                
                 }
             }
             .navigationTitle("Messages")

@@ -1,15 +1,9 @@
-//
-//  MeetupDetailsView.swift
-//  SoloTravel
-//
-//  Created by Max Roberts on 5/16/24.
-//
-
 import SwiftUI
 
 struct MeetupDetailsView: View {
     
     @StateObject private var viewModel = MeetupDetailsViewModel()
+    @State private var isRSVPed = false  // State to track RSVP status
     var meetup: Meetup
     
     var body: some View {
@@ -21,7 +15,7 @@ struct MeetupDetailsView: View {
                         .scaledToFill()
                         .frame(minHeight: 400)
                 }
-                    
+                
                 Text("\(meetup.title)")
                     .font(.title)
                     .bold()
@@ -44,21 +38,46 @@ struct MeetupDetailsView: View {
                     .padding()
                 
                 HStack {
+                    // RSVP Button with Animation
                     Button {
                         Task {
-                            try await viewModel.loadCurrentUser()
                             viewModel.requestRSVP(meetup: meetup)
+                            withAnimation {
+                                isRSVPed = true
+                            }
                         }
                     } label: {
-                        Text("RSVP")
+                        if isRSVPed {
+                            HStack {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.white)
+                            }
                             .frame(width: 90, height: 45)
+                            .background(Color.green)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.green, lineWidth: 1)
-                            )
-                            .foregroundStyle(.green)
-                        // Animate into checkmark, popup to show you requested RSVP
+                            .transition(.opacity.combined(with: .scale))
+                            
+                            
+                            
+                        } else if viewModel.user?.rsvpMeetups?.contains(where: { $0 == meetup.id }) == true || ((viewModel.user?.rsvpRequests?.contains(where: { $0 == meetup.id }) == true)) {
+                            HStack {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 10)
+                            }
+                            .frame(width: 90, height: 45)
+                            .background(Color.green)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        } else {
+                            Text("RSVP")
+                                .frame(width: 90, height: 45)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.green, lineWidth: 1)
+                                )
+                                .foregroundStyle(.green)
+                        }
                     }
                     
                     Spacer()
@@ -88,10 +107,13 @@ struct MeetupDetailsView: View {
             }
             .onAppear {
                 Task {
+                    try await viewModel.loadCurrentUser()
+                    print(viewModel.user?.rsvpMeetups ?? [])
+                    print(viewModel.user?.rsvpRequests ?? [])
+                    print(viewModel.user?.rsvpMeetups?.contains(where: { $0 == meetup.id }) == true || ((viewModel.user?.rsvpRequests?.contains(where: { $0 == meetup.id }) == true)))
                     try await viewModel.getHost(userId: meetup.organizerId ?? "")
                     try await viewModel.loadImage(from: meetup.imageURL ?? "")
                 }
-            
             }
         }
     }

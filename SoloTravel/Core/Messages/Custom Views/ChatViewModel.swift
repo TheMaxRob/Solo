@@ -76,7 +76,7 @@ final class ChatViewModel: ObservableObject {
         let message = Message(senderId: senderId, recipientId: recipientId, content: content, timestamp: Date())
         do {
             conversation.messages?.append(message)
-            try await MessageManager.shared.sendMessage(conversationId: conversationId, message: message)
+            try await MessageManager.shared.sendMessage(conversationId: conversationId, message: message, recipientId: recipientId, senderId: senderId)
             conversation.lastMessage = content
         } catch {
             print("Failed to send message: \(error)")

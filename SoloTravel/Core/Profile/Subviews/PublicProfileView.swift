@@ -16,7 +16,7 @@ struct PublicProfileView: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    if let profileImage = viewModel.meetupImage {
+                    if let _ = viewModel.meetupImage {
                         Image("MaxPFP")
                             .resizable()
                             .scaledToFill()

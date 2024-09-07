@@ -61,7 +61,7 @@ final class MeetupCreationViewModel: ObservableObject {
     
     
     func setCity(city: String) {
-        var cityCountry = city.split(separator: ", ")
+        let cityCountry = city.split(separator: ", ")
         self.city = String(cityCountry[0])
         self.country = String(cityCountry[1])
     }
