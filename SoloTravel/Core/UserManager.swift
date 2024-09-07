@@ -293,11 +293,21 @@ final class UserManager {
         let snapshot = try await userRef.getDocument()
         if snapshot.exists {
             var meetupNames: [String] = []
-            meetupNames = snapshot.data()?["created_meetups"] as? [String] ?? []
+            meetupNames = snapshot.data()?[DBUser.CodingKeys.createdMeetups.rawValue] as? [String] ?? []
             return meetupNames
         } else { return [] }
     }
     
+    
+    func setUserMessagesRead(userId: String) async throws {
+        let userRef = userCollection.document(userId)
+        let snapshot = try await userRef.getDocument()
+        if snapshot.exists {
+            try await userRef.updateData([
+                DBUser.CodingKeys.hasUnreadMessages.rawValue : false
+            ])
+        }
+    }
     
     
     enum Error: Swift.Error {

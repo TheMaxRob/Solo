@@ -136,7 +136,9 @@ struct Conversation: Codable, Identifiable {
     var lastMessage: String?
     let timestamp: Date?
     var messages: [Message]?
-    var hasUnreadMessage: Bool
+    var hasUnreadMessages: Bool
+    var mostRecentSenderId: String
+    
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -144,7 +146,8 @@ struct Conversation: Codable, Identifiable {
         case lastMessage = "last_message"
         case timestamp = "timestamp"
         case messages = "messages"
-        case hasUnreadMessage = "has_unread_message"
+        case hasUnreadMessages = "has_unread_messages"
+        case mostRecentSenderId = "most_recent_sender_id"
     }
     
     init(
@@ -157,7 +160,8 @@ struct Conversation: Codable, Identifiable {
         self.lastMessage = lastMessage
         self.timestamp = createdDate
         self.messages = []
-        self.hasUnreadMessage = false
+        self.hasUnreadMessages = false
+        self.mostRecentSenderId = ""
     }
     
     
@@ -168,7 +172,8 @@ struct Conversation: Codable, Identifiable {
         self.lastMessage = try container.decodeIfPresent(String.self, forKey: .lastMessage)
         self.timestamp = try container.decodeIfPresent(Date.self, forKey: .timestamp)
         self.messages = try container.decodeIfPresent([Message].self, forKey: .messages)
-        self.hasUnreadMessage = try container.decode(Bool.self, forKey: .hasUnreadMessage)
+        self.hasUnreadMessages = try container.decode(Bool.self, forKey: .hasUnreadMessages)
+        self.mostRecentSenderId = try container.decode(String.self, forKey: .mostRecentSenderId)
     }
     
     func encode(to encoder: any Encoder) throws {
@@ -178,7 +183,8 @@ struct Conversation: Codable, Identifiable {
         try container.encodeIfPresent(self.lastMessage, forKey: .lastMessage)
         try container.encodeIfPresent(self.timestamp, forKey: .timestamp)
         try container.encodeIfPresent(self.messages, forKey: .messages)
-        try container.encode(self.hasUnreadMessage, forKey: .hasUnreadMessage)
+        try container.encode(self.hasUnreadMessages, forKey: .hasUnreadMessages)
+        try container.encode(self.mostRecentSenderId, forKey: .mostRecentSenderId)
     }
 }
 
@@ -197,6 +203,7 @@ struct DBUser: Codable, Identifiable {
     let homeCountry: String?
     let age: String?
     let bio: String?
+    var hasUnreadMessages: Bool?
     
     
     init(auth: AuthDataResultModel) {
@@ -213,6 +220,7 @@ struct DBUser: Codable, Identifiable {
         self.homeCountry = ""
         self.age = ""
         self.bio = ""
+        self.hasUnreadMessages = false
     }
     
     init(
@@ -243,6 +251,7 @@ struct DBUser: Codable, Identifiable {
         self.homeCountry = homeCountry
         self.age = age
         self.bio = bio
+        self.hasUnreadMessages = false
     }
     
     enum CodingKeys: String, CodingKey {
@@ -259,6 +268,7 @@ struct DBUser: Codable, Identifiable {
         case homeCountry = "home_country"
         case age = "age"
         case bio = "bio"
+        case hasUnreadMessages = "has_unread_messages"
     }
     
     
@@ -277,6 +287,7 @@ struct DBUser: Codable, Identifiable {
         self.homeCountry = try container.decodeIfPresent(String.self, forKey: .homeCountry)
         self.age = try container.decodeIfPresent(String.self, forKey: .age)
         self.bio = try container.decodeIfPresent(String.self, forKey: .bio)
+        self.hasUnreadMessages = try container.decodeIfPresent(Bool.self, forKey: .hasUnreadMessages)
     }
     
     
@@ -295,6 +306,7 @@ struct DBUser: Codable, Identifiable {
         try container.encodeIfPresent(self.homeCountry, forKey: .homeCountry)
         try container.encodeIfPresent(self.age, forKey: .age)
         try container.encodeIfPresent(self.bio, forKey: .bio)
+        try container.encodeIfPresent(self.hasUnreadMessages, forKey: .hasUnreadMessages)
     }
     
 }

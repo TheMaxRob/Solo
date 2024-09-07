@@ -49,18 +49,39 @@ final class MessageManager {
     
     func fetchConversation(conversationId: String) async throws -> Conversation {
         print("fetching conversation with id \(conversationId)")
+        print("normal version called – hasUnreadMessages set to false")
         let conversationRef = conversationCollection.document(conversationId)
-        do {
-            let documentSnapshot = try await conversationRef.getDocument()
-            if documentSnapshot.exists {
-                let conversation = try documentSnapshot.data(as: Conversation.self)
+        let snapshot = try await conversationRef.getDocument()
+        if snapshot.exists {
+            do {
+                try await conversationRef.updateData([
+                    Conversation.CodingKeys.hasUnreadMessages.rawValue : false
+                ])
+                let conversation = try snapshot.data(as: Conversation.self)
                 return conversation
-            } else {
-                throw NSError(domain: "com.MaxRoberts.app", code: 404, userInfo: [NSLocalizedDescriptionKey: "Conversation not found"])
+            } catch {
+                print("Error fetching conversation: \(error)")
             }
-        } catch {
-            throw error
         }
+        return Conversation(userIds: [], lastMessage: "", createdDate: Date())
+    }
+    
+    
+    // This function doesn't update the conversation to being read
+    func fetchConversationMessagesView(conversationId: String) async throws -> Conversation {
+        print("fetching conversation with id \(conversationId)")
+        print("MessagesView version called – hasUnreadMessages not set to false")
+        let conversationRef = conversationCollection.document(conversationId)
+        let snapshot = try await conversationRef.getDocument()
+        if snapshot.exists {
+            do {
+                let conversation = try snapshot.data(as: Conversation.self)
+                return conversation
+            } catch {
+                print("Error fetchin conversation: \(error)")
+            }
+        }
+        return Conversation(userIds: [], lastMessage: "", createdDate: Date())
     }
     
     
@@ -119,27 +140,44 @@ final class MessageManager {
     }
     
     
-    // sends message and designates the conversation as having unread messages
-    
-    func sendMessage(conversationId: String, message: Message) async throws {
+    // Sends message and designates the conversation and user as having unread messages
+    func sendMessage(conversationId: String, message: Message, recipientId: String, senderId: String) async throws {
         let conversationRef = conversationCollection.document(conversationId)
         
         let messagesRef = conversationRef.collection("messages")
         
         // Add the message document to the messages subcollection
-        try await messagesRef.addDocument(data: [
-            Message.CodingKeys.senderId.rawValue : message.senderId,
-            Message.CodingKeys.recipientId.rawValue : message.recipientId,
-            "content": message.content,
-            "timestamp": message.timestamp
+        do {
+            try await messagesRef.addDocument(data: [
+                Message.CodingKeys.senderId.rawValue : message.senderId,
+                Message.CodingKeys.recipientId.rawValue : message.recipientId,
+                Message.CodingKeys.content.rawValue : message.content,
+                Message.CodingKeys.timestamp.rawValue : message.timestamp
+            ])
             
-        ])
+            // Update the conversation document with the latest message information
+            try await conversationRef.updateData([
+                Conversation.CodingKeys.hasUnreadMessages.rawValue : true,
+                Conversation.CodingKeys.lastMessage.rawValue : message.content,
+                Conversation.CodingKeys.mostRecentSenderId.rawValue : senderId
+            ])
+            
+            // Update recipient to have unread conversation
+            let userRef = userCollection.document(recipientId)
+            let userSnapshot = try await userRef.getDocument()
+            if userSnapshot.exists {
+                try await userRef.updateData([
+                    DBUser.CodingKeys.hasUnreadMessages.rawValue : true
+                ])
+            }
+            
+            
+        } catch {
+            
+        }
+       
         
-        // Update the conversation document with the latest message information
-        try await conversationRef.updateData([
-            "hasUnreadMessage": true,
-            "lastMessage": message.content
-        ])
+        
     }
 
     
@@ -187,7 +225,7 @@ final class MessageManager {
         let snapshot = try await conversationRef.getDocument()
         if snapshot.exists {
             try await conversationRef.updateData([
-                "has_unread_message" : false
+                Conversation.CodingKeys.hasUnreadMessages.rawValue : false
             ])
         }
     }
