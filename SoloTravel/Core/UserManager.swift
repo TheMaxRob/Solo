@@ -310,7 +310,71 @@ final class UserManager {
     }
     
     
-    enum Error: Swift.Error {
-        case tooManyMeetups
+    func blockUser(userId: String, blockedUser: String) async throws {
+        let userRef = userCollection.document(userId)
+        let snapshot = try await userRef.getDocument()
+        if snapshot.exists {
+            do {
+                try await userRef.updateData([
+                    DBUser.CodingKeys.blockedUsers.rawValue : FieldValue.arrayUnion([blockedUser])
+                ])
+            } catch {
+                print("Error blocking user: \(error)")
+            }
+        }
+        
+        let blockedUserRef = userCollection.document(blockedUser)
+        let blockedUserSnapshot = try await blockedUserRef.getDocument()
+        if blockedUserSnapshot.exists {
+            do {
+                try await blockedUserRef.updateData([
+                    DBUser.CodingKeys.blockedBy.rawValue : FieldValue.arrayUnion([userId])
+                ])
+            } catch {
+                print("Error blocking user: \(error)")
+            }
+        }
+    }
+    
+    
+    func unblockUser(userId: String, blockedUser: String) async throws {
+        print("unblockUser userId: \(userId)")
+        print("unblockUser blockedUserId: \(blockedUser)")
+        let userRef = userCollection.document(userId)
+        let snapshot = try await userRef.getDocument()
+        if snapshot.exists {
+            do {
+                print("removing \(blockedUser) from \(userId)'s blockedUsers list")
+                try await userRef.updateData([
+                    DBUser.CodingKeys.blockedUsers.rawValue : FieldValue.arrayRemove([blockedUser])
+                ])
+            } catch {
+                print("Error blocking user: \(error)")
+            }
+        }
+        
+        let blockedUserRef = userCollection.document(blockedUser)
+        let blockedUserSnapshot = try await blockedUserRef.getDocument()
+        if blockedUserSnapshot.exists {
+            do {
+                print("removing \(userId) from \(blockedUser)'s blockedBy list")
+                try await blockedUserRef.updateData([
+                    DBUser.CodingKeys.blockedBy.rawValue : FieldValue.arrayRemove([userId])
+                ])
+            } catch {
+                print("Error blocking user: \(error)")
+            }
+        }
+    }
+    
+    
+    func setHasNewAcceptanceFalse(userId: String) async throws {
+        let userRef = userCollection.document(userId)
+        let snapshot = try await userRef.getDocument()
+        if snapshot.exists {
+            try await userRef.updateData([
+                "has_new_acceptance" : false
+            ])
+        }
     }
 }

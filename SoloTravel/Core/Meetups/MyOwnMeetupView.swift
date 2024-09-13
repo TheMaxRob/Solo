@@ -14,13 +14,27 @@ struct MyOwnMeetupView: View {
         NavigationStack {
             VStack {
                 Text("\(String(describing: meetup.title))")
+                    .foregroundStyle(.black)
                     .font(.headline)
+                    .fontWeight(meetup.hasNewMember ?? false ? .bold : .regular)
                 Text("\(formatDayAndTime(date: meetup.meetTime ?? Date()))")
+                    .fontWeight(meetup.hasNewMember ?? false ? .bold : .regular)
+                    .foregroundStyle(.black)
+                    .font(.footnote)
+                Text(((meetup.country?.isEmpty) == nil) ? "\(meetup.city ?? "") \(meetup.country ?? "")" : "\(meetup.city ?? "")")
+                    .fontWeight(meetup.hasNewMember ?? false ? .bold : .regular)
+                    .font(.footnote)
+                    .foregroundStyle(.black)
+                if meetup.hasNewMember ?? false {
+                    Circle()
+                        .fill(Color.blue)
+                        .frame(width: 10, height: 10)
+
+                }
             }
             .padding(.horizontal, 50)
             .padding(.vertical)
             .frame(width: 350)
-            //.background(.yellow)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .shadow(radius: 10, x: 3, y: 5)
         }

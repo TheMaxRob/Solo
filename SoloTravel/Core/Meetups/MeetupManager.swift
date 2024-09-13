@@ -233,33 +233,37 @@ final class MeetupManager {
     
     
     func acceptUserToMeetup(meetupId: String, userId: String) async throws {
-        print("acceptUserToMeetup")
-        // Move user from pending to accepted
-        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
-            let meetupSnapshot = try await meetupRef.getDocument()
-            if meetupSnapshot.exists {
-                try await meetupRef.updateData([
-                    "pending_users" : FieldValue.arrayRemove([userId]),
-                    "attendees": FieldValue.arrayUnion([userId])
+            print("acceptUserToMeetup")
+        
+            // Move user from pending to accepted
+            if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+                let meetupSnapshot = try await meetupRef.getDocument()
+                if meetupSnapshot.exists {
+                    try await meetupRef.updateData([
+                        Meetup.CodingKeys.pendingUsers.rawValue : FieldValue.arrayRemove([userId]),
+                        Meetup.CodingKeys.attendees.rawValue : FieldValue.arrayUnion([userId]),
+                    ])
+                } else {
+                    print("meetupRef does not exist – acceptUserToMeetup()")
+                }
+            }
+            
+            // Move meetup from requested to upcoming
+            let userRef = db.collection("users").document(userId)
+            let userSnapshot = try await userRef.getDocument()
+            if userSnapshot.exists {
+                try await userRef.updateData([
+                    DBUser.CodingKeys.rsvpRequests.rawValue : FieldValue.arrayRemove([meetupId]),
+                    DBUser.CodingKeys.rsvpMeetups.rawValue : FieldValue.arrayUnion([meetupId]),
+                    "has_new_acceptance" : true
                 ])
             } else {
-                print("meetupRef does not exist – acceptUserToMeetup()")
+                print("userRef does not exist – acceptUserToMeetup()")
             }
-        }
         
-        
-        // Move meetup from requested to upcoming
-        let userRef = db.collection("users").document(userId)
-        let userSnapshot = try await userRef.getDocument()
-        if userSnapshot.exists {
-            try await userRef.updateData([
-                "rsvp_requests" : FieldValue.arrayRemove([meetupId]),
-                "rsvp_meetups" : FieldValue.arrayUnion([meetupId])
-            ])
-        } else {
-            print("userRef does not exist – acceptUserToMeetup()")
         }
-    }
+
+
     
     
     func declineUserToMeetup(meetupId: String, userId: String) async throws {
@@ -312,18 +316,41 @@ final class MeetupManager {
     }
 
     
-    
+    // Add a user to pending
     func addPendingUser(meetupId: String, userId: String) async throws {
+        // Update meetup data
         if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
             let snapshot = try await meetupRef.getDocument()
             if snapshot.exists {
                 try await meetupRef.updateData([
-                    "pending_users": FieldValue.arrayUnion([userId])
+                    Meetup.CodingKeys.pendingUsers.rawValue : FieldValue.arrayUnion([userId]),
+                    "has_new_member" : true
                 ])
+                
+                let organizerId = snapshot.data()?[Meetup.CodingKeys.organizerId.rawValue] as? String
+                
+                // Inform user that they have a new request
+                if (organizerId != nil) {
+                    let userRef = db.collection("users").document(organizerId ?? "")
+                    let userSnapshot = try await userRef.getDocument()
+                    if userSnapshot.exists {
+                        try await userRef.updateData([
+                            DBUser.CodingKeys.hasNewRequest.rawValue : true
+                        ])
+                    } else {
+                        print("Could not find user document in addPendingUser")
+                    }
+                } else {
+                    print("organizerId not found")
+                }
             } else {
                 print("Could not addPendingUser.")
             }
         }
+        
+        
+        // Inform organizer that they have a new rsvp request
+        
     }
     
     
@@ -415,6 +442,33 @@ final class MeetupManager {
             try await userRef.updateData([
                 "rsvp_requests" : FieldValue.arrayRemove([meetupId])
             ])
+        }
+    }
+    
+     
+    // On host end – get rid of notifications
+    func setNoNewMembers(meetupId: String, userId: String) async throws {
+        if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
+            let snapshot = try await meetupRef.getDocument()
+            if snapshot.exists {
+                try await meetupRef.updateData([
+                    "has_new_member" : false
+                ])
+                print("has_new_member set to false")
+                
+                let userRef = db.collection("users").document(userId)
+                let userSnapshot = try await userRef.getDocument()
+                if userSnapshot.exists {
+                    try await userRef.updateData([
+                        "has_new_request" : false
+                    ])
+                }
+                
+            } else {
+                print("could not find meetup snapshot – setNoNewMembers")
+            }
+        } else {
+            print("Could not fetch meetupRef – setNoNewMembers")
         }
     }
 }

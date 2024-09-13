@@ -12,6 +12,7 @@ final class MeetupsViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
     @Published var meetups: [Meetup] = []
+    @Published var image: UIImage? = nil
     
     
     func loadCurrentUser() async throws {
@@ -24,6 +25,12 @@ final class MeetupsViewModel: ObservableObject {
         let unFilteredMeetups = try await MeetupManager.shared.fetchMeetups(country: country, city: city)
         meetups = MeetupManager.shared.filterMeetupsByTimeFrame(meetups: unFilteredMeetups, start: start, end: end)
     }
+    
+    
+    func loadImage(from url: String) async throws {
+        image = try await UserManager.shared.loadImage(from: url)
+    }
+
 }
 
 
@@ -44,11 +51,12 @@ struct MeetupsView: View {
                             MeetupView(meetup: meetup)
                             Divider()
                         }
-                       
                     }
                 }
                 .scrollContentBackground(.hidden)
                 .listStyle(PlainListStyle())
+                
+                Spacer()
             }
             .navigationTitle("\(city) Meetups")
             .toolbar {
@@ -58,7 +66,6 @@ struct MeetupsView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-
                 }
             }
         }

@@ -14,21 +14,34 @@ struct ChatView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Divider().frame(height: 3)
-
-                    ScrollView {
-                        VStack {
-                            ForEach(viewModel.conversation.messages ?? []) { message in
-                                MessageBubbleView(
-                                    text: message.content,
-                                    isCurrentUser: message.senderId == viewModel.user?.userId
-                                )
-                            }
+            VStack(spacing: 0) {
+                // Custom top bar
+                VStack {
+                    Spacer().frame(height: 55)
+                    if let otherUser = viewModel.other {
+                        UserPFPView(user: otherUser)
+                        Text("\(otherUser.firstName ?? "") \(otherUser.lastName ?? "")")
+                            .font(.headline)
+                    }
+                }
+                .frame(height: 150)
+                .background(Color(.systemBackground))
+                
+                Divider()
+                
+                ScrollView {
+                    VStack {
+                        ForEach(viewModel.conversation.messages ?? []) { message in
+                            MessageBubbleView(
+                                text: message.content,
+                                isCurrentUser: message.senderId == viewModel.user?.userId
+                            )
                         }
                     }
-                    .padding(.horizontal)
-                    
+                }
+                .padding(.horizontal)
+                
+                if viewModel.canSendMessage() {
                     HStack {
                         TextField("Message", text: $messageText)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -38,7 +51,6 @@ struct ChatView: View {
                                 if viewModel.user == nil {
                                     print("User == nil")
                                     try await viewModel.loadCurrentUser()
-                                    
                                 }
                                 try await viewModel.sendMessage(
                                     to: conversationId,
@@ -54,43 +66,31 @@ struct ChatView: View {
                         .padding(.leading, 8)
                     }
                     .padding()
-                    
-                }
-            .padding(.top, 45)
-            }
-            .onAppear {
-                Task {
-                    try await viewModel.loadCurrentUser()
-                    print("conversationId on load: \(conversationId)")
-                    viewModel.conversation = try await viewModel.fetchConversation(conversationId: conversationId) ?? Conversation(userIds: [], lastMessage: "", createdDate: Date())
-                    try await viewModel.fetchMessages(conversationId: conversationId)
+                } else {
+                    Text("You cannot send messages to this user.")
+                        .font(.footnote)
                 }
             }
-            .onDisappear {
-                if (viewModel.conversation.messages == nil) {
-                    Task { try await viewModel.deleteConversation(conversationId: conversationId) }
-                }
-                // Task { try await viewModel.setMessagesRead(conversationId: conversationId) }
-            }
-            .navigationTitle("")
-            .navigationBarTitleDisplayMode(.inline)
-
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                        VStack(alignment: .center) {
-                            if let otherUser = viewModel.other {
-                                UserPFPView(user: otherUser)
-                                Text("\(otherUser.firstName ?? "") \(otherUser.lastName ?? "")")
-                            }
-                        }
-                        .padding(.top, 40)
-                }
+            .edgesIgnoringSafeArea(.top)
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            Task {
+                try await viewModel.loadCurrentUser()
+                print("conversationId on load: \(conversationId)")
+                viewModel.conversation = try await viewModel.fetchConversation(conversationId: conversationId) ?? Conversation(userIds: [], lastMessage: "", createdDate: Date())
+                try await viewModel.fetchMessages(conversationId: conversationId)
             }
         }
+        .onDisappear {
+            if (viewModel.conversation.messages == nil) {
+                Task { try await viewModel.deleteConversation(conversationId: conversationId) }
+            }
+            // Task { try await viewModel.setMessagesRead(conversationId: conversationId) }
+        }
     }
-
+}
 
 #Preview {
     ChatView(conversationId: "")
 }
-

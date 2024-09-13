@@ -48,33 +48,43 @@ struct ProfileView: View {
                             .shadow(radius: 5)
                     }
                     
-                    
-                    
                     Text("\(viewModel.user?.firstName ?? "") \(viewModel.user?.lastName ?? "")")
                         .font(.title)
                         .fontWeight(.bold)
                 }
                 
                 VStack {
+                    // My Meetups
                     NavigationLink {
                         MyMeetupsView(user: viewModel.user ?? DBUser(userId: ""))
                     } label: {
-                        ProfileListItem(text: "My Meetups")
+                        ProfileListItem(
+                            text: "My Meetups",
+                            isHighlighted: viewModel.user?.hasNewRequest == true
+                        )
                     }
+                    .font(viewModel.user?.hasNewRequest == true ? .system(size: 18, weight: .bold) : .system(size: 16))
+
+                    // Upcoming Meetups
                     NavigationLink {
                         UpcomingMeetupsView(user: viewModel.user ?? DBUser(userId: ""))
                     } label: {
-                        ProfileListItem(text: "Upcoming Meetups")
+                        ProfileListItem(
+                            text: "Upcoming Meetups",
+                            isHighlighted: viewModel.user?.hasNewAcceptance == true
+                        )
                     }
+                    .font(viewModel.user?.hasNewAcceptance == true ? .system(size: 18, weight: .bold) : .system(size: 16))
+
                     NavigationLink {
                         BookmarkedMeetupsView(user: viewModel.user ?? DBUser(userId: ""))
                     } label: {
-                        ProfileListItem(text: "Boomarked Meetups")
-                    }               
+                        ProfileListItem(text: "Bookmarked Meetups", isHighlighted: false)
+                    }
                     NavigationLink {
                         PublicProfileView(userId: viewModel.user?.userId ?? "")
                     } label: {
-                        ProfileListItem(text: "My Public Profile")
+                        ProfileListItem(text: "My Public Profile", isHighlighted: false)
                     }
                     Divider()
                         .padding(8)
@@ -104,13 +114,12 @@ struct ProfileView: View {
                 }
             }
             .frame(width: 400)
-            //.background(.yellow)
             .navigationTitle("Profile")
             .onAppear {
                 Task {
                     do {
                         try await viewModel.loadCurrentUser()
-                        print("User loaded")
+                        print("User loaded: \(viewModel.user) ")
                         if let photoURL = viewModel.user?.photoURL, !photoURL.isEmpty {
                             try await viewModel.loadImage(from: photoURL)
                             print("Profile image loaded")
@@ -126,7 +135,7 @@ struct ProfileView: View {
         }
     }
 }
-    
+
     private func stripTime(from originalDate: Date) -> Date {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
@@ -145,6 +154,7 @@ struct ProfileView: View {
 
 struct ProfileListItem: View {
     var text: String
+    var isHighlighted: Bool
 
     var body: some View {
         ZStack {
@@ -153,6 +163,7 @@ struct ProfileListItem: View {
                     .padding(8)
                 Text(text)
                     .foregroundStyle(.black)
+                    .fontWeight(isHighlighted ? .bold : .regular)
                     
             }
             .frame(maxWidth: .infinity)
@@ -161,7 +172,7 @@ struct ProfileListItem: View {
 }
 
 #Preview {
-    ProfileListItem(text: "Example Text")
+    ProfileListItem(text: "Example Text", isHighlighted: false)
         .previewLayout(.sizeThatFits)
         .padding()
 }

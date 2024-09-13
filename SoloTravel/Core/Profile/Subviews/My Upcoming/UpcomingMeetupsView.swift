@@ -43,24 +43,30 @@ struct UpcomingMeetupsView: View {
                     }
                 }
                 .padding()
-                //.background(.yellow)
                 .navigationTitle("Upcoming Meetups")
                 .onAppear {
                     Task {
+                        // Reset the meetups to avoid duplication
+                        viewModel.acceptedMeetups = []
+                        viewModel.requestedMeetups = []
+                        
+                        try await viewModel.loadCurrentUser()
                         try await viewModel.getAcceptedMeetups(meetupIds: user.rsvpMeetups ?? [])
                         try await viewModel.getRequestedMeetups(meetupIds: user.rsvpRequests ?? [])
+                        try await viewModel.setHasNewAcceptanceFalse(userId: user.userId)
                     }
                 }
+
                 if viewModel.isShowingUpcoming {
-                    if viewModel.acceptedMeetups.count > 0 {
                         ForEach(viewModel.acceptedMeetups) { meetup in
                             NavigationLink {
                                 OtherAttendeesView(meetup: meetup)
                             } label: {
-                                UpcomingMeetupView(viewModel: viewModel, meetup: meetup)
+                                UpcomingMeetupView(viewModel: viewModel, meetup: meetup, hostId: meetup.organizerId ?? "")
                             }
+                            Spacer()
                         }
-                    } else {
+                    if (viewModel.acceptedMeetups.count < 1) {
                         Spacer()
                         Text("You aren't going to any meetups yet.")
                         Spacer()
@@ -70,6 +76,7 @@ struct UpcomingMeetupsView: View {
                     ForEach(viewModel.requestedMeetups) { meetup in
                         RequestedMeetupView(viewModel: viewModel, meetup: meetup)
                     }
+                    Spacer()
                 } else {
                         Spacer()
                         Text("No RSVP Requests.")

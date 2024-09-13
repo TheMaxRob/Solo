@@ -7,9 +7,8 @@
 
 import SwiftUI
 
+@MainActor
 final class UpcomingMeetupsViewModel: ObservableObject {
-    
-    
     @Published var isShowingUpcoming = true
     @Published var isShowingRequested = false
     @Published private(set) var user: DBUser? = nil
@@ -18,13 +17,20 @@ final class UpcomingMeetupsViewModel: ObservableObject {
     @Published var acceptedMeetups: [Meetup] = []
     @Published var requestedMeetups: [Meetup] = []
     
+    
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
         self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
     }
     
     
+    func setHasNewAcceptanceFalse(userId: String) async throws {
+        try await UserManager.shared.setHasNewAcceptanceFalse(userId: userId)
+    }
+    
+    
     func getHost(userId: String) async throws {
+        print("getHost called with \(userId)")
         host = try await UserManager.shared.getUser(userId: userId)
     }
     
@@ -56,6 +62,8 @@ final class UpcomingMeetupsViewModel: ObservableObject {
         for meetupId in meetupIds {
             try await requestedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "", description: "", meetTime: Date(), city: "", country: "", createdDate: Date(), organizerId: "", meetSpot: "", attendees: [], pendingUsers: [], imageURL: ""))
         }
+        
+        print("requestedMeetups: \(requestedMeetups)")
     }
     
     

@@ -38,6 +38,7 @@ struct SoloTabView: View {
                 .tabItem {
                     Label("Profile", systemImage: "person.crop.circle.fill")
                 }
+                .badge(viewModel.user.hasNewRequest ?? false || viewModel.user.hasNewAcceptance ?? false ? "" : nil)
         }
         .tint(.blue)
         .onAppear {
