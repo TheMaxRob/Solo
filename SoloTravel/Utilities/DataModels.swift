@@ -51,6 +51,7 @@ struct Meetup: Identifiable, Codable, Equatable {
     let attendees: [String]?
     let pendingUsers: [String]?
     let imageURL: String?
+    let hasNewMember: Bool?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -65,6 +66,7 @@ struct Meetup: Identifiable, Codable, Equatable {
         case attendees = "attendees"
         case pendingUsers = "pending_users"
         case imageURL = "image_url"
+        case hasNewMember = "has_new_member"
     }
     
     init(title: String?,
@@ -93,6 +95,7 @@ struct Meetup: Identifiable, Codable, Equatable {
         self.attendees = []
         self.pendingUsers = []
         self.imageURL = imageURL ?? ""
+        self.hasNewMember = false
     }
     
     init(from decoder: Decoder) throws {
@@ -109,6 +112,7 @@ struct Meetup: Identifiable, Codable, Equatable {
         self.attendees = try container.decodeIfPresent([String].self, forKey: .attendees)
         self.pendingUsers = try container.decodeIfPresent([String].self, forKey: .pendingUsers)
         self.imageURL = try container.decodeIfPresent(String.self, forKey: .imageURL)
+        self.hasNewMember = try container.decodeIfPresent(Bool.self, forKey: .hasNewMember)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -124,6 +128,7 @@ struct Meetup: Identifiable, Codable, Equatable {
         try container.encodeIfPresent(attendees, forKey: .attendees)
         try container.encodeIfPresent(pendingUsers, forKey: .pendingUsers)
         try container.encodeIfPresent(imageURL, forKey: .imageURL)
+        try container.encodeIfPresent(hasNewMember, forKey: .hasNewMember)
     }
 }
 
@@ -204,6 +209,10 @@ struct DBUser: Codable, Identifiable {
     let age: String?
     let bio: String?
     var hasUnreadMessages: Bool?
+    var blockedUsers: [String]?
+    var blockedBy: [String]?
+    var hasNewAcceptance: Bool?
+    var hasNewRequest: Bool?
     
     
     init(auth: AuthDataResultModel) {
@@ -252,6 +261,10 @@ struct DBUser: Codable, Identifiable {
         self.age = age
         self.bio = bio
         self.hasUnreadMessages = false
+        self.blockedUsers = []
+        self.blockedBy = []
+        self.hasNewAcceptance = false
+        self.hasNewRequest = false
     }
     
     enum CodingKeys: String, CodingKey {
@@ -269,6 +282,10 @@ struct DBUser: Codable, Identifiable {
         case age = "age"
         case bio = "bio"
         case hasUnreadMessages = "has_unread_messages"
+        case blockedUsers = "blocked_users"
+        case blockedBy = "blocked_by"
+        case hasNewAcceptance = "has_new_acceptance"
+        case hasNewRequest = "has_new_request"
     }
     
     
@@ -288,6 +305,10 @@ struct DBUser: Codable, Identifiable {
         self.age = try container.decodeIfPresent(String.self, forKey: .age)
         self.bio = try container.decodeIfPresent(String.self, forKey: .bio)
         self.hasUnreadMessages = try container.decodeIfPresent(Bool.self, forKey: .hasUnreadMessages)
+        self.blockedUsers = try container.decodeIfPresent([String].self, forKey: .blockedUsers)
+        self.blockedBy = try container.decodeIfPresent([String].self, forKey: .blockedBy)
+        self.hasNewAcceptance = try container.decodeIfPresent(Bool.self, forKey: .hasNewAcceptance)
+        self.hasNewRequest = try container.decodeIfPresent(Bool.self, forKey: .hasNewRequest)
     }
     
     
@@ -307,6 +328,10 @@ struct DBUser: Codable, Identifiable {
         try container.encodeIfPresent(self.age, forKey: .age)
         try container.encodeIfPresent(self.bio, forKey: .bio)
         try container.encodeIfPresent(self.hasUnreadMessages, forKey: .hasUnreadMessages)
+        try container.encodeIfPresent(self.blockedUsers, forKey: .blockedUsers)
+        try container.encodeIfPresent(self.blockedBy, forKey: .blockedBy)
+        try container.encodeIfPresent(self.hasNewAcceptance, forKey: .hasNewAcceptance)
+        try container.encodeIfPresent(self.hasNewRequest, forKey: .hasNewRequest)
     }
     
 }

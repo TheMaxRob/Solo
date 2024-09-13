@@ -15,6 +15,7 @@ final class PublicProfileViewModel: ObservableObject {
     @Published var isShowingPersonalMessageView = false
     @Published var conversationId: String?
     
+    
     func loadImage(from url: String) async throws {
         meetupImage = try await UserManager.shared.loadImage(from: url)
     }
@@ -33,17 +34,34 @@ final class PublicProfileViewModel: ObservableObject {
     
     
     func createConversation(with profileId: String) async throws -> String? {
-        guard let user else { return nil }
+        print("createConversation in PFPViewModel")
+        guard let user else { 
+            print("guard let user failed")
+            return nil
+        }
         
         if (user.userId == profileId) {
             print("Cannot create chat with yourself.")
             return nil
         } else {
+            print("createConversation auth passed – passing to Manager")
             let userIds = [user.userId, profileId]
             let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
             isShowingPersonalMessageView = true
             return conversationId
         }
+    }
+    
+    
+    func blockUser(userId: String, blockedUser: String) async throws {
+        print("blockUser called")
+        try await UserManager.shared.blockUser(userId: userId, blockedUser: blockedUser)
+    }
+    
+    
+    func unblockUser(userId: String, unblockedUser: String) async throws {
+        print("unblockUser called")
+        try await UserManager.shared.unblockUser(userId: userId, blockedUser: unblockedUser)
     }
     
 }

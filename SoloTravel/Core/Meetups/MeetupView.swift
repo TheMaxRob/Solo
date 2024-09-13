@@ -21,13 +21,17 @@ final class MeetupViewModel: ObservableObject {
     
     
     func getHost(userId: String) async throws {
-        host = try await UserManager.shared.getUser(userId: userId)
-    }
-    
-    func loadImage(from url: String) async throws {
-        profileImage = try await UserManager.shared.loadImage(from: url)
-        print("loaded Image")
-    }
+            host = try await UserManager.shared.getUser(userId: userId)
+            // Load image after host is set
+            if let photoURL = host.photoURL, !photoURL.isEmpty {
+                try await loadImage(from: photoURL)
+            }
+        }
+        
+        func loadImage(from url: String) async throws {
+            profileImage = try await UserManager.shared.loadImage(from: url)
+            print("loaded Image")
+        }
 }
 
 
@@ -37,45 +41,44 @@ struct MeetupView: View {
     var meetup: Meetup
     
     var body: some View {
-        NavigationStack {
-            HStack {
-                NavigationLink {
-                    PublicProfileView(userId: viewModel.host.userId)
-                } label: {
-                    UserPFPView(user: viewModel.host)
-                }
-                Spacer()
-                VStack {
-                    Text("\(String(describing: meetup.title))")
-                        .font(.headline)
-                    Text("\(formatDayAndTime(date: meetup.meetTime ?? Date()))")
-                }
-                
+        HStack {
+            // Show profile image when loaded
+            if let profileImage = viewModel.profileImage {
+                Image(uiImage: profileImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipShape(Circle())
+                    .shadow(radius: 5)
+            } else {
+                UserPFPView(user: viewModel.host)
             }
-            .padding(.horizontal, 30)
-            .padding(.vertical)
-           .frame(width: 350)
-            .clipShape(RoundedRectangle(cornerRadius: 15))
-            .shadow(radius: 10, x: 3, y: 5)
-            .onAppear {
-                Task {
-                    try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
-                    try await viewModel.loadImage(from: viewModel.host.photoURL ?? "")
-                }
+            
+            Spacer()
+            
+            VStack {
+                Text(meetup.title)
+                    .font(.headline)
+                Text(formatDayAndTime(date: meetup.meetTime ?? Date()))
             }
         }
-        
+        .padding(.horizontal, 30)
+        .padding(.vertical)
+        .frame(width: 350)
+        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .shadow(radius: 10, x: 3, y: 5)
+        .onAppear {
+            Task {
+                try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
+            }
+        }
     }
     
     private func formatDayAndTime(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEE, MMM d, yyyy h:mm a"
-        
         return formatter.string(from: date)
     }
-    
-    
-    
 }
 
 #Preview {

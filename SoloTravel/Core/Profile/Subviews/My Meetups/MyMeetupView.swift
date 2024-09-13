@@ -45,12 +45,11 @@ struct MyMeetupView: View {
                         }
                     }
                 }
-                .padding()
                 
                 
                 if viewModel.isShowingAttendeesView {
                     if viewModel.attendees.count > 0 {
-                        VStack {
+                        ScrollView {
                             ForEach(viewModel.attendees) { attendee in
                                 AcceptedUserCellView(viewModel: viewModel, user: attendee, meetupId: meetup.id)
                                     .overlay(Button {
@@ -60,10 +59,14 @@ struct MyMeetupView: View {
                                     } label: {
                                         Image(systemName: "xmark")
                                     }
-                                    .padding(5)
+                                    .padding(.horizontal, 5)
                                     .buttonStyle(BorderlessButtonStyle()),
                                     alignment: .topTrailing)
+                                
+                                Divider()
+                                    .padding(.top, -15)
                             }
+                            Spacer()
                         }
                     } else {
                         Spacer()
@@ -86,11 +89,12 @@ struct MyMeetupView: View {
                 }
                    
             }
-            
             .frame(width: 350)
             // .background(Color.yellow.edgesIgnoringSafeArea(.all))
             .onAppear {
                 Task {
+                    try await viewModel.loadCurrentUser()
+                    try await viewModel.setNoNewMembers(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
                     try await viewModel.loadAttendees(userIds: meetup.attendees ?? [])
                     try await viewModel.loadPendingUsers(userIds: meetup.pendingUsers ?? [])
                 }
@@ -204,7 +208,6 @@ struct AcceptedUserCellView: View {
                         .foregroundStyle(.black)
                 }
             }
-            .padding()
             .frame(width: 345, height: 130)
             //.background(.yellow)
             .shadow(radius: 5, x: 3, y: 3)

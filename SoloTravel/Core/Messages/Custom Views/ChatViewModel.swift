@@ -18,6 +18,17 @@ final class ChatViewModel: ObservableObject {
     @Published var isLoadingUsers: Bool = true
     
     
+    func canSendMessage() -> Bool {
+        guard let user = user, let other = other else {
+            return false
+        }
+        
+        let isBlockedByOther = other.blockedUsers?.contains(user.userId)
+        let hasBlockedOther = user.blockedUsers?.contains(other.userId)
+        
+        return !(isBlockedByOther == true || hasBlockedOther == true)
+    }
+    
     
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()

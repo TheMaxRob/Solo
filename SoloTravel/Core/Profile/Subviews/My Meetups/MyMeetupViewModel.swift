@@ -14,7 +14,15 @@ final class MyMeetupViewModel: ObservableObject {
     @Published var pendingUsers: [DBUser] = []
     @Published var attendees: [DBUser] = []
     @Published var profileImage: UIImage? = nil
+    @Published var user: DBUser? = nil
     
+    
+    func loadCurrentUser() async throws {
+        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+        print("authDataResult created")
+        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+    }
+
     func loadPendingUsers(userIds: [String]) async throws {
         if userIds.isEmpty { return }
         for userId in userIds {
@@ -62,5 +70,11 @@ final class MyMeetupViewModel: ObservableObject {
         if let index = attendees.firstIndex(where: { $0.userId == userId }) {
                attendees.remove(at: index)
            }
+    }
+    
+    
+    func setNoNewMembers(meetupId: String, userId: String) async throws {
+        print("viewModel setNoNewMembers: \(meetupId)")
+        try await MeetupManager.shared.setNoNewMembers(meetupId: meetupId, userId: userId)
     }
 }
