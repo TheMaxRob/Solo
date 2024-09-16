@@ -2,7 +2,7 @@
 //  UpcomingMeetupView.swift
 //  SoloTravel
 //
-//  Created by Max Roberts on 7/9/24.
+//  Created by/Users/themaxroberts/Desktop/CS Projects/Solo/SoloTravel/Core/Profile/Subviews/My Upcoming/RequestedMeetupView.swift Max Roberts on 7/9/24.
 //
 
 import SwiftUI
@@ -13,6 +13,7 @@ struct UpcomingMeetupView: View {
     var viewModel: UpcomingMeetupsViewModel
     var meetup: Meetup
     var hostId: String
+    @State private var isErrorAlertPresented = false
     
     var body: some View {
         NavigationStack {
@@ -34,9 +35,13 @@ struct UpcomingMeetupView: View {
             .shadow(radius: 10, x: 3, y: 5)
             .onAppear {
                 Task {
-                    try await viewModel.loadCurrentUser()
-                    try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
-                    try await viewModel.loadImage(from: viewModel.host.photoURL ?? "")
+                    do {
+                        try await viewModel.loadCurrentUser()
+                        try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
+                        try await viewModel.loadImage(from: viewModel.host.photoURL ?? "")
+                    } catch {
+                        isErrorAlertPresented = true
+                    }
                 }
             }
             .overlay(Button {
@@ -47,6 +52,9 @@ struct UpcomingMeetupView: View {
                 Image(systemName: "xmark")
                     .foregroundStyle(.red)
             }.padding(), alignment: .topTrailing)
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
+            }
         }
         
     }

@@ -13,10 +13,15 @@ final class MeetupDetailsViewModel: ObservableObject {
     @Published var host: DBUser? = nil
     @Published var isShowingPersonalMessageView = false
     @Published var image: UIImage? = nil
+    @Published var errorMessage: String? = nil
     
     func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        do {
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+        } catch {
+            errorMessage = "Error loading your account."
+        }
     }
     
     
@@ -39,7 +44,7 @@ final class MeetupDetailsViewModel: ObservableObject {
                 do {
                     try await UserManager.shared.requestRSVP(userId: user.userId, meetupId: meetup.id)
                 } catch {
-                    print("Error RSVPing to Meetup!")
+                    errorMessage = "Error RSVPing to meetup."
                 }
             }
         }
@@ -53,16 +58,25 @@ final class MeetupDetailsViewModel: ObservableObject {
             print("Cannot create chat with yourself.")
             return nil
         } else {
-            let userIds = [user.userId, organizerId]
-            let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
-            isShowingPersonalMessageView = true
-            return conversationId
+            do {
+                let userIds = [user.userId, organizerId]
+                let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
+                isShowingPersonalMessageView = true
+                return conversationId
+            } catch {
+                errorMessage = "Error creating conversation."
+                return ""
+            }
         }
     }
     
     
     func getHost(userId: String) async throws {
-        host = try await UserManager.shared.getUser(userId: userId)
+        do {
+            host = try await UserManager.shared.fetchUser(userId: userId)
+        } catch {
+            errorMessage = "Error fetching user's profile."
+        }
     }
     
 }

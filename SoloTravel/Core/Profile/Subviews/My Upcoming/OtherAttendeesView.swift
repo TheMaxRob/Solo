@@ -14,7 +14,7 @@ final class OtherAttendeesViewModel: ObservableObject {
     func getOtherAttendees(userIds: [String]) async throws {
         print("UserIds: \(userIds)")
         for userId in userIds {
-            attendees.append(try await UserManager.shared.getUser(userId: userId))
+            attendees.append(try await UserManager.shared.fetchUser(userId: userId))
         }
     }
 }

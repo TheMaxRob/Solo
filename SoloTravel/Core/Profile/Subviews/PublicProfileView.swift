@@ -16,6 +16,7 @@ struct PublicProfileView: View {
     @State private var alertMessage = ""
     @State private var didBlockUser = false
     @State private var showBlockAlert = false
+    @State private var isErrorAlertPresented = false
     private var isBlocked: Bool {
         viewModel.user?.blockedUsers?.contains(viewModel.profileUser?.userId ?? "") == true ||
         viewModel.user?.blockedBy?.contains(viewModel.profileUser?.userId ?? "") == true
@@ -53,7 +54,11 @@ struct PublicProfileView: View {
                                 alertMessage = "You have been blocked by this user."
                                 showMessageAlert = true
                             } else {
-                                viewModel.conversationId = try await viewModel.createConversation(with: viewModel.profileUser?.userId ?? "")
+                                do {
+                                    viewModel.conversationId = try await viewModel.createConversation(with: viewModel.profileUser?.userId ?? "")
+                                } catch {
+                                    isErrorAlertPresented = true
+                                }
                             }
                         }
                         
@@ -97,11 +102,23 @@ struct PublicProfileView: View {
                                         primaryButton: .destructive(Text("Confirm")) {
                                             Task {
                                                 if (!isBlocked) {
-                                                    try await viewModel.blockUser(userId: viewModel.user?.userId ?? "", blockedUser: viewModel.profileUser?.userId ?? "")
+                                                    do {
+                                                        try await viewModel.blockUser(userId: viewModel.user?.userId ?? "", blockedUser: viewModel.profileUser?.userId ?? "")
+                                                    } catch {
+                                                        isErrorAlertPresented = true
+                                                    }
                                                 } else {
-                                                    try await viewModel.unblockUser(userId: viewModel.user?.userId ?? "", unblockedUser: viewModel.profileUser?.userId ?? "")
+                                                    do {
+                                                        try await viewModel.unblockUser(userId: viewModel.user?.userId ?? "", unblockedUser: viewModel.profileUser?.userId ?? "")
+                                                    } catch {
+                                                        isErrorAlertPresented = true
+                                                    }
                                                 }
-                                                try await viewModel.loadCurrentUser()
+                                                do {
+                                                    try await viewModel.loadCurrentUser()
+                                                } catch {
+                                                    isErrorAlertPresented = true
+                                                }
                                             }
                                         },
                                         secondaryButton: .cancel()
@@ -113,15 +130,21 @@ struct PublicProfileView: View {
                 }
                 .onAppear {
                     Task {
-                        try await viewModel.loadCurrentUser()
-                        print("userId passed to file: \(userId)")
-                        try await viewModel.getUser(userId: userId)
-                        try await viewModel.loadImage(from: viewModel.profileUser?.photoURL ?? "")
+                        do {
+                            try await viewModel.loadCurrentUser()
+                            try await viewModel.getUser(userId: userId)
+                            try await viewModel.loadImage(from: viewModel.profileUser?.photoURL ?? "")
+                        } catch {
+                            isErrorAlertPresented = true
+                        }
                     }
                 }
                 .navigationDestination(isPresented: $viewModel.isShowingPersonalMessageView) {
                     ChatView(conversationId: viewModel.conversationId ?? "")
                 }
+            }
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
         }
         

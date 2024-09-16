@@ -16,11 +16,15 @@ final class UpcomingMeetupsViewModel: ObservableObject {
     @Published var profileImage: UIImage? = nil
     @Published var acceptedMeetups: [Meetup] = []
     @Published var requestedMeetups: [Meetup] = []
-    
+    @Published var errorMessage: String? = nil
     
     func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        do {
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+        } catch {
+            errorMessage = "Error loading your account."
+        }
     }
     
     
@@ -31,7 +35,11 @@ final class UpcomingMeetupsViewModel: ObservableObject {
     
     func getHost(userId: String) async throws {
         print("getHost called with \(userId)")
-        host = try await UserManager.shared.getUser(userId: userId)
+        do {
+            host = try await UserManager.shared.fetchUser(userId: userId)
+        } catch {
+            errorMessage = "Error fetching host's profile."
+        }
     }
     
     
@@ -41,36 +49,49 @@ final class UpcomingMeetupsViewModel: ObservableObject {
     
     
     func unRequest(meetupId: String, userId: String) async throws {
-        try await MeetupManager.shared.unRequest(meetupId: meetupId, userId: userId)
-        if let index = requestedMeetups.firstIndex(where: { $0.id == meetupId }) {
-            requestedMeetups.remove(at: index)
+        do {
+            try await MeetupManager.shared.unRequest(meetupId: meetupId, userId: userId)
+            if let index = requestedMeetups.firstIndex(where: { $0.id == meetupId }) {
+                requestedMeetups.remove(at: index)
+            }
+        } catch {
+            errorMessage = "Error removing RSVP request from meetup."
         }
     }
     
     
     func unRSVP(meetupId: String, userId: String) async throws {
-        print("unRSVP")
-        try await MeetupManager.shared.unRSVP(meetupId: meetupId, userId: userId)
-        if let index = acceptedMeetups.firstIndex(where: { $0.id == meetupId }) {
-            acceptedMeetups.remove(at: index)
+        do {
+            try await MeetupManager.shared.unRSVP(meetupId: meetupId, userId: userId)
+            if let index = acceptedMeetups.firstIndex(where: { $0.id == meetupId }) {
+                acceptedMeetups.remove(at: index)
+            }
+        } catch {
+            errorMessage = "Error removing RSVP from meetup."
         }
     }
     
     
     func getRequestedMeetups(meetupIds: [String]) async throws {
-        if meetupIds.isEmpty { return }
-        for meetupId in meetupIds {
-            try await requestedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "", description: "", meetTime: Date(), city: "", country: "", createdDate: Date(), organizerId: "", meetSpot: "", attendees: [], pendingUsers: [], imageURL: ""))
+        do {
+            if meetupIds.isEmpty { return }
+            for meetupId in meetupIds {
+                try await requestedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "", description: "", meetTime: Date(), city: "", country: "", createdDate: Date(), organizerId: "", meetSpot: "", attendees: [], pendingUsers: [], imageURL: ""))
+            }
+        } catch {
+            errorMessage = "Error fetching your RSVP requests."
         }
-        
-        print("requestedMeetups: \(requestedMeetups)")
     }
     
     
     func getAcceptedMeetups(meetupIds: [String]) async throws {
-        if meetupIds.isEmpty { return }
-        for meetupId in meetupIds {
-            try await acceptedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "", description: "", meetTime: Date(), city: "", country: "", createdDate: Date(), organizerId: "", meetSpot: "", attendees: [], pendingUsers: [], imageURL: ""))
+        do {
+            if meetupIds.isEmpty { return }
+            for meetupId in meetupIds {
+                try await acceptedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "", description: "", meetTime: Date(), city: "", country: "", createdDate: Date(), organizerId: "", meetSpot: "", attendees: [], pendingUsers: [], imageURL: ""))
+            }
+        } catch {
+            errorMessage = "Error fetching your upcoming meetups."
         }
     }
 }

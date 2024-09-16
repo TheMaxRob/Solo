@@ -51,7 +51,6 @@ struct OtherUserCellView: View {
             //.background(.yellow)
             .shadow(radius: 5, x: 3, y: 3)
             .onAppear {
-                print("Other User Cell View Appeared!")
                 Task { try await viewModel.loadImage(from: user.photoURL ?? "") }
             }
         }

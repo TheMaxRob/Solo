@@ -15,18 +15,26 @@ final class MyMeetupViewModel: ObservableObject {
     @Published var attendees: [DBUser] = []
     @Published var profileImage: UIImage? = nil
     @Published var user: DBUser? = nil
+    @Published var errorMessage: String? = nil
     
     
     func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        print("authDataResult created")
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        do {
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+        } catch {
+            errorMessage = "Error loading your profile."
+        }
     }
 
     func loadPendingUsers(userIds: [String]) async throws {
-        if userIds.isEmpty { return }
-        for userId in userIds {
-            try await pendingUsers.append(UserManager.shared.getUser(userId: userId))
+        do {
+            if userIds.isEmpty { return }
+            for userId in userIds {
+                try await pendingUsers.append(UserManager.shared.fetchUser(userId: userId))
+            }
+        } catch {
+            errorMessage = "Error fetching RSVP requests to this meetup."
         }
     }
     
@@ -38,38 +46,51 @@ final class MyMeetupViewModel: ObservableObject {
     
     
     func loadAttendees(userIds: [String]) async throws {
-        if userIds.isEmpty { return }
-        for userId in userIds {
-            try await attendees.append(UserManager.shared.getUser(userId: userId))
+        do {
+            if userIds.isEmpty { return }
+            for userId in userIds {
+                try await attendees.append(UserManager.shared.fetchUser(userId: userId))
+            }
+        } catch {
+            errorMessage = "Error loading meetup attendees."
         }
     }
     
     
     func acceptRSVP(meetupId: String, userId: String) async throws {
-        print("acceptRSVP")
-        if let index = pendingUsers.firstIndex(where: { $0.userId == userId }) {
-               pendingUsers.remove(at: index)
-           }
-        try await MeetupManager.shared.acceptUserToMeetup(meetupId: meetupId, userId: userId)
-        attendees.append(try await UserManager.shared.getUser(userId: userId))
+        do {
+            if let index = pendingUsers.firstIndex(where: { $0.userId == userId }) {
+                   pendingUsers.remove(at: index)
+               }
+            try await MeetupManager.shared.acceptUserToMeetup(meetupId: meetupId, userId: userId)
+            attendees.append(try await UserManager.shared.fetchUser(userId: userId))
+        } catch {
+            errorMessage = "Error accepting RSVP to meetup."
+        }
     }
     
     
     func declineRSVP(meetupId: String, userId: String) async throws {
-        print("declineRSVP")
-        
-        try await MeetupManager.shared.declineUserToMeetup(meetupId: meetupId, userId: userId)
-        if let index = pendingUsers.firstIndex(where: { $0.userId == userId }) {
-               pendingUsers.remove(at: index)
-           }
+        do {
+            try await MeetupManager.shared.declineUserToMeetup(meetupId: meetupId, userId: userId)
+            if let index = pendingUsers.firstIndex(where: { $0.userId == userId }) {
+                   pendingUsers.remove(at: index)
+               }
+        } catch {
+            errorMessage = "Error declining RSVP request."
+        }
     }
     
     
     func removeUser(meetupId: String, userId: String) async throws {
-        try await MeetupManager.shared.removeUserFromMeetup(meetupId: meetupId, userId: userId)
-        if let index = attendees.firstIndex(where: { $0.userId == userId }) {
-               attendees.remove(at: index)
-           }
+        do {
+            try await MeetupManager.shared.removeUserFromMeetup(meetupId: meetupId, userId: userId)
+            if let index = attendees.firstIndex(where: { $0.userId == userId }) {
+                   attendees.remove(at: index)
+            }
+        } catch {
+            errorMessage = "Error removing user from meetup."
+        }
     }
     
     

@@ -17,6 +17,7 @@ final class EditUserProfileViewModel: ObservableObject {
     var bio: String = ""
     @Published var imageSelection: PhotosPickerItem? = nil
     @Published var selectedImage: UIImage? = nil
+    @Published var errorMessage: String? = nil
 
     
     func loadImage(from item: PhotosPickerItem?) async throws  -> UIImage? {
@@ -55,9 +56,13 @@ final class EditUserProfileViewModel: ObservableObject {
                     updateFields[DBUser.CodingKeys.photoURL.rawValue] = imageURL
                 }
                 if !updateFields.isEmpty {
-                    try await UserManager.shared.updateUserInformation(userId: userId, fields: updateFields)
+                    do {
+                        try await UserManager.shared.updateUserInformation(userId: userId, fields: updateFields)
+                    } catch {
+                        errorMessage = "There was a problem saving your new profile information. Please try again later."
+                    }
                 } else {
-                    print("No fields have been edited.")
+                    errorMessage = "Please edit a field to save your new profile information."
                 }
         
     }
@@ -73,6 +78,7 @@ struct EditUserProfileView: View {
     @StateObject var viewModel = EditUserProfileViewModel()
     var user: DBUser
     @State private var isImagePickerPresented = false
+    @State private var isErrorAlertPresented = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -116,8 +122,12 @@ struct EditUserProfileView: View {
                 
                 Button {
                     Task {
-                        try await viewModel.saveChanges(userId: user.userId)
-                        dismiss()
+                        do {
+                            try await viewModel.saveChanges(userId: user.userId)
+                            dismiss()
+                        } catch {
+                            isErrorAlertPresented = true
+                        }
                     }
                 } label: {
                     Text("Save Changes")

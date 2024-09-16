@@ -14,6 +14,7 @@ struct MyMeetupView: View {
     
     var meetup: Meetup
     @StateObject var viewModel = MyMeetupViewModel()
+    @State private var isErrorAlertPresented = false
     
     var body: some View {
         NavigationStack {
@@ -93,11 +94,18 @@ struct MyMeetupView: View {
             // .background(Color.yellow.edgesIgnoringSafeArea(.all))
             .onAppear {
                 Task {
-                    try await viewModel.loadCurrentUser()
-                    try await viewModel.setNoNewMembers(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
-                    try await viewModel.loadAttendees(userIds: meetup.attendees ?? [])
-                    try await viewModel.loadPendingUsers(userIds: meetup.pendingUsers ?? [])
+                    do {
+                        try await viewModel.loadCurrentUser()
+                        try await viewModel.setNoNewMembers(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
+                        try await viewModel.loadAttendees(userIds: meetup.attendees ?? [])
+                        try await viewModel.loadPendingUsers(userIds: meetup.pendingUsers ?? [])
+                    } catch {
+                        isErrorAlertPresented = true
+                    }
                 }
+            }
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
         }
     }

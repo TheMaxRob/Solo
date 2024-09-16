@@ -11,6 +11,7 @@ struct SettingsView: View {
     
     @StateObject private var viewModel = SettingsViewModel()
     @Binding var isNotAuthenticated: Bool
+    @State private var isErrorAlertPresented = false
     
     
     var body: some View {
@@ -22,9 +23,8 @@ struct SettingsView: View {
                             try viewModel.signOut()
                             isNotAuthenticated = true
                         } catch {
-                            print(error)
+                            isErrorAlertPresented = true
                         }
-                        
                     }
                 }
                 
@@ -32,9 +32,8 @@ struct SettingsView: View {
                     Task {
                         do {
                             try await viewModel.deleteUser()
-                            print("USER DELETED")
                         } catch {
-                            print(error)
+                            isErrorAlertPresented = true
                         }
                     }
                     isNotAuthenticated = true
@@ -42,6 +41,9 @@ struct SettingsView: View {
                     Text("Delete Account")
                 }
                 emailSection
+            }
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
             .navigationTitle("Settings")
         }
@@ -54,6 +56,8 @@ struct SettingsView: View {
 
 
 extension SettingsView {
+    
+    
     
     private var emailSection: some View {
         Section {
@@ -78,17 +82,6 @@ extension SettingsView {
                         print(error)
                     }
                 }
-            }
-            Button("Update Password") {
-                Task {
-                    do {
-                        try await viewModel.updatePassword()
-                        print("PASSWORD UPDATED")
-                    } catch {
-                        print(error)
-                    }
-                }
-                
             }
         } header: {
             Text("Email Section")

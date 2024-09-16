@@ -13,17 +13,26 @@ final class MeetupsViewModel: ObservableObject {
     @Published private(set) var user: DBUser? = nil
     @Published var meetups: [Meetup] = []
     @Published var image: UIImage? = nil
+    @Published var errorMessage: String? = nil
     
     
     func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        do {
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+        } catch {
+            errorMessage = "Error fetching your user profile."
+        }
     }
     
     
     func fetchMeetups(country: String, city: String, start: Date, end: Date) async throws {
-        let unFilteredMeetups = try await MeetupManager.shared.fetchMeetups(country: country, city: city)
-        meetups = MeetupManager.shared.filterMeetupsByTimeFrame(meetups: unFilteredMeetups, start: start, end: end)
+        do {
+            let unFilteredMeetups = try await MeetupManager.shared.fetchMeetups(country: country, city: city)
+            meetups = MeetupManager.shared.filterMeetupsByTimeFrame(meetups: unFilteredMeetups, start: start, end: end)
+        } catch {
+            errorMessage = "Error fetching meetups."
+        }
     }
     
     
@@ -36,6 +45,7 @@ final class MeetupsViewModel: ObservableObject {
 
 struct MeetupsView: View {
     @StateObject private var viewModel = MeetupsViewModel()
+    @State private var isErrorAlertPresented = false
     var city: String
     var country: String
     var start: Date
@@ -58,6 +68,9 @@ struct MeetupsView: View {
                 
                 Spacer()
             }
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
+            }
             .navigationTitle("\(city) Meetups")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -71,7 +84,11 @@ struct MeetupsView: View {
         }
         .onAppear {
             Task {
-                try await viewModel.fetchMeetups(country: country, city: city, start: start, end: end)
+                do {
+                    try await viewModel.fetchMeetups(country: country, city: city, start: start, end: end)
+                } catch {
+                    isErrorAlertPresented = true
+                }
             }
         }
     }

@@ -14,6 +14,8 @@ struct ProfileCreationView: View {
     @Binding var isShowingAccountCreationView: Bool
     @Binding var isNotAuthenticated: Bool
     @State private var isImagePickerPresented = false
+    @State private var showErrorAlert = false
+    
     
     var body: some View {
         NavigationStack {
@@ -75,19 +77,23 @@ struct ProfileCreationView: View {
                     }
                     .simultaneousGesture(TapGesture().onEnded {
                         Task {
-                            print("Task Entered")
                             do {
                                 try await viewModel.loadCurrentUser()
-                                print("User loaded")
                                 try await viewModel.saveUserProfile()
-                                print("UserProfile saved")
                             } catch {
-                                print("Error: \(error)")
+                                showErrorAlert = true
                             }
                         }
                     })
                     Spacer()
                 }
+            }
+            .alert(isPresented: $showErrorAlert) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(viewModel.errorMessage ?? "Something went wrong"),
+                    dismissButton: .default(Text("OK"))
+                )
             }
             .photosPicker(isPresented: $isImagePickerPresented, selection: $viewModel.imageSelection, matching: .images)
             .onChange(of: viewModel.imageSelection) { _, newSelection in

@@ -19,13 +19,18 @@ final class MeetupCreationViewModel: ObservableObject {
     @Published var country: String = ""
     @Published var imageSelection: PhotosPickerItem? = nil
     @Published var selectedImage: UIImage? = nil
+    @Published var errorMessage: String? = nil
     
     
     @Published private(set) var user: DBUser? = nil
     
     func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        do {
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+        } catch {
+            errorMessage = "Error loading your account."
+        }
     }
     
     
@@ -49,7 +54,7 @@ final class MeetupCreationViewModel: ObservableObject {
                 let newMeetup = Meetup(title: meetupTitle, description: meetupDescription, meetTime: meetTime, city: city, country: country, createdDate: createdDate, organizerId: user?.userId, meetSpot: meetSpot, attendees: [], pendingUsers: [], imageURL: imageURL)
                 try await UserManager.shared.createMeetup(userId: userId, meetup: newMeetup)
             } catch {
-                print("Error creating meetup: \(error)")
+                errorMessage = "Error creating meetup."
             }
         }
     }

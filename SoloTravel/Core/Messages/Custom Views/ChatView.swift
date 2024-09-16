@@ -10,7 +10,9 @@ import SwiftUI
 struct ChatView: View {
     @StateObject private var viewModel = ChatViewModel()
     @State private var messageText: String = ""
+    @State private var isErrorAlertPresented = false
     var conversationId: String
+    
     
     var body: some View {
         NavigationStack {
@@ -76,10 +78,14 @@ struct ChatView: View {
         .navigationBarHidden(true)
         .onAppear {
             Task {
-                try await viewModel.loadCurrentUser()
-                print("conversationId on load: \(conversationId)")
-                viewModel.conversation = try await viewModel.fetchConversation(conversationId: conversationId) ?? Conversation(userIds: [], lastMessage: "", createdDate: Date())
-                try await viewModel.fetchMessages(conversationId: conversationId)
+                do {
+                    try await viewModel.loadCurrentUser()
+                    print("conversationId on load: \(conversationId)")
+                    viewModel.conversation = try await viewModel.fetchConversation(conversationId: conversationId) ?? Conversation(userIds: [], lastMessage: "", createdDate: Date())
+                    try await viewModel.fetchMessages(conversationId: conversationId)
+                } catch {
+                    isErrorAlertPresented = true
+                }
             }
         }
         .onDisappear {
@@ -87,6 +93,9 @@ struct ChatView: View {
                 Task { try await viewModel.deleteConversation(conversationId: conversationId) }
             }
             // Task { try await viewModel.setMessagesRead(conversationId: conversationId) }
+        }
+        .alert(isPresented: $isErrorAlertPresented) {
+            Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
         }
     }
 }

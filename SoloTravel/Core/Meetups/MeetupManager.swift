@@ -12,7 +12,10 @@ import FirebaseFirestoreSwift
 
 final class MeetupManager {
     static let shared = MeetupManager()
-    private let db = Firestore.firestore()
+    // private let db = Firestore.firestore()
+    private let userCollection = Firestore.firestore().collection("users")
+    private let meetupsCollection = Firestore.firestore().collection("meetups")
+    private let meetupIndexCollection = Firestore.firestore().collection("meetup_index")
     
     static let cities = [
         "Barcelona, Spain", "Florence, Italy", "Lisbon, Portugal", "London, United Kingdom", "Madrid, Spain", "Nice, France", "Paris, Frace", "Porto, Lisbon,", "Rome, Italy", "Sevilla, Spain", "Valencia, Spain", "Venice, Italy"
@@ -34,24 +37,29 @@ final class MeetupManager {
     
     
     func addMeetup(meetup: Meetup) async throws {
-        print("meetup received by addMeetup in MeetupManager: \(meetup)")
-        let countryRef = db.collection("meetups").document(meetup.country ?? "")
-        let meetupRef = countryRef.collection(meetup.city ?? "").document(meetup.id)
-        let meetupData = try encoder.encode(meetup)
-        print("meetupData encoded: \(meetup)")
-        
-        try await meetupRef.setData(meetupData)
-        
-        let indexRef = db.collection("meetup_index").document(meetup.id)
-        try await indexRef.setData([
-            "country" : meetup.country ?? "",
-            "city" : meetup.city ?? ""
-        ])
+        do {
+            print("meetup received by addMeetup in MeetupManager: \(meetup)")
+            let countryRef = meetupsCollection.document(meetup.country ?? "")
+            let meetupRef = countryRef.collection(meetup.city ?? "").document(meetup.id)
+            let meetupData = try encoder.encode(meetup)
+            print("meetupData encoded: \(meetup)")
+            
+            try await meetupRef.setData(meetupData)
+            
+            let indexRef = meetupIndexCollection.document(meetup.id)
+            try await indexRef.setData([
+                "country" : meetup.country ?? "",
+                "city" : meetup.city ?? ""
+            ])
+        } catch {
+            print("Error adding meetup: \(error)")
+            throw error
+        }
     }
     
     
     func fetchMeetups(country: String, city: String) async throws -> [Meetup] {
-        let docRef = db.collection("meetups").document(country).collection(city)
+        let docRef = meetupsCollection.document(country).collection(city)
         let snapshot = try await docRef.getDocuments()
         do {
             let meetups: [Meetup] = try snapshot.documents.compactMap { document in
@@ -139,12 +147,12 @@ final class MeetupManager {
     }
     
     func getMeetupRefByIndex(meetupId: String) async throws -> DocumentReference? {
-        let indexRef = db.collection("meetup_index").document(meetupId)
+        let indexRef = meetupIndexCollection.document(meetupId)
         let indexSnapshot = try await indexRef.getDocument()
         if let indexData = indexSnapshot.data() {
             if let country = indexData["country"] as? String,
                let city = indexData["city"] as? String {
-                return db.collection("meetups").document(country)
+                return meetupsCollection.document(country)
                     .collection(city).document(meetupId)
             } else {
                 print("returned nil – country or city failed")
@@ -159,12 +167,12 @@ final class MeetupManager {
     
     func getMeetup(meetupId: String) async throws -> Meetup? {
         print("getMeetupId: \(meetupId)")
-        let indexRef = db.collection("meetup_index").document(meetupId)
+        let indexRef = meetupIndexCollection.document(meetupId)
         let indexSnapshot = try await indexRef.getDocument()
         if let data = indexSnapshot.data() {
             if let country = data["country"] as? String,
                let city = data["city"] as? String {
-                let snapshot = try await db.collection("meetups").document(country).collection(city).document(meetupId).getDocument()
+                let snapshot = try await meetupsCollection.document(country).collection(city).document(meetupId).getDocument()
                 if let dict = snapshot.data() {
                     if let meetup = try? decoder.decode(Meetup.self, from: dict) {
                         return meetup
@@ -222,7 +230,7 @@ final class MeetupManager {
 //                let country = data["country"] as? String
 //                let city = data["city"] as? String
 //                print("data exists for getMeetupRef")
-//                return db.collection("meetups").document(country)
+//                return meetupsCollection.document(country)
 //                    .collection(city).document(meetupId)
 //            } catch {
 //                print("Error: \(error)")
@@ -249,7 +257,7 @@ final class MeetupManager {
             }
             
             // Move meetup from requested to upcoming
-            let userRef = db.collection("users").document(userId)
+            let userRef = userCollection.document(userId)
             let userSnapshot = try await userRef.getDocument()
             if userSnapshot.exists {
                 try await userRef.updateData([
@@ -278,7 +286,7 @@ final class MeetupManager {
             }
         }
         
-        let userRef = db.collection("users").document(userId)
+        let userRef = userCollection.document(userId)
         let userSnapshot = try await userRef.getDocument()
         if userSnapshot.exists {
             try await userRef.updateData([
@@ -303,7 +311,7 @@ final class MeetupManager {
             }
         }
         
-        let userRef = db.collection("users").document(userId)
+        let userRef = userCollection.document(userId)
         let userSnapshot = try await userRef.getDocument()
         if userSnapshot.exists {
             try await userRef.updateData([
@@ -331,7 +339,7 @@ final class MeetupManager {
                 
                 // Inform user that they have a new request
                 if (organizerId != nil) {
-                    let userRef = db.collection("users").document(organizerId ?? "")
+                    let userRef = userCollection.document(organizerId ?? "")
                     let userSnapshot = try await userRef.getDocument()
                     if userSnapshot.exists {
                         try await userRef.updateData([
@@ -356,7 +364,7 @@ final class MeetupManager {
     
     func deleteMeetup(meetupId: String) async throws {
         if let meetupRef = try await getMeetupRefByIndex(meetupId: meetupId) {
-            try await db.collection("meetup_index").document(meetupId).delete()
+            try await meetupIndexCollection.document(meetupId).delete()
             let snapshot = try await meetupRef.getDocument()
             if snapshot.exists {
                 // remove meetupId from the "rsvp_meetups" field of all attending users
@@ -456,7 +464,7 @@ final class MeetupManager {
                 ])
                 print("has_new_member set to false")
                 
-                let userRef = db.collection("users").document(userId)
+                let userRef = userCollection.document(userId)
                 let userSnapshot = try await userRef.getDocument()
                 if userSnapshot.exists {
                     try await userRef.updateData([

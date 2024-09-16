@@ -13,31 +13,40 @@ final class MeetupViewModel: ObservableObject {
     @Published private(set) var user: DBUser? = nil
     @Published private(set) var host: DBUser = DBUser(userId: "")
     @Published var profileImage: UIImage? = nil
+    @Published var errorMessage: String? = nil
     
     func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        do {
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+        } catch {
+            errorMessage = "Error loading your account."
+        }
     }
     
     
     func getHost(userId: String) async throws {
-            host = try await UserManager.shared.getUser(userId: userId)
-            // Load image after host is set
-            if let photoURL = host.photoURL, !photoURL.isEmpty {
-                try await loadImage(from: photoURL)
-            }
+        do {
+            host = try await UserManager.shared.fetchUser(userId: userId)
+        } catch {
+            errorMessage = "Error loading organizer's profile."
         }
+        if let photoURL = host.photoURL, !photoURL.isEmpty {
+            try await loadImage(from: photoURL)
+        }
+    }
         
-        func loadImage(from url: String) async throws {
-            profileImage = try await UserManager.shared.loadImage(from: url)
-            print("loaded Image")
-        }
+    func loadImage(from url: String) async throws {
+        profileImage = try await UserManager.shared.loadImage(from: url)
+        print("loaded Image")
+    }
 }
 
 
 struct MeetupView: View {
     
     @StateObject var viewModel = MeetupViewModel()
+    @State private var isErrorAlertPresented = false
     var meetup: Meetup
     
     var body: some View {
@@ -69,8 +78,15 @@ struct MeetupView: View {
         .shadow(radius: 10, x: 3, y: 5)
         .onAppear {
             Task {
-                try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
+                do {
+                    try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
+                } catch {
+                    isErrorAlertPresented = true
+                }
             }
+        }
+        .alert(isPresented: $isErrorAlertPresented) {
+            Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
         }
     }
     
