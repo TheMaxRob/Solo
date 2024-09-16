@@ -10,6 +10,7 @@ import SwiftUI
 struct UpcomingMeetupsView: View {
     var user: DBUser
     @StateObject var viewModel = UpcomingMeetupsViewModel()
+    @State private var isErrorAlertPresented = false
     
     var body: some View {
         NavigationStack {
@@ -47,13 +48,17 @@ struct UpcomingMeetupsView: View {
                 .onAppear {
                     Task {
                         // Reset the meetups to avoid duplication
-                        viewModel.acceptedMeetups = []
-                        viewModel.requestedMeetups = []
-                        
-                        try await viewModel.loadCurrentUser()
-                        try await viewModel.getAcceptedMeetups(meetupIds: user.rsvpMeetups ?? [])
-                        try await viewModel.getRequestedMeetups(meetupIds: user.rsvpRequests ?? [])
-                        try await viewModel.setHasNewAcceptanceFalse(userId: user.userId)
+                        do {
+                            viewModel.acceptedMeetups = []
+                            viewModel.requestedMeetups = []
+                            
+                            try await viewModel.loadCurrentUser()
+                            try await viewModel.getAcceptedMeetups(meetupIds: user.rsvpMeetups ?? [])
+                            try await viewModel.getRequestedMeetups(meetupIds: user.rsvpRequests ?? [])
+                            try await viewModel.setHasNewAcceptanceFalse(userId: user.userId)
+                        } catch {
+                            isErrorAlertPresented = true
+                        }
                     }
                 }
 
@@ -86,6 +91,9 @@ struct UpcomingMeetupsView: View {
                 Spacer()
             }
             .frame(width: 400)
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
+            }
             //.background(.yellow)
         }
     }

@@ -16,27 +16,45 @@ final class MessagesViewModel: ObservableObject {
     @Published var selectedConversationId: String = ""
     @Published var user: DBUser?
     @Published var userNames: [String] = []
+    @Published var errorMessage: String? = nil
     private var listener: ListenerRegistration?
 
     
     func loadCurrentUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        do {
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+        } catch {
+            errorMessage = "Error loading your account."
+        }
     }
     
     
     func fetchConversations(for userId: String) async throws {
-        conversations = try await MessageManager.shared.fetchConversations(userId: userId)
+        do {
+            conversations = try await MessageManager.shared.fetchConversations(userId: userId)
+        } catch {
+            errorMessage = "There was an error loading your conversations."
+        }
     }
     
     
     func fetchConversationMessagesView(conversationId: String) async throws -> Conversation {
-        return try await MessageManager.shared.fetchConversationMessagesView(conversationId: conversationId)
+        do {
+            return try await MessageManager.shared.fetchConversationMessagesView(conversationId: conversationId)
+        } catch {
+            errorMessage = "There was an error loading your conversations."
+            return Conversation(userIds: [], lastMessage: "", createdDate: Date())
+        }
     }
     
 
     func fetchMessages(conversationId: String) async throws {
-        messages = try await MessageManager.shared.fetchMessages(conversationId: conversationId)
+        do {
+            messages = try await MessageManager.shared.fetchMessages(conversationId: conversationId)
+        } catch {
+            errorMessage = "There was an error loading messages."
+        }
     }
     
     

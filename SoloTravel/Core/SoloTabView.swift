@@ -14,7 +14,7 @@ final class SoloTabViewModel: ObservableObject {
     func loadCurrentUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
         print("authDataResult created")
-        self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+        self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
     }
 }
 

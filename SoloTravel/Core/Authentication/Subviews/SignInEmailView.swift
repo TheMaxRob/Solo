@@ -14,6 +14,7 @@ struct SignInEmailView: View {
     @Binding var showSignInView: Bool
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var isErrorAlertPresented = false
     
     var body: some View {
         NavigationStack {

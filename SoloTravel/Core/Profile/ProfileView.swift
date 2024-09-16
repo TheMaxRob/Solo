@@ -5,14 +5,14 @@ final class ProfileViewModel: ObservableObject {
     
     @Published private(set) var user: DBUser? = nil
     @Published var profileImage: UIImage? = nil
+    @Published var errorMessage: String? = nil
     
     func loadCurrentUser() async throws {
         do {
             let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            self.user = try await UserManager.shared.getUser(userId: authDataResult.uid)
+            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
         } catch {
-            print("Error loading current user: \(error)")
-            throw error
+            errorMessage = "Error loading your account."
         }
     }
     
@@ -25,6 +25,7 @@ final class ProfileViewModel: ObservableObject {
 struct ProfileView: View {
     
     @StateObject var viewModel = ProfileViewModel()
+    @State private var isErrorAlertPresented = false
     @Binding var isNotAuthenticated: Bool
     
     var body: some View {
@@ -119,7 +120,7 @@ struct ProfileView: View {
                 Task {
                     do {
                         try await viewModel.loadCurrentUser()
-                        print("User loaded: \(viewModel.user) ")
+                        // print("User loaded: \(viewModel.user) ")
                         if let photoURL = viewModel.user?.photoURL, !photoURL.isEmpty {
                             try await viewModel.loadImage(from: photoURL)
                             print("Profile image loaded")
@@ -127,11 +128,13 @@ struct ProfileView: View {
                             print("No photo URL available for user")
                         }
                     } catch {
-                        print("Error in onAppear: \(error)")
+                        isErrorAlertPresented = true
                     }
                 }
             }
-            
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
+            }
         }
     }
 }

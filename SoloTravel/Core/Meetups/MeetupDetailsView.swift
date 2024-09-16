@@ -7,6 +7,7 @@ struct MeetupDetailsView: View {
     var meetup: Meetup
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var isErrorAlertPresented = false
     
     var body: some View {
         NavigationStack {
@@ -127,12 +128,16 @@ struct MeetupDetailsView: View {
             }
             .onAppear {
                 Task {
-                    try await viewModel.loadCurrentUser()
-                    print(viewModel.user?.rsvpMeetups ?? [])
-                    print(viewModel.user?.rsvpRequests ?? [])
-                    print(viewModel.user?.rsvpMeetups?.contains(where: { $0 == meetup.id }) == true || ((viewModel.user?.rsvpRequests?.contains(where: { $0 == meetup.id }) == true)))
-                    try await viewModel.getHost(userId: meetup.organizerId ?? "")
-                    try await viewModel.loadImage(from: meetup.imageURL ?? "")
+                    do {
+                        try await viewModel.loadCurrentUser()
+    //                    print(viewModel.user?.rsvpMeetups ?? [])
+    //                    print(viewModel.user?.rsvpRequests ?? [])
+    //                    print(viewModel.user?.rsvpMeetups?.contains(where: { $0 == meetup.id }) == true || ((viewModel.user?.rsvpRequests?.contains(where: { $0 == meetup.id }) == true)))
+                        try await viewModel.getHost(userId: meetup.organizerId ?? "")
+                        try await viewModel.loadImage(from: meetup.imageURL ?? "")
+                    } catch {
+                        isErrorAlertPresented = true
+                    }
                 }
             }
         }

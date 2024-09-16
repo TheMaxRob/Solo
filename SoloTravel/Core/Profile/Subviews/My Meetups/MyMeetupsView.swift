@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MyMeetupsView: View {
     @StateObject private var viewModel = MyMeetupsViewModel()
+    @State private var isErrorAlertPresented = false
     var user: DBUser
     
     var body: some View {
@@ -21,7 +22,13 @@ struct MyMeetupsView: View {
                         } label: {
                             MyOwnMeetupView(meetup: meetup)
                                 .overlay(Button {
-                                        Task { try await viewModel.deleteMeetup(meetupId: meetup.id) }
+                                        Task {
+                                            do {
+                                                try await viewModel.deleteMeetup(meetupId: meetup.id)
+                                            } catch {
+                                                isErrorAlertPresented = true
+                                            }
+                                        }
                                     } label: {
                                         Image(systemName: "trash")
                                             .foregroundStyle(.red)
@@ -52,8 +59,15 @@ struct MyMeetupsView: View {
             .navigationTitle("My Meetups")
             .onAppear {
                 Task {
-                    try await viewModel.loadMeetups(userId: user.userId)
+                    do {
+                        try await viewModel.loadMeetups(userId: user.userId)
+                    } catch {
+                        isErrorAlertPresented = true
+                    }
                 }
+            }
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
         }
 

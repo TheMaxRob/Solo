@@ -12,6 +12,7 @@ struct RequestedMeetupView: View {
     
     @ObservedObject var viewModel: UpcomingMeetupsViewModel
     var meetup: Meetup
+    @State private var isErrorAlertPresented = false
     
     var body: some View {
         NavigationStack {
@@ -52,7 +53,7 @@ struct RequestedMeetupView: View {
                             try await viewModel.loadImage(from: url)
                         }
                     } catch {
-                        print("Error loading host or image: \(error)")
+                        isErrorAlertPresented = true
                     }
                 }
             }
@@ -61,7 +62,7 @@ struct RequestedMeetupView: View {
                     do {
                         try await viewModel.unRequest(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
                     } catch {
-                        print("Error un-requesting meetup: \(error)")
+                        isErrorAlertPresented = true
                     }
                 }
             } label: {
@@ -69,6 +70,10 @@ struct RequestedMeetupView: View {
                     .foregroundStyle(.red)
             }
             .padding(), alignment: .topTrailing)
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
+            }
+            
         }
     }
     

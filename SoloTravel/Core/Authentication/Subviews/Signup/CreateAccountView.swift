@@ -16,6 +16,7 @@ struct CreateAccountView: View {
     @State private var alertMessage = ""
     @State var isShowingProfileCreationView: Bool = false
     @Binding var isNotAuthenticated: Bool
+    @State private var isErrorAlertPresented = false
     
     var body: some View {
         NavigationStack {
@@ -54,6 +55,9 @@ struct CreateAccountView: View {
                 }
                 .navigationTitle("Create Your Account")
                 Spacer()
+            }
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
             .padding()
             .fullScreenCover(isPresented: $isShowingProfileCreationView, content: {

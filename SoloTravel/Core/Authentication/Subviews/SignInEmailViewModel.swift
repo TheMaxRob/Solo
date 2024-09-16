@@ -11,6 +11,7 @@ import Foundation
 final class SignInEmailViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
+    @Published var errorMessage: String? = nil
     
     func signIn() async throws {
         guard !email.isEmpty, !password.isEmpty else {
@@ -28,10 +29,15 @@ final class SignInEmailViewModel: ObservableObject {
     
     func changePassword(newPassword: String) async throws {
         guard !newPassword.isEmpty else {
-            print("Please enter a new password.")
+            errorMessage = "Please enter a new password."
             return
         }
         
-        try await AuthenticationManager.shared.updatePassword(newPassword: newPassword)
+        do {
+            try await AuthenticationManager.shared.updatePassword(newPassword: newPassword)
+        } catch {
+            print("Error: \(error)")
+            errorMessage = "There was an error changing your password."
+        }
     }
 }

@@ -17,4 +17,5 @@ final class HomeViewModel: ObservableObject {
     let countries = ["France", "Germany", "Greece", "Italy", "Spain", "United Kingdom"]
     @Published var selectedCountry: String = ""
     @Published var selectedStay: Date = Date()
+    
 }
