@@ -15,6 +15,8 @@ struct MyMeetupView: View {
     var meetup: Meetup
     @StateObject var viewModel = MyMeetupViewModel()
     @State private var isErrorAlertPresented = false
+    @State private var isRemoveUserAlertPresented = false
+    @State private var selectedUserForRemoval: DBUser? = nil
     
     var body: some View {
         NavigationStack {
@@ -55,7 +57,8 @@ struct MyMeetupView: View {
                                 AcceptedUserCellView(viewModel: viewModel, user: attendee, meetupId: meetup.id)
                                     .overlay(Button {
                                         Task {
-                                            try await viewModel.removeUser(meetupId: meetup.id, userId: attendee.userId)
+                                            isRemoveUserAlertPresented = true
+                                            selectedUserForRemoval = attendee
                                         }
                                     } label: {
                                         Image(systemName: "xmark")
@@ -107,6 +110,19 @@ struct MyMeetupView: View {
             .alert(isPresented: $isErrorAlertPresented) {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
+            .alert(isPresented: $isRemoveUserAlertPresented, content: {
+                Alert(title: Text("Remove User"), message: Text("Are you sure you want to remove this user?"),
+                      primaryButton: .destructive(Text("Confirm"), action: {
+                    Task {
+                        do {
+                            try await viewModel.removeUser(meetupId: meetup.id, userId: selectedUserForRemoval?.userId ?? "")
+                        } catch {
+                            isErrorAlertPresented = true
+                        }
+                    }    
+                }), secondaryButton: .cancel()
+                )
+            })
         }
     }
 }

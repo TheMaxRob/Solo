@@ -19,8 +19,8 @@ struct CountryCardView: View {
             FranceCardView()
         case "United Kingdom":
             UKCardView()
-        case "Greece":
-            GreeceCardView()
+        case "Ireland":
+            IrelandCardView()
         case "Italy":
             ItalyCardView()
         case "Germany":

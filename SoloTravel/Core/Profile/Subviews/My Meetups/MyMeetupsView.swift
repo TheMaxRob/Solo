@@ -10,7 +10,10 @@ import SwiftUI
 struct MyMeetupsView: View {
     @StateObject private var viewModel = MyMeetupsViewModel()
     @State private var isErrorAlertPresented = false
+    @State private var isConfirmDeleteMeetupAlertPresented = false
+    @State private var selectedMeetup: Meetup? = nil
     var user: DBUser
+    
     
     var body: some View {
         NavigationStack {
@@ -23,11 +26,8 @@ struct MyMeetupsView: View {
                             MyOwnMeetupView(meetup: meetup)
                                 .overlay(Button {
                                         Task {
-                                            do {
-                                                try await viewModel.deleteMeetup(meetupId: meetup.id)
-                                            } catch {
-                                                isErrorAlertPresented = true
-                                            }
+                                            isConfirmDeleteMeetupAlertPresented = true
+                                            selectedMeetup = meetup
                                         }
                                     } label: {
                                         Image(systemName: "trash")
@@ -39,7 +39,6 @@ struct MyMeetupsView: View {
                 } else {
                     Text("You haven't created any meetups yet.")
                         .frame(width: 400)
-                        //.background(.yellow)
                     
                     NavigationLink {
                         MeetupCreationView()
@@ -69,11 +68,21 @@ struct MyMeetupsView: View {
             .alert(isPresented: $isErrorAlertPresented) {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
+            .alert(isPresented: $isConfirmDeleteMeetupAlertPresented, content: {
+                Alert(title: Text("Delete Meetup"), message: Text("Are you sure you want to delete this meetup?"), primaryButton: .destructive(Text("Confirm")) {
+                    Task {
+                        do {
+                            try await viewModel.deleteMeetup(meetupId: selectedMeetup?.id ?? "")
+                        } catch {
+                            isErrorAlertPresented = true
+                        }
+                    }
+                }, secondaryButton: .cancel())
+            })
         }
-
-        
     }
 }
+                   
 
 #Preview {
     MyMeetupsView(user: DBUser(userId: "123", email: "maxroberts2003@gmail.com", firstName: "Max", lastName: "Roberts", dateCreated: Date(), rsvpMeetups: [], createdMeetups: [], conversations: [], homeCountry: "United States"))

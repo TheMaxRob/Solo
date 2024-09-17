@@ -1,16 +1,16 @@
 //
-//  GreeceCardView.swift
+//  IrelandCardView.swift
 //  SoloTravel
 //
-//  Created by Max Roberts on 7/10/24.
+//  Created by Max Roberts on 9/16/24.
 //
 
 import SwiftUI
 
-struct GreeceCardView: View {
+struct IrelandCardView: View {
     var body: some View {
         ZStack {
-            Image("GreeceMap")
+            Image("IrelandMap")
                 .resizable()
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .frame(width: 100, height: 130)
@@ -18,11 +18,9 @@ struct GreeceCardView: View {
         }
         .foregroundStyle(.gray.opacity(0.6))
         .shadow(radius: 10)
-        
-        
     }
 }
 
 #Preview {
-    GreeceCardView()
+    IrelandCardView()
 }

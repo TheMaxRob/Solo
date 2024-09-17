@@ -14,7 +14,7 @@ final class HomeViewModel: ObservableObject {
             GridItem(.flexible()),
             GridItem(.flexible())
         ]
-    let countries = ["France", "Germany", "Greece", "Italy", "Spain", "United Kingdom"]
+    let countries = ["France", "Germany", "Ireland", "Italy", "Spain", "United Kingdom"]
     @Published var selectedCountry: String = ""
     @Published var selectedStay: Date = Date()
     

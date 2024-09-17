@@ -14,6 +14,7 @@ struct UpcomingMeetupView: View {
     var meetup: Meetup
     var hostId: String
     @State private var isErrorAlertPresented = false
+    @State private var isUnRSVPAlertPresented = false
     
     var body: some View {
         NavigationStack {
@@ -46,7 +47,7 @@ struct UpcomingMeetupView: View {
             }
             .overlay(Button {
                 Task {
-                    try await viewModel.unRSVP(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
+                    isUnRSVPAlertPresented = true
                 }
             } label: {
                 Image(systemName: "xmark")
@@ -55,6 +56,18 @@ struct UpcomingMeetupView: View {
             .alert(isPresented: $isErrorAlertPresented) {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
+            .alert(isPresented: $isUnRSVPAlertPresented, content: {
+                Alert(title: Text("Remove RSVP"), message: Text("Are you sure you want unRSVP from this meetup?"), primaryButton: .destructive(Text("Confirm")) {
+                    Task {
+                        do {
+                            try await viewModel.unRSVP(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
+                        } catch {
+                            isErrorAlertPresented = true
+                        }
+                    }
+                }, secondaryButton: .cancel())
+            })
+
         }
         
     }
