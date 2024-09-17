@@ -19,9 +19,10 @@
 		923E94352C3F1366002AE12B /* UKCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94342C3F1366002AE12B /* UKCardView.swift */; };
 		923E94372C3F1369002AE12B /* ItalyCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94362C3F1369002AE12B /* ItalyCardView.swift */; };
 		923E94392C3F136E002AE12B /* GermanyCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94382C3F136E002AE12B /* GermanyCardView.swift */; };
-		923E943B2C3F1372002AE12B /* GreeceCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E943A2C3F1372002AE12B /* GreeceCardView.swift */; };
 		923E943D2C3F1691002AE12B /* CountryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E943C2C3F1691002AE12B /* CountryCardView.swift */; };
 		923E943F2C3F1911002AE12B /* TimeFrameModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E943E2C3F1911002AE12B /* TimeFrameModalView.swift */; };
+		924E979C2C99189000608229 /* IrelandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E979B2C99189000608229 /* IrelandView.swift */; };
+		924E979E2C9918B300608229 /* IrelandCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E979D2C9918B300608229 /* IrelandCardView.swift */; };
 		925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */; };
 		925181002C260149003F8ACA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FF2C260149003F8ACA /* WelcomeView.swift */; };
 		925AC4F52C41B41F001FC6CC /* ForgotPasswordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */; };
@@ -51,7 +52,6 @@
 		92A8FF822C3B850E0025FAA9 /* UKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF812C3B850E0025FAA9 /* UKView.swift */; };
 		92A8FF842C3B852A0025FAA9 /* ItalyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF832C3B852A0025FAA9 /* ItalyView.swift */; };
 		92A8FF862C3B85320025FAA9 /* GermanyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF852C3B85320025FAA9 /* GermanyView.swift */; };
-		92A8FF882C3B854B0025FAA9 /* GreeceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF872C3B854B0025FAA9 /* GreeceView.swift */; };
 		92A8FF8A2C3B894D0025FAA9 /* CityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF892C3B894D0025FAA9 /* CityView.swift */; };
 		92A8FF8C2C3C40980025FAA9 /* CheckMarkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF8B2C3C40980025FAA9 /* CheckMarkButton.swift */; };
 		92A8FF8E2C3C40AA0025FAA9 /* DeclineButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF8D2C3C40AA0025FAA9 /* DeclineButton.swift */; };
@@ -129,9 +129,10 @@
 		923E94342C3F1366002AE12B /* UKCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UKCardView.swift; sourceTree = "<group>"; };
 		923E94362C3F1369002AE12B /* ItalyCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItalyCardView.swift; sourceTree = "<group>"; };
 		923E94382C3F136E002AE12B /* GermanyCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GermanyCardView.swift; sourceTree = "<group>"; };
-		923E943A2C3F1372002AE12B /* GreeceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreeceCardView.swift; sourceTree = "<group>"; };
 		923E943C2C3F1691002AE12B /* CountryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryCardView.swift; sourceTree = "<group>"; };
 		923E943E2C3F1911002AE12B /* TimeFrameModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFrameModalView.swift; sourceTree = "<group>"; };
+		924E979B2C99189000608229 /* IrelandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrelandView.swift; sourceTree = "<group>"; };
+		924E979D2C9918B300608229 /* IrelandCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrelandCardView.swift; sourceTree = "<group>"; };
 		925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicturesCreationView.swift; sourceTree = "<group>"; };
 		925180FF2C260149003F8ACA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordButton.swift; sourceTree = "<group>"; };
@@ -155,7 +156,6 @@
 		92A8FF812C3B850E0025FAA9 /* UKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UKView.swift; sourceTree = "<group>"; };
 		92A8FF832C3B852A0025FAA9 /* ItalyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItalyView.swift; sourceTree = "<group>"; };
 		92A8FF852C3B85320025FAA9 /* GermanyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GermanyView.swift; sourceTree = "<group>"; };
-		92A8FF872C3B854B0025FAA9 /* GreeceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreeceView.swift; sourceTree = "<group>"; };
 		92A8FF892C3B894D0025FAA9 /* CityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityView.swift; sourceTree = "<group>"; };
 		92A8FF8B2C3C40980025FAA9 /* CheckMarkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMarkButton.swift; sourceTree = "<group>"; };
 		92A8FF8D2C3C40AA0025FAA9 /* DeclineButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeclineButton.swift; sourceTree = "<group>"; };
@@ -258,7 +258,7 @@
 				923E94342C3F1366002AE12B /* UKCardView.swift */,
 				923E94362C3F1369002AE12B /* ItalyCardView.swift */,
 				923E94382C3F136E002AE12B /* GermanyCardView.swift */,
-				923E943A2C3F1372002AE12B /* GreeceCardView.swift */,
+				924E979D2C9918B300608229 /* IrelandCardView.swift */,
 			);
 			path = CardViews;
 			sourceTree = "<group>";
@@ -339,7 +339,7 @@
 				92A8FF812C3B850E0025FAA9 /* UKView.swift */,
 				92A8FF832C3B852A0025FAA9 /* ItalyView.swift */,
 				92A8FF852C3B85320025FAA9 /* GermanyView.swift */,
-				92A8FF872C3B854B0025FAA9 /* GreeceView.swift */,
+				924E979B2C99189000608229 /* IrelandView.swift */,
 				92A8FF892C3B894D0025FAA9 /* CityView.swift */,
 				923E942F2C3F1355002AE12B /* CardViews */,
 			);
@@ -701,7 +701,6 @@
 				925AC4FB2C41F28F001FC6CC /* OtherAttendeesView.swift in Sources */,
 				92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */,
 				92F4875E2C1A485D00E82EA3 /* ChatViewModel.swift in Sources */,
-				923E943B2C3F1372002AE12B /* GreeceCardView.swift in Sources */,
 				923E943F2C3F1911002AE12B /* TimeFrameModalView.swift in Sources */,
 				925AC5002C41F481001FC6CC /* OtherUserCellView.swift in Sources */,
 				92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */,
@@ -720,7 +719,6 @@
 				925AC4F92C41BDBE001FC6CC /* LoadingView.swift in Sources */,
 				92DA73512C238370004D271A /* CreateAccountView.swift in Sources */,
 				92A8FF842C3B852A0025FAA9 /* ItalyView.swift in Sources */,
-				92A8FF882C3B854B0025FAA9 /* GreeceView.swift in Sources */,
 				923E943D2C3F1691002AE12B /* CountryCardView.swift in Sources */,
 				92E87A052C6066D6009759A3 /* UpcomingMeetupsViewModel.swift in Sources */,
 				92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */,
@@ -737,6 +735,7 @@
 				923E94332C3F1361002AE12B /* FranceCardView.swift in Sources */,
 				920D08532BDABCE400B2466C /* MessageCellView.swift in Sources */,
 				92A8FF862C3B85320025FAA9 /* GermanyView.swift in Sources */,
+				924E979C2C99189000608229 /* IrelandView.swift in Sources */,
 				92D2F8412BCE88FF0057534B /* TravelError.swift in Sources */,
 				92A8FF8A2C3B894D0025FAA9 /* CityView.swift in Sources */,
 				925B35F02BE2EBD400DAF991 /* SignInEmailView.swift in Sources */,
@@ -747,6 +746,7 @@
 				920E50332C0C18F500368677 /* SettingsViewModel.swift in Sources */,
 				92A8FF982C3DD3400025FAA9 /* MyOwnMeetupView.swift in Sources */,
 				92E3AE002C3B32C2004BC645 /* MyMeetupsViewModel.swift in Sources */,
+				924E979E2C9918B300608229 /* IrelandCardView.swift in Sources */,
 				925B35F42BE2EC3500DAF991 /* AuthenticationManager.swift in Sources */,
 				925181002C260149003F8ACA /* WelcomeView.swift in Sources */,
 				92D732A62BE7FDA7005629CB /* ProfileView.swift in Sources */,

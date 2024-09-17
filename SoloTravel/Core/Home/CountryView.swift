@@ -21,8 +21,8 @@ struct CountryView: View {
             FranceView(start: start, end: end)
         case "United Kingdom":
             UKView(start: start, end: end)
-        case "Greece":
-            GreeceView(start: start, end: end)
+        case "Ireland":
+            IrelandView(start: start, end: end)
         case "Italy":
             ItalyView(start: start, end: end)
         case "Germany":
