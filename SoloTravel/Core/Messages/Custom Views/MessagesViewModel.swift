@@ -60,7 +60,6 @@ final class MessagesViewModel: ObservableObject {
     
     func fetchUserNames(userIds: [String]) async throws {
         let filteredUserIds = userIds.filter { $0 != user?.userId }
-        print("filteredUserIds: ", filteredUserIds)
         userNames = try await UserManager.shared.fetchUserNames(userIds: filteredUserIds)
     }
     
