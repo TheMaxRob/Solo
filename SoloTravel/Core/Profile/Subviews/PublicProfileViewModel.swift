@@ -80,4 +80,13 @@ final class PublicProfileViewModel: ObservableObject {
         }
     }
     
+    
+    func reportUser(userId: String, reportedUserId: String, content: String) async throws {
+        do {
+            try await UserManager.shared.reportUser(userId: userId, reportedUserId: reportedUserId, content: content)
+        } catch {
+            errorMessage = "Error reporting user."
+        }
+    }
+    
 }

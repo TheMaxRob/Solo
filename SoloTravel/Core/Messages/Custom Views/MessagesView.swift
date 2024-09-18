@@ -73,14 +73,6 @@ struct MessagesView: View {
             .alert(isPresented: $isErrorAlertPresented) {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Messages")
-                        .font(.headline)
-                }
-            }
-            
-            // No idea why this doesn't work
             .navigationTitle("Messages")
             
         }

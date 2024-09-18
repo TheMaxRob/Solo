@@ -23,13 +23,12 @@ final class ProfileViewModel: ObservableObject {
 }
 
 struct ProfileView: View {
-    
     @StateObject var viewModel = ProfileViewModel()
     @State private var isErrorAlertPresented = false
     @Binding var isNotAuthenticated: Bool
-    
+
     var body: some View {
-        NavigationStack {
+        NavigationView {
             VStack {
                 VStack {
                     if let profileImage = viewModel.profileImage {
@@ -94,7 +93,6 @@ struct ProfileView: View {
                         if viewModel.user != nil {
                             EditUserProfileView(user: viewModel.user!)
                         }
-                        
                     } label: {
                         Label("Edit Profile", systemImage: "square.and.pencil")
                     }
@@ -102,11 +100,10 @@ struct ProfileView: View {
                 }
                 .padding(.horizontal)
                 
-                
                 Spacer()
             }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: SettingsView(isNotAuthenticated: $isNotAuthenticated)) {
                         Image(systemName: "gear")
                             .font(.title3)
@@ -114,13 +111,11 @@ struct ProfileView: View {
                     }
                 }
             }
-            .frame(width: 400)
-            .navigationTitle("Profile")
+            //.frame(width: 400)
             .onAppear {
                 Task {
                     do {
                         try await viewModel.loadCurrentUser()
-                        // print("User loaded: \(viewModel.user) ")
                         if let photoURL = viewModel.user?.photoURL, !photoURL.isEmpty {
                             try await viewModel.loadImage(from: photoURL)
                             print("Profile image loaded")
@@ -135,9 +130,13 @@ struct ProfileView: View {
             .alert(isPresented: $isErrorAlertPresented) {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
+            .offset(y: -50)
+            Spacer()
+            
         }
     }
 }
+
 
     private func stripTime(from originalDate: Date) -> Date {
         let dateFormatter = DateFormatter()
@@ -156,6 +155,7 @@ struct ProfileView: View {
 
 
 struct ProfileListItem: View {
+    @Environment(\.colorScheme) var colorScheme
     var text: String
     var isHighlighted: Bool
 
@@ -165,7 +165,7 @@ struct ProfileListItem: View {
                 Divider()
                     .padding(8)
                 Text(text)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(colorScheme == .light ? .black : .white)
                     .fontWeight(isHighlighted ? .bold : .regular)
                     
             }

@@ -213,6 +213,7 @@ struct DBUser: Codable, Identifiable {
     var blockedBy: [String]?
     var hasNewAcceptance: Bool?
     var hasNewRequest: Bool?
+    var reportedUsers: [String]?
     
     
     init(auth: AuthDataResultModel) {
@@ -230,6 +231,7 @@ struct DBUser: Codable, Identifiable {
         self.age = ""
         self.bio = ""
         self.hasUnreadMessages = false
+        self.reportedUsers = []
     }
     
     init(
@@ -265,6 +267,7 @@ struct DBUser: Codable, Identifiable {
         self.blockedBy = []
         self.hasNewAcceptance = false
         self.hasNewRequest = false
+        self.reportedUsers = []
     }
     
     enum CodingKeys: String, CodingKey {
@@ -286,6 +289,7 @@ struct DBUser: Codable, Identifiable {
         case blockedBy = "blocked_by"
         case hasNewAcceptance = "has_new_acceptance"
         case hasNewRequest = "has_new_request"
+        case reportedUsers = "reported_users"
     }
     
     
@@ -309,6 +313,7 @@ struct DBUser: Codable, Identifiable {
         self.blockedBy = try container.decodeIfPresent([String].self, forKey: .blockedBy)
         self.hasNewAcceptance = try container.decodeIfPresent(Bool.self, forKey: .hasNewAcceptance)
         self.hasNewRequest = try container.decodeIfPresent(Bool.self, forKey: .hasNewRequest)
+        self.reportedUsers = try container.decodeIfPresent([String].self, forKey: .reportedUsers)
     }
     
     
@@ -332,6 +337,7 @@ struct DBUser: Codable, Identifiable {
         try container.encodeIfPresent(self.blockedBy, forKey: .blockedBy)
         try container.encodeIfPresent(self.hasNewAcceptance, forKey: .hasNewAcceptance)
         try container.encodeIfPresent(self.hasNewRequest, forKey: .hasNewRequest)
+        try container.encodeIfPresent(self.reportedUsers, forKey: .reportedUsers)
     }
     
 }

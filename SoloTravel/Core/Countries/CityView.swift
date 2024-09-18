@@ -42,7 +42,7 @@ struct CityView: View {
                 VStack(spacing: 2){
                     ZStack {
                         Circle()
-                            .fill(.red)
+                            .fill(.red.opacity(0.9))
                             .frame(width: 30, height: 30)
                         
                         if viewModel.isLoading {
