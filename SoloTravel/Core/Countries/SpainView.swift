@@ -28,7 +28,7 @@ struct SpainView: View {
                         CityView(cityName: "Madrid", country: "Spain", start: start, end: end)
                     }
                     .frame(width: 100, height: 100)
-                    .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.4)
+                    .position(x: geometry.size.width * 0.45, y: geometry.size.height * 0.6)
                     
                     // Barcelona
                     NavigationLink {
@@ -37,7 +37,7 @@ struct SpainView: View {
                         CityView(cityName: "Barcelona", country: "Spain", start: start, end: end)
                     }
                     .frame(width: 100, height: 100)
-                    .position(x: geometry.size.width * 0.8, y: geometry.size.height * 0.3)
+                    .position(x: geometry.size.width * 0.775, y: geometry.size.height * 0.5)
                     
                     // Sevilla
                     NavigationLink {
@@ -46,7 +46,7 @@ struct SpainView: View {
                         CityView(cityName: "Sevilla", country: "Spain", start: start, end: end)
                     }
                     .frame(width: 100, height: 100)
-                    .position(x: geometry.size.width * 0.35, y: geometry.size.height * 0.715)
+                    .position(x: geometry.size.width * 0.375, y: geometry.size.height * 0.815)
                 }
                 .frame(width: 400, height: 400)
             }

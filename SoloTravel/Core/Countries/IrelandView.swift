@@ -12,9 +12,36 @@ struct IrelandView: View {
     var end: Date
     
     var body: some View {
-        Image("IrelandMap")
-            .resizable()
-            .frame(width: 500, height: 600)
+        VStack {
+            ZStack {
+                Image("IrelandMap")
+                    .resizable()
+                    .frame(width: 400, height: 400)
+                
+                GeometryReader { geometry in
+                    
+                    // Madrid
+                    NavigationLink {
+                        MeetupsView(city: "Dublin", country: "Ireland", start: start, end: end)
+                    } label: {
+                        CityView(cityName: "Dublin", country: "Ireland", start: start, end: end)
+                    }
+                    .frame(width: 100, height: 100)
+                    .position(x: geometry.size.width * 0.61, y: geometry.size.height * 0.6)
+                    
+                    // Dublin
+                    NavigationLink {
+                        MeetupsView(city: "Galway", country: "Ireland", start: start, end: end)
+                    } label: {
+                        CityView(cityName: "Galway", country: "Ireland", start: start, end: end)
+                    }
+                    .frame(width: 100, height: 100)
+                    .position(x: geometry.size.width * 0.35, y: geometry.size.height * 0.65)
+                }
+                .frame(width: 400, height: 400)
+            }
+            .frame(width: 400, height: 400)
+        }
     }
 }
 

@@ -19,34 +19,44 @@ final class SoloTabViewModel: ObservableObject {
 }
 
 struct SoloTabView: View {
-    
     @StateObject private var viewModel = SoloTabViewModel()
     @Binding var isNotAuthenticated: Bool
+    @State private var selectedTab = 0
     
     var body: some View {
-        TabView {
-            HomeView(isNotAuthenticated: $isNotAuthenticated)
-                .tabItem { Label("Home", systemImage: "house.fill") }
-            
-            MessagesView()
-                .tabItem {
-                    Label("Messages", systemImage: "message.fill") 
-                }
-                .badge(viewModel.user.hasUnreadMessages ?? false ? "" : nil)
-            
-            ProfileView(isNotAuthenticated: $isNotAuthenticated)
-                .tabItem {
-                    Label("Profile", systemImage: "person.crop.circle.fill")
-                }
-                .badge(viewModel.user.hasNewRequest ?? false || viewModel.user.hasNewAcceptance ?? false ? "" : nil)
+        NavigationStack {
+            TabView(selection: $selectedTab) {
+                HomeView(isNotAuthenticated: $isNotAuthenticated)
+                    .tabItem { Label("Home", systemImage: "house.fill") }
+                    .tag(0)
+                
+                MessagesView()
+                    .tabItem { Label("Messages", systemImage: "message.fill") }
+                    .tag(1)
+                
+                ProfileView(isNotAuthenticated: $isNotAuthenticated)
+                    .tabItem { Label("Profile", systemImage: "person.crop.circle.fill") }
+                    .tag(2)
+            }
+            .tint(.blue)
+            .navigationTitle(tabTitle)
+            //.navigationBarTitleDisplayMode(.inline)
         }
-        .tint(.blue)
         .onAppear {
             Task { try await viewModel.loadCurrentUser() }
         }
     }
-}
-
-#Preview {
-    SoloTabView(isNotAuthenticated: .constant(false))
+    
+    private var tabTitle: String {
+        switch selectedTab {
+        case 0:
+            return ""
+        case 1:
+            return "Messages"
+        case 2:
+            return ""
+        default:
+            return ""
+        }
+    }
 }

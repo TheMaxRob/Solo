@@ -24,6 +24,7 @@ final class UserManager {
     private let userCollection = Firestore.firestore().collection("users")
     private let meetupsCollection = Firestore.firestore().collection("meetups")
     private let meetupsIndexCollection = Firestore.firestore().collection("meetup_index")
+    private let reportsCollection = Firestore.firestore().collection("reports")
     private let storage = Storage.storage()
     
     
@@ -502,6 +503,42 @@ final class UserManager {
             throw error
         }
     }
+    
+    
+    func reportUser(userId: String, reportedUserId: String, content: String) async throws {
+        guard !userId.isEmpty else {
+            throw UserManagerError.invalidUserId
+        }
+        
+        let userRef = userCollection.document(userId)
+        
+        do {
+            let snapshot = try await userRef.getDocument()
+            
+            if snapshot.exists {
+                // Add reported user to the user's reported list
+                try await userRef.updateData([
+                    DBUser.CodingKeys.reportedUsers.rawValue : FieldValue.arrayUnion([reportedUserId])
+                ])
+                
+                // Add a document to the "reports" collection with the reportedUserId as the document ID
+                let reportData: [String: Any] = [
+                    "reported_by": userId,
+                    "timestamp": Timestamp(),
+                    "reason": content
+                ]
+                
+                try await reportsCollection.document(reportedUserId).setData(reportData)
+                
+            } else {
+                throw UserManagerError.userNotFound
+            }
+        } catch {
+            print("Error reporting user: \(error)")
+            throw error
+        }
+    }
+
 }
 
 

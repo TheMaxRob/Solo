@@ -13,9 +13,36 @@ struct GermanyView: View {
     var end: Date
     
     var body: some View {
-        Image("GermanyMap")
-            .resizable()
-            .frame(width: 500, height: 600)
+        VStack {
+            ZStack {
+                Image("GermanyMap")
+                    .resizable()
+                    .frame(width: 400, height: 400)
+                
+                GeometryReader { geometry in
+                    
+                    // Paris
+                    NavigationLink {
+                        MeetupsView(city: "Berlin", country: "Germany", start: start, end: end)
+                    } label: {
+                        CityView(cityName: "Berlin", country: "Germany", start: start, end: end)
+                    }
+                    .frame(width: 100, height: 100)
+                    .position(x: geometry.size.width * 0.64, y: geometry.size.height * 0.5)
+                    
+                    // Nice
+                    NavigationLink {
+                        MeetupsView(city: "Munich", country: "Germany", start: start, end: end)
+                    } label: {
+                        CityView(cityName: "Munich", country: "Germany", start: start, end: end)
+                    }
+                    .frame(width: 100, height: 100)
+                    .position(x: geometry.size.width * 0.47, y: geometry.size.height * 0.76)
+                }
+                .frame(width: 400, height: 400)
+            }
+            .frame(width: 400, height: 400)
+        }
     }
 }
 

@@ -30,6 +30,7 @@ struct ChatView: View {
                 .background(Color(.systemBackground))
                 
                 Divider()
+                    .padding(.bottom)
                 
                 ScrollView {
                     VStack {
@@ -75,7 +76,7 @@ struct ChatView: View {
             }
             .edgesIgnoringSafeArea(.top)
         }
-        .navigationBarHidden(true)
+        //.navigationBarHidden(true)
         .onAppear {
             Task {
                 do {
