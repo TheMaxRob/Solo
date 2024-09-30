@@ -26,6 +26,7 @@ final class OtherUserCellViewModel: ObservableObject {
 struct OtherUserCellView: View {
     
     @StateObject var viewModel = OtherUserCellViewModel()
+    var otherUser: DBUser
     var user: DBUser
     
     var body: some View {
@@ -34,7 +35,7 @@ struct OtherUserCellView: View {
                 ZStack(alignment: .topLeading) {
                     VStack(alignment: .center) {
                         NavigationLink {
-                            PublicProfileView(userId: user.userId)
+                            PublicProfileView(profileUser: otherUser, user: user)
                         } label: {
                             UserPFPView(user: user)
                         }
@@ -58,5 +59,5 @@ struct OtherUserCellView: View {
 }
 
 #Preview {
-    OtherUserCellView(user: DBUser(userId: "12345", firstName: "Max", lastName: "Roberts"))
+    OtherUserCellView(otherUser: DBUser(userId: ""), user: DBUser(userId: "12345", firstName: "Max", lastName: "Roberts"))
 }

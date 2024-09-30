@@ -5,6 +5,7 @@ struct HomeView: View {
     @Binding var isNotAuthenticated: Bool
     @State private var selectedCountry: String?
     @State private var isShowingTimeFrameModal = false
+    var user: DBUser
     
     var body: some View {
         ZStack {
@@ -66,5 +67,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(isNotAuthenticated: .constant(false))
+    HomeView(isNotAuthenticated: .constant(false), user: DBUser(userId: ""))
 }

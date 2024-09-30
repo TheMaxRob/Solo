@@ -26,6 +26,7 @@ struct ProfileView: View {
     @StateObject var viewModel = ProfileViewModel()
     @State private var isErrorAlertPresented = false
     @Binding var isNotAuthenticated: Bool
+    var user: DBUser
 
     var body: some View {
         NavigationView {
@@ -48,7 +49,7 @@ struct ProfileView: View {
                             .shadow(radius: 5)
                     }
                     
-                    Text("\(viewModel.user?.firstName ?? "") \(viewModel.user?.lastName ?? "")")
+                    Text("\(user.firstName ?? "") \(user.lastName ?? "")")
                         .font(.title)
                         .fontWeight(.bold)
                 }
@@ -56,43 +57,43 @@ struct ProfileView: View {
                 VStack {
                     // My Meetups
                     NavigationLink {
-                        MyMeetupsView(user: viewModel.user ?? DBUser(userId: ""))
+                        MyMeetupsView(user: user)
                     } label: {
                         ProfileListItem(
                             text: "My Meetups",
-                            isHighlighted: viewModel.user?.hasNewRequest == true
+                            isHighlighted: user.hasNewRequest == true,
+                            user: user
                         )
                     }
-                    .font(viewModel.user?.hasNewRequest == true ? .system(size: 18, weight: .bold) : .system(size: 16))
+                    .font(user.hasNewRequest == true ? .system(size: 18, weight: .bold) : .system(size: 16))
 
                     // Upcoming Meetups
                     NavigationLink {
-                        UpcomingMeetupsView(user: viewModel.user ?? DBUser(userId: ""))
+                        UpcomingMeetupsView(user: user)
                     } label: {
                         ProfileListItem(
                             text: "Upcoming Meetups",
-                            isHighlighted: viewModel.user?.hasNewAcceptance == true
+                            isHighlighted: user.hasNewAcceptance == true,
+                            user: user
                         )
                     }
-                    .font(viewModel.user?.hasNewAcceptance == true ? .system(size: 18, weight: .bold) : .system(size: 16))
+                    .font(user.hasNewAcceptance == true ? .system(size: 18, weight: .bold) : .system(size: 16))
 
                     NavigationLink {
-                        BookmarkedMeetupsView(user: viewModel.user ?? DBUser(userId: ""))
+                        BookmarkedMeetupsView(user: user)
                     } label: {
-                        ProfileListItem(text: "Bookmarked Meetups", isHighlighted: false)
+                        ProfileListItem(text: "Bookmarked Meetups", isHighlighted: false, user: user)
                     }
                     NavigationLink {
-                        PublicProfileView(userId: viewModel.user?.userId ?? "")
+                        PublicProfileView(profileUser: user, user: user)
                     } label: {
-                        ProfileListItem(text: "My Public Profile", isHighlighted: false)
+                        ProfileListItem(text: "My Public Profile", isHighlighted: false, user: user)
                     }
                     Divider()
                         .padding(8)
                     
                     NavigationLink {
-                        if viewModel.user != nil {
-                            EditUserProfileView(user: viewModel.user!)
-                        }
+                        EditUserProfileView()
                     } label: {
                         Label("Edit Profile", systemImage: "square.and.pencil")
                     }
@@ -115,8 +116,8 @@ struct ProfileView: View {
             .onAppear {
                 Task {
                     do {
-                        try await viewModel.loadCurrentUser()
-                        if let photoURL = viewModel.user?.photoURL, !photoURL.isEmpty {
+                        //try await viewModel.loadCurrentUser()
+                        if let photoURL = user.photoURL, !photoURL.isEmpty {
                             try await viewModel.loadImage(from: photoURL)
                             print("Profile image loaded")
                         } else {
@@ -150,7 +151,7 @@ struct ProfileView: View {
 
 
 #Preview {
-    ProfileView(isNotAuthenticated: .constant(false))
+    ProfileView(isNotAuthenticated: .constant(false), user: DBUser(userId: ""))
 }
 
 
@@ -158,6 +159,7 @@ struct ProfileListItem: View {
     @Environment(\.colorScheme) var colorScheme
     var text: String
     var isHighlighted: Bool
+    var user: DBUser
 
     var body: some View {
         ZStack {
@@ -175,7 +177,7 @@ struct ProfileListItem: View {
 }
 
 #Preview {
-    ProfileListItem(text: "Example Text", isHighlighted: false)
+    ProfileListItem(text: "Example Text", isHighlighted: false, user: DBUser(userId: ""))
         .previewLayout(.sizeThatFits)
         .padding()
 }

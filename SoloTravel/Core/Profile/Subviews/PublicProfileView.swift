@@ -10,7 +10,9 @@ import SwiftUI
 struct PublicProfileView: View {
     
     @StateObject private var viewModel = PublicProfileViewModel()
-    var userId: String
+    //var userId: String
+    var profileUser: DBUser?
+    var profileUserId: String?
     var profileImage: UIImage?
     @State private var showMessageAlert = false
     @State private var alertMessage = ""
@@ -21,9 +23,10 @@ struct PublicProfileView: View {
     @State private var showReportSheet = false
     @State private var reportReason = ""
     private var isBlocked: Bool {
-        viewModel.user?.blockedUsers?.contains(viewModel.profileUser?.userId ?? "") == true ||
-        viewModel.user?.blockedBy?.contains(viewModel.profileUser?.userId ?? "") == true
+        user.blockedUsers?.contains(viewModel.profileUser?.userId ?? "") == true ||
+        user.blockedBy?.contains(viewModel.profileUser?.userId ?? "") == true
     }
+    var user: DBUser
 
     var body: some View {
         NavigationStack {
@@ -44,17 +47,17 @@ struct PublicProfileView: View {
                             .shadow(radius: 5)
                     }
                     
-                    Text("\(viewModel.profileUser?.firstName ?? "") \(viewModel.profileUser?.lastName ?? ""), \(viewModel.profileUser?.age ?? "")")
+                    Text("\(profileUser?.firstName ?? viewModel.profileUser?.firstName ?? "") \(profileUser?.lastName ?? viewModel.profileUser?.lastName ?? ""), \(profileUser?.age ?? viewModel.profileUser?.age ?? "")")
                         .font(.title)
                         .fontWeight(.bold)
                     
                     // Message button
                     Button {
                         Task {
-                            if (viewModel.user?.blockedUsers?.contains(where: { $0 == viewModel.profileUser?.userId ?? "" }) == true) {
+                            if (user.blockedUsers?.contains(where: { $0 == viewModel.profileUser?.userId ?? "" }) == true) {
                                 alertMessage = "You have blocked this user."
                                 showMessageAlert = true
-                            } else if (viewModel.user?.blockedBy?.contains(where: { $0 == viewModel.profileUser?.userId ?? "" }) == true) {
+                            } else if (user.blockedBy?.contains(where: { $0 == viewModel.profileUser?.userId ?? "" }) == true) {
                                 alertMessage = "You have been blocked by this user."
                                 showMessageAlert = true
                             } else {
@@ -77,18 +80,18 @@ struct PublicProfileView: View {
                         Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
                     }
                     
-                    Text("🇺🇸 \(viewModel.profileUser?.homeCountry ?? "Unknown")")
+                    Text("🇺🇸 \(profileUser?.homeCountry ?? viewModel.profileUser?.homeCountry ?? "Unknown")")
                         .padding(30)
                     
                     Text("About me")
                         .bold()
                         .font(.headline)
                     
-                    Text("\(viewModel.profileUser?.bio ?? "")")
+                    Text("\(profileUser?.bio ?? viewModel.profileUser?.bio ?? "")")
                         .padding()
                     
                     // Report User Button
-                    if (viewModel.profileUser?.userId != viewModel.user?.userId) {
+                    if (profileUser?.userId ?? viewModel.profileUser?.userId ?? "" != user.userId) {
                         Button {
                             showReportSheet = true  // Show the report modal
                         } label: {
@@ -101,7 +104,7 @@ struct PublicProfileView: View {
                     }
                     
                     // Block & Unblock Button
-                    if (viewModel.profileUser?.userId != viewModel.user?.userId) {
+                    if (profileUser?.userId ?? viewModel.profileUser?.userId ?? "" != user.userId) {
                         Button {
                             showBlockAlert = true
                         } label: {
@@ -119,13 +122,13 @@ struct PublicProfileView: View {
                                     Task {
                                         if (!isBlocked) {
                                             do {
-                                                try await viewModel.blockUser(userId: viewModel.user?.userId ?? "", blockedUser: viewModel.profileUser?.userId ?? "")
+                                                try await viewModel.blockUser(userId: user.userId, blockedUser: viewModel.profileUser?.userId ?? "")
                                             } catch {
                                                 isErrorAlertPresented = true
                                             }
                                         } else {
                                             do {
-                                                try await viewModel.unblockUser(userId: viewModel.user?.userId ?? "", unblockedUser: viewModel.profileUser?.userId ?? "")
+                                                try await viewModel.unblockUser(userId: user.userId, unblockedUser: viewModel.profileUser?.userId ?? "")
                                             } catch {
                                                 isErrorAlertPresented = true
                                             }
@@ -147,8 +150,12 @@ struct PublicProfileView: View {
                 .onAppear {
                     Task {
                         do {
-                            try await viewModel.loadCurrentUser()
-                            try await viewModel.getUser(userId: userId)
+                            //try await viewModel.loadCurrentUser()
+                            //print("user in PublicProfileView: \(user)")
+                            //print("profileUser in PublicProfileView: \(profileUser)")
+                            if (profileUser == nil) {
+                                try await viewModel.getUser(userId: profileUserId ?? "")
+                            }
                             try await viewModel.loadImage(from: viewModel.profileUser?.photoURL ?? "")
                         } catch {
                             isErrorAlertPresented = true
@@ -163,14 +170,14 @@ struct PublicProfileView: View {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
             .sheet(isPresented: $showReportSheet) {
-                ReportUserSheet(userId: userId, reportedUserId: viewModel.profileUser?.userId ?? "", viewModel: viewModel, isPresentingSheet: $showReportSheet)
+                ReportUserSheet(userId: user.userId, reportedUserId: viewModel.profileUser?.userId ?? "", viewModel: viewModel, isPresentingSheet: $showReportSheet)
             }
         }
     }
 }
 
 #Preview {
-    PublicProfileView(userId: "")
+    PublicProfileView(profileUser: DBUser(userId: ""), user: DBUser(userId: ""))
 }
 
 

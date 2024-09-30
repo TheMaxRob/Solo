@@ -21,7 +21,7 @@ struct MyMeetupsView: View {
                 if (viewModel.meetups.count > 0 || user.createdMeetups?.count ?? 0 > 0) {
                     ForEach(viewModel.meetups) { meetup in
                         NavigationLink {
-                            MyMeetupView(meetup: meetup)
+                            MyMeetupView(meetup: meetup, user: user)
                         } label: {
                             MyOwnMeetupView(meetup: meetup)
                                 .overlay(Button {

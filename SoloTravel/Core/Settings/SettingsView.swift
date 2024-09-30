@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @EnvironmentObject var userStateManager: UserStateManager
     @StateObject private var viewModel = SettingsViewModel()
     @Binding var isNotAuthenticated: Bool
     @State private var isErrorAlertPresented = false
@@ -22,6 +23,7 @@ struct SettingsView: View {
                         do {
                             try viewModel.signOut()
                             isNotAuthenticated = true
+                            userStateManager.currentUser = nil
                         } catch {
                             isErrorAlertPresented = true
                         }

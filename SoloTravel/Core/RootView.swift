@@ -6,21 +6,26 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct RootView: View {
-    @State var showSignInView: Bool = false
-    @State var showCreateAccountView: Bool = false
+    @EnvironmentObject private var userStateManager: UserStateManager
     @State var isNotAuthenticated: Bool = false
     
     var body: some View {
         ZStack {
             NavigationStack {
-                SoloTabView(isNotAuthenticated: $isNotAuthenticated)
+                SoloTabView(isNotAuthenticated: $isNotAuthenticated, user: userStateManager.currentUser ?? DBUser(userId: ""))
             }
         }
         .onAppear {
-            let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
-            self.isNotAuthenticated = authUser == nil
+            Task { try await userStateManager.loadUser() }
+        }
+        .onChange(of: userStateManager.currentUser) { _, newUser in
+            isNotAuthenticated = newUser == nil
+            Task {
+                try await userStateManager.refreshUser()
+            }
         }
         .fullScreenCover(isPresented: $isNotAuthenticated, content: {
             NavigationStack {

@@ -479,4 +479,29 @@ final class MeetupManager {
             print("Could not fetch meetupRef – setNoNewMembers")
         }
     }
+    
+    
+    func deleteExpiredMeetups() async throws {
+        let db = Firestore.firestore()
+        let meetupsRef = db.collection("meetups")
+        
+        // Get the current date and time
+        let now = Date()
+        
+        do {
+            // Asynchronously fetch meetups where `meetTime` is in the past
+            let snapshot = try await meetupsRef.whereField("meet_time", isLessThan: now).getDocuments()
+            
+            // Delete each expired meetup
+            for document in snapshot.documents {
+                let docID = document.documentID
+                try await meetupsRef.document(docID).delete()
+                print("Successfully deleted expired meetup with ID: \(docID)")
+            }
+        } catch {
+            print("Error fetching or deleting documents: \(error)")
+            throw error
+        }
+    }
+
 }

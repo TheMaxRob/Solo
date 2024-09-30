@@ -8,6 +8,7 @@
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
+
 struct Message: Codable, Identifiable {
     @DocumentID var id: String?
     let senderId: String
@@ -19,8 +20,8 @@ struct Message: Codable, Identifiable {
         case id
         case senderId = "sender_id"
         case recipientId = "recipient_id"
-        case content
-        case timestamp
+        case content = "content"
+        case timestamp = "timestamp"
     }
     
     init(
@@ -193,7 +194,7 @@ struct Conversation: Codable, Identifiable {
     }
 }
 
-struct DBUser: Codable, Identifiable {
+struct DBUser: Codable, Identifiable, Equatable {
     var id: String { userId }
     let userId: String
     let email: String?

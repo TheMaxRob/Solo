@@ -15,6 +15,7 @@ struct SignInEmailView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isErrorAlertPresented = false
+    @EnvironmentObject var userStateManager: UserStateManager
     
     var body: some View {
         NavigationStack {
@@ -32,7 +33,7 @@ struct SignInEmailView: View {
                 Button {
                     Task {
                         do {
-                            try await viewModel.signIn()
+                            userStateManager.currentUser = try await viewModel.signIn()
                             showSignInView = false
                             isNotAuthenticated = false
                         } catch {

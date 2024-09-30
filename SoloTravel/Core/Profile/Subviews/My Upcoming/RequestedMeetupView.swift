@@ -10,15 +10,18 @@ import SwiftUI
 
 struct RequestedMeetupView: View {
     
+    var user: DBUser
+    var profileUser: DBUser?
     @ObservedObject var viewModel: UpcomingMeetupsViewModel
     var meetup: Meetup
     @State private var isErrorAlertPresented = false
+    
     
     var body: some View {
         NavigationStack {
             HStack(spacing: 20) {
                 NavigationLink {
-                    PublicProfileView(userId: viewModel.host.userId)
+                    PublicProfileView(profileUser: profileUser, user: user)
                 } label: {
                     if let image = viewModel.profileImage {
                         UserPFPView(user: viewModel.host)

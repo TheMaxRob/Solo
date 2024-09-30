@@ -119,6 +119,14 @@ fastlane/test_output
 # Firebase API
 GoogleService-Info.plist
 
+
+# Firebase Functions
+functions/firebase.json
+functions/index.js
+functions/package.json
+functions/package-lock.json
+
+
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/

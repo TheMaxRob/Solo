@@ -61,7 +61,7 @@ struct ChatView: View {
                                     senderId: viewModel.user?.userId ?? "",
                                     recipientId: viewModel.conversation.users.filter { $0 != viewModel.user?.userId }.first ?? ""
                                 )
-                                print("viewModel.sendMessage successful")
+                                //print("viewModel.sendMessage successful")
                                 messageText = ""
                                 try await viewModel.fetchMessages(conversationId: conversationId)
                             }

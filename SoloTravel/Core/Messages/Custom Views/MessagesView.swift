@@ -10,6 +10,7 @@ import SwiftUI
 struct MessagesView: View {
     @StateObject var viewModel = MessagesViewModel()
     @State private var isErrorAlertPresented = false
+    var user: DBUser
     
     var body: some View {
         NavigationStack {
@@ -32,11 +33,11 @@ struct MessagesView: View {
                             
                             Text("\(conversation.lastMessage ?? "")")
                                 .font(.subheadline)
-                                .fontWeight(conversation.hasUnreadMessages && viewModel.user?.userId != conversation.mostRecentSenderId ? .bold : .regular)
+                                .fontWeight(conversation.hasUnreadMessages && user.userId != conversation.mostRecentSenderId ? .bold : .regular)
                         }
                        
                         Spacer()
-                        if conversation.hasUnreadMessages && viewModel.user?.userId != conversation.mostRecentSenderId {
+                        if conversation.hasUnreadMessages && user.userId != conversation.mostRecentSenderId {
                                     Circle()
                                         .fill(Color.blue)
                                         .frame(width: 10, height: 10)

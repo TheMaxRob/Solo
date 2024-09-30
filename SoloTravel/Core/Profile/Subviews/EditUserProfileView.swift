@@ -35,36 +35,35 @@ final class EditUserProfileViewModel: ObservableObject {
     func saveChanges(userId: String) async throws {
         var updateFields = [String: Any]()
                
-                if !firstName.isEmpty {
-                    updateFields[DBUser.CodingKeys.firstName.rawValue] = firstName
-                }
-                if !lastName.isEmpty {
-                    updateFields[DBUser.CodingKeys.lastName.rawValue] = lastName
-                }
-                if !email.isEmpty {
-                    updateFields[DBUser.CodingKeys.email.rawValue] = email
-                }
-                if !homeCountry.isEmpty {
-                    updateFields[DBUser.CodingKeys.homeCountry.rawValue] = homeCountry
-                }
-                if !bio.isEmpty {
-                    updateFields[DBUser.CodingKeys.bio.rawValue] = bio
-                }
-                if let image = selectedImage {
-                    // Assuming you have a method to upload the image and get the URL
-                    let imageURL = try await UserManager.shared.uploadImageToFirebase(image)
-                    updateFields[DBUser.CodingKeys.photoURL.rawValue] = imageURL
-                }
-                if !updateFields.isEmpty {
-                    do {
-                        try await UserManager.shared.updateUserInformation(userId: userId, fields: updateFields)
-                    } catch {
-                        errorMessage = "There was a problem saving your new profile information. Please try again later."
-                    }
-                } else {
-                    errorMessage = "Please edit a field to save your new profile information."
-                }
-        
+        if !firstName.isEmpty {
+            updateFields[DBUser.CodingKeys.firstName.rawValue] = firstName
+        }
+        if !lastName.isEmpty {
+            updateFields[DBUser.CodingKeys.lastName.rawValue] = lastName
+        }
+        if !email.isEmpty {
+            updateFields[DBUser.CodingKeys.email.rawValue] = email
+        }
+        if !homeCountry.isEmpty {
+            updateFields[DBUser.CodingKeys.homeCountry.rawValue] = homeCountry
+        }
+        if !bio.isEmpty {
+            updateFields[DBUser.CodingKeys.bio.rawValue] = bio
+        }
+        if let image = selectedImage {
+            // Assuming you have a method to upload the image and get the URL
+            let imageURL = try await UserManager.shared.uploadImageToFirebase(image)
+            updateFields[DBUser.CodingKeys.photoURL.rawValue] = imageURL
+        }
+        if !updateFields.isEmpty {
+            do {
+                try await UserManager.shared.updateUserInformation(userId: userId, fields: updateFields)
+            } catch {
+                errorMessage = "There was a problem saving your new profile information. Please try again later."
+            }
+        } else {
+            errorMessage = "Please edit a field to save your new profile information."
+        }
     }
     
     
@@ -76,7 +75,8 @@ final class EditUserProfileViewModel: ObservableObject {
 struct EditUserProfileView: View {
     
     @StateObject var viewModel = EditUserProfileViewModel()
-    var user: DBUser
+    //var user: DBUser
+    @EnvironmentObject var userStateManager: UserStateManager
     @State private var isImagePickerPresented = false
     @State private var isErrorAlertPresented = false
     @Environment(\.dismiss) private var dismiss
@@ -110,20 +110,21 @@ struct EditUserProfileView: View {
                 }
                 
                 
-                BottomLineTextField(placeholder: "\(user.firstName ?? "First Name")", text: $viewModel.firstName)
+                BottomLineTextField(placeholder: "\(userStateManager.currentUser?.firstName ?? "First Name")", text: $viewModel.firstName)
                 
-                BottomLineTextField(placeholder: "\(user.lastName ?? "Last Name")", text: $viewModel.lastName)
+                BottomLineTextField(placeholder: "\(userStateManager.currentUser?.lastName ?? "Last Name")", text: $viewModel.lastName)
                     .padding(.vertical)
                 
-                BottomLineTextField(placeholder: "\(user.homeCountry ?? "Home Country")", text: $viewModel.homeCountry)
+                BottomLineTextField(placeholder: "\(userStateManager.currentUser?.homeCountry ?? "Home Country")", text: $viewModel.homeCountry)
                 
-                CustomTextEditor(placeholder: "\(user.bio ?? "Your Biography")", text: $viewModel.bio)
+                CustomTextEditor(placeholder: "\(userStateManager.currentUser?.bio ?? "Your Biography")", text: $viewModel.bio)
                     .padding(.top, 25)
                 
                 Button {
                     Task {
                         do {
-                            try await viewModel.saveChanges(userId: user.userId)
+                            try await viewModel.saveChanges(userId: userStateManager.currentUser?.userId ?? "")
+                            try await userStateManager.refreshUser()
                             dismiss()
                         } catch {
                             isErrorAlertPresented = true
@@ -139,7 +140,7 @@ struct EditUserProfileView: View {
                 .navigationTitle("Edit Profile")
             }
             .onAppear {
-                viewModel.setBio(bio: user.bio ?? "")
+                viewModel.setBio(bio: userStateManager.currentUser?.bio ?? "")
             }
             .photosPicker(isPresented: $isImagePickerPresented, selection: $viewModel.imageSelection, matching: .images)
             .onChange(of: viewModel.imageSelection) { _, newSelection in
@@ -155,5 +156,5 @@ struct EditUserProfileView: View {
 }
 
 #Preview {
-    EditUserProfileView(user: DBUser(userId: "12345", firstName: "Max", lastName: "Roberts", bio: "Test Biography"))
+    EditUserProfileView()
 }

@@ -13,17 +13,24 @@ final class SignInEmailViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var errorMessage: String? = nil
     
-    func signIn() async throws {
+    
+    func signIn() async throws -> DBUser? {
         guard !email.isEmpty, !password.isEmpty else {
-            print("No email or password found.") // Should do some real validation in real app
-            return
+            errorMessage = "Please enter your email and password."
+            return nil
         }
         
-        try await AuthenticationManager.shared.signInUser(email: email, password: password)
-        
+        do {
+            let authDataResult = try await AuthenticationManager.shared.signInUser(email: email, password: password)
+            let user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+            return user
+        } catch {
+            errorMessage = "There was an error fetching your account."
+        }
         // try await UserManager.shared.createNewUser(user: user)
 //        let user = DBUser(auth: authDataResult)
 //        try await UserManager.shared.createNewUser(user: user)
+        return nil
     }
     
     

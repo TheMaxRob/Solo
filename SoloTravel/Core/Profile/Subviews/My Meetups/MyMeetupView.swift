@@ -13,6 +13,7 @@ import SwiftUI
 struct MyMeetupView: View {
     
     var meetup: Meetup
+    var user: DBUser
     @StateObject var viewModel = MyMeetupViewModel()
     @State private var isErrorAlertPresented = false
     @State private var isRemoveUserAlertPresented = false
@@ -54,7 +55,7 @@ struct MyMeetupView: View {
                     if viewModel.attendees.count > 0 {
                         ScrollView {
                             ForEach(viewModel.attendees) { attendee in
-                                AcceptedUserCellView(viewModel: viewModel, user: attendee, meetupId: meetup.id)
+                                AcceptedUserCellView(viewModel: viewModel, user: user, meetupId: meetup.id, profileUser: attendee)
                                     .overlay(Button {
                                         Task {
                                             isRemoveUserAlertPresented = true
@@ -80,9 +81,8 @@ struct MyMeetupView: View {
                 } else if viewModel.isShowingPendingView {
                     if viewModel.pendingUsers.count > 0 {
                         ForEach(viewModel.pendingUsers) { attendee in
-                            PendingUserCellView(viewModel: viewModel, user: attendee, meetupId: meetup.id)
+                            PendingUserCellView(viewModel: viewModel, user: user, meetupId: meetup.id, profileUser: attendee)
                         }
-                        
                     } else {
                         Spacer()
                         Text("No pending attendees.")
@@ -129,6 +129,7 @@ struct MyMeetupView: View {
 
 #Preview {
     MyMeetupView(meetup: Meetup(
+        
         title: "Title",
         description: "description",
         meetTime: Date(),
@@ -140,7 +141,7 @@ struct MyMeetupView: View {
         attendees: [],
         pendingUsers: [],
         imageURL: ""
-    ))
+    ), user: DBUser(userId: ""))
 }
 
 
@@ -149,12 +150,13 @@ struct PendingUserCellView: View {
     var viewModel: MyMeetupViewModel
     var user: DBUser
     var meetupId: String
+    var profileUser: DBUser
     
     var body: some View {
         NavigationStack {
             VStack(alignment: .center) {
                 NavigationLink {
-                    PublicProfileView(userId: user.userId)
+                    PublicProfileView(profileUser: profileUser, user: user)
                 } label: {
                     UserPFPView(user: user)
                 }
@@ -216,13 +218,14 @@ struct AcceptedUserCellView: View {
     var viewModel: MyMeetupViewModel
     var user: DBUser
     var meetupId: String
+    var profileUser: DBUser
     
     var body: some View {
         NavigationStack {
             VStack {
                 VStack(alignment: .center) {
                     NavigationLink {
-                        PublicProfileView(userId: user.userId)
+                        PublicProfileView(profileUser: profileUser, user: user)
                     } label: {
                         UserPFPView(user: user)
                     }
@@ -244,5 +247,5 @@ struct AcceptedUserCellView: View {
 }
 
 #Preview(body: {
-    AcceptedUserCellView(viewModel: MyMeetupViewModel(), user: DBUser(userId: ""), meetupId: "")
+    AcceptedUserCellView(viewModel: MyMeetupViewModel(), user: DBUser(userId: ""), meetupId: "", profileUser: DBUser(userId: ""))
 })

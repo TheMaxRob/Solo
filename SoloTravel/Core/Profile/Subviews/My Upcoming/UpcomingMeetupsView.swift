@@ -52,7 +52,7 @@ struct UpcomingMeetupsView: View {
                             viewModel.acceptedMeetups = []
                             viewModel.requestedMeetups = []
                             
-                            try await viewModel.loadCurrentUser()
+                            //try await viewModel.loadCurrentUser()
                             try await viewModel.getAcceptedMeetups(meetupIds: user.rsvpMeetups ?? [])
                             try await viewModel.getRequestedMeetups(meetupIds: user.rsvpRequests ?? [])
                             try await viewModel.setHasNewAcceptanceFalse(userId: user.userId)
@@ -65,9 +65,9 @@ struct UpcomingMeetupsView: View {
                 if viewModel.isShowingUpcoming {
                         ForEach(viewModel.acceptedMeetups) { meetup in
                             NavigationLink {
-                                OtherAttendeesView(meetup: meetup)
+                                OtherAttendeesView(meetup: meetup, user: user)
                             } label: {
-                                UpcomingMeetupView(viewModel: viewModel, meetup: meetup, hostId: meetup.organizerId ?? "")
+                                UpcomingMeetupView(viewModel: viewModel, meetup: meetup, hostId: meetup.organizerId ?? "", user: user)
                             }
                             Spacer()
                         }
@@ -79,7 +79,7 @@ struct UpcomingMeetupsView: View {
                 } else if viewModel.isShowingRequested {
                 if viewModel.requestedMeetups.count > 0 {
                     ForEach(viewModel.requestedMeetups) { meetup in
-                        RequestedMeetupView(viewModel: viewModel, meetup: meetup)
+                        RequestedMeetupView(user: user, viewModel: viewModel, meetup: meetup)
                     }
                     Spacer()
                 } else {

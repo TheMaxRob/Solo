@@ -10,6 +10,7 @@ import Foundation
 @MainActor
 final class SettingsViewModel: ObservableObject {
     
+    
     @Published var errorMessage: String? = nil
     
     func signOut() throws {

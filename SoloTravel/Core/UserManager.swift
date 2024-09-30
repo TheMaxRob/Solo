@@ -257,7 +257,7 @@ final class UserManager {
     
     func loadImage(from url: String) async throws -> UIImage {
         do {
-            print("imageURL: \(url)")
+            //print("imageURL: \(url)")
             guard let imageURL = URL(string: url) else {
                 return UIImage(systemName: "person.circle.fill")!
             }

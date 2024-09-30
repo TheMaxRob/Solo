@@ -22,19 +22,20 @@ struct SoloTabView: View {
     @StateObject private var viewModel = SoloTabViewModel()
     @Binding var isNotAuthenticated: Bool
     @State private var selectedTab = 0
+    var user: DBUser
     
     var body: some View {
         NavigationStack {
             TabView(selection: $selectedTab) {
-                HomeView(isNotAuthenticated: $isNotAuthenticated)
+                HomeView(isNotAuthenticated: $isNotAuthenticated, user: user)
                     .tabItem { Label("Home", systemImage: "house.fill") }
                     .tag(0)
                 
-                MessagesView()
+                MessagesView(user: user)
                     .tabItem { Label("Messages", systemImage: "message.fill") }
                     .tag(1)
                 
-                ProfileView(isNotAuthenticated: $isNotAuthenticated)
+                ProfileView(isNotAuthenticated: $isNotAuthenticated, user: user)
                     .tabItem { Label("Profile", systemImage: "person.crop.circle.fill") }
                     .tag(2)
             }

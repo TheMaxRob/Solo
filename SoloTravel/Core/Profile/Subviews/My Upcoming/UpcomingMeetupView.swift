@@ -15,12 +15,13 @@ struct UpcomingMeetupView: View {
     var hostId: String
     @State private var isErrorAlertPresented = false
     @State private var isUnRSVPAlertPresented = false
+    var user: DBUser
     
     var body: some View {
         NavigationStack {
             HStack(spacing: 20) {
                 NavigationLink {
-                    PublicProfileView(userId: hostId)
+                    PublicProfileView(profileUserId: hostId, user: user)
                 } label: {
                     UserPFPView(user: viewModel.host)
                 }
