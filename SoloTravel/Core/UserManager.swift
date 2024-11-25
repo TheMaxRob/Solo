@@ -538,6 +538,26 @@ final class UserManager {
             throw error
         }
     }
+    
+    
+    func bookmarkMeetup(userId: String, meetupId: String) async throws {
+        guard !userId.isEmpty else {
+            throw UserManagerError.invalidUserId
+        }
+        
+        let userRef = userCollection.document(userId)
+        
+        do {
+            let snapshot = try await userRef.getDocument()
+            if snapshot.exists {
+                try awiat userRef.updateData([
+                    DBUser.CodingKeys.bookmarkedMeetups.rawValue : FieldValue.arrayUnion([meetupId])])
+            }
+        } catch {
+            print("Error bookmarking meetup.")
+            throw error
+        }
+    }
 
 }
 

@@ -85,5 +85,5 @@ struct MyMeetupsView: View {
                    
 
 #Preview {
-    MyMeetupsView(user: DBUser(userId: "123", email: "maxroberts2003@gmail.com", firstName: "Max", lastName: "Roberts", dateCreated: Date(), rsvpMeetups: [], createdMeetups: [], conversations: [], homeCountry: "United States"))
+    MyMeetupsView(user: DBUser(userId: ""))
 }

@@ -15,22 +15,12 @@ final class MeetupDetailsViewModel: ObservableObject {
     @Published var image: UIImage? = nil
     @Published var errorMessage: String? = nil
     
-    func loadCurrentUser() async throws {
-        do {
-            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        } catch {
-            errorMessage = "Error loading your account."
-        }
-    }
-    
-    
     func loadImage(from url: String) async throws {
         image = try await UserManager.shared.loadImage(from: url)
     }
     
     
-    func requestRSVP(meetup: Meetup) {
+    func requestRSVP(meetup: Meetup, userId: String) async throws {
         guard let user else {
             print("No user found.")
             return
@@ -40,18 +30,16 @@ final class MeetupDetailsViewModel: ObservableObject {
             print("Cannot RSVP to your own meetup")
             return
         } else {
-            Task {
-                do {
-                    try await UserManager.shared.requestRSVP(userId: user.userId, meetupId: meetup.id)
-                } catch {
-                    errorMessage = "Error RSVPing to meetup."
-                }
+            do {
+                try await UserManager.shared.requestRSVP(userId: userId, meetupId: meetup.id)
+            } catch {
+                errorMessage = "Error RSVPing to meetup."
             }
         }
     }
     
     
-    func createConversation(with organizerId: String) async throws -> String? {
+    func createConversation(with organizerId: String, userId: String) async throws -> String? {
         guard let user else { return nil }
         
         if (user.userId == organizerId) {
@@ -59,7 +47,7 @@ final class MeetupDetailsViewModel: ObservableObject {
             return nil
         } else {
             do {
-                let userIds = [user.userId, organizerId]
+                let userIds = [userId, organizerId]
                 let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
                 isShowingPersonalMessageView = true
                 return conversationId
@@ -68,6 +56,11 @@ final class MeetupDetailsViewModel: ObservableObject {
                 return ""
             }
         }
+    }
+    
+    
+    func bookmarkMeetup(userId: String, meetupId: String) async throws {
+        UserManager.shared.bookmarkMeetup(userId: userId, meetupId: meetupId)
     }
     
     

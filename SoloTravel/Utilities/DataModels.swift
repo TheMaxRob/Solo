@@ -215,6 +215,7 @@ struct DBUser: Codable, Identifiable, Equatable {
     var hasNewAcceptance: Bool?
     var hasNewRequest: Bool?
     var reportedUsers: [String]?
+    var bookmarkedMeetups: [String]?
     
     
     init(auth: AuthDataResultModel) {
@@ -233,6 +234,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.bio = ""
         self.hasUnreadMessages = false
         self.reportedUsers = []
+        self.bookmarkedMeetups = []
     }
     
     init(
@@ -241,9 +243,6 @@ struct DBUser: Codable, Identifiable, Equatable {
         firstName: String? = nil,
         lastName: String? = nil,
         photoURL: String? = nil,
-        dateCreated: Date? = nil,
-        rsvpMeetups: [String]? = [],
-        rsvpRequests: [String]? = [],
         createdMeetups: [String]? = [],
         conversations: [String]? = [],
         homeCountry: String? = nil,
@@ -255,11 +254,11 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.firstName = firstName
         self.lastName = lastName
         self.photoURL = photoURL
-        self.dateCreated = dateCreated
-        self.rsvpMeetups = rsvpMeetups
-        self.rsvpRequests = rsvpRequests
-        self.createdMeetups = createdMeetups
-        self.conversations = conversations
+        self.dateCreated = Date()
+        self.rsvpMeetups = []
+        self.rsvpRequests = []
+        self.createdMeetups = []
+        self.conversations = []
         self.homeCountry = homeCountry
         self.age = age
         self.bio = bio
@@ -269,6 +268,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.hasNewAcceptance = false
         self.hasNewRequest = false
         self.reportedUsers = []
+        self.bookmarkedMeetups = []
     }
     
     enum CodingKeys: String, CodingKey {
@@ -291,6 +291,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         case hasNewAcceptance = "has_new_acceptance"
         case hasNewRequest = "has_new_request"
         case reportedUsers = "reported_users"
+        case bookmarkedMeetups = "bookmarked_meetups"
     }
     
     
@@ -315,6 +316,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.hasNewAcceptance = try container.decodeIfPresent(Bool.self, forKey: .hasNewAcceptance)
         self.hasNewRequest = try container.decodeIfPresent(Bool.self, forKey: .hasNewRequest)
         self.reportedUsers = try container.decodeIfPresent([String].self, forKey: .reportedUsers)
+        self.bookmarkedMeetups = try container.decodeIfPresent([String].self, forKey: .bookmarkedMeetups)
     }
     
     
@@ -339,6 +341,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         try container.encodeIfPresent(self.hasNewAcceptance, forKey: .hasNewAcceptance)
         try container.encodeIfPresent(self.hasNewRequest, forKey: .hasNewRequest)
         try container.encodeIfPresent(self.reportedUsers, forKey: .reportedUsers)
+        try container.encodeIfPresent(self.bookmarkedMeetups, forKey: .bookmarkedMeetups)
     }
     
 }
