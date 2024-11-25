@@ -60,7 +60,7 @@ final class MeetupDetailsViewModel: ObservableObject {
     
     
     func bookmarkMeetup(userId: String, meetupId: String) async throws {
-        UserManager.shared.bookmarkMeetup(userId: userId, meetupId: meetupId)
+        try await UserManager.shared.bookmarkMeetup(userId: userId, meetupId: meetupId)
     }
     
     

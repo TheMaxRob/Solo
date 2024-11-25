@@ -35,6 +35,7 @@ final class ProfileCreationViewModel: ObservableObject {
     
     
     func saveUserProfile() async throws {
+        print("saveUserProfile called")
         do {
             let photoURL = try await UserManager.shared.uploadImageToFirebase((selectedImage ?? UIImage(systemName: "person.circle")!))
             print("uploadImagetoFirebase successful")

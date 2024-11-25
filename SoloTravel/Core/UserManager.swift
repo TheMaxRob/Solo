@@ -204,6 +204,7 @@ final class UserManager {
                            bio: String,
                            age: String,
                            photoURL: String) async throws {
+        print("createUserProfile called")
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId
         }
@@ -550,7 +551,7 @@ final class UserManager {
         do {
             let snapshot = try await userRef.getDocument()
             if snapshot.exists {
-                try awiat userRef.updateData([
+                try await userRef.updateData([
                     DBUser.CodingKeys.bookmarkedMeetups.rawValue : FieldValue.arrayUnion([meetupId])])
             }
         } catch {

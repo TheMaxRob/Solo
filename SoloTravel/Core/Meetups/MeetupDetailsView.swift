@@ -122,7 +122,7 @@ struct MeetupDetailsView: View {
                     Button {
                         Task {
                             do {
-                                try await viewModel.bookmarkMeetup(meetupId: meetup.id, userId: user.userId)
+                                try await viewModel.bookmarkMeetup(userId: user.userId, meetupId: meetup.id)
                                 withAnimation {
                                     isBookmarked = true
                                 }

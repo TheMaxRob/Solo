@@ -18,6 +18,7 @@ final class ProfileViewModel: ObservableObject {
     
     
     func loadImage(from url: String) async throws {
+        print("photoURL for loading: \(url)")
         profileImage = try await UserManager.shared.loadImage(from: url)
     }
 }
