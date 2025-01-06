@@ -52,7 +52,7 @@ final class EditUserProfileViewModel: ObservableObject {
         }
         if let image = selectedImage {
             // Assuming you have a method to upload the image and get the URL
-            let imageURL = try await UserManager.shared.uploadImageToFirebase(image)
+            let imageURL = try await UserManager.shared.uploadImageToFirebase(image, userId: userId)
             updateFields[DBUser.CodingKeys.photoURL.rawValue] = imageURL
         }
         if !updateFields.isEmpty {

@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct UpcomingMeetupsView: View {
-    var user: DBUser
     @StateObject var viewModel = UpcomingMeetupsViewModel()
     @State private var isErrorAlertPresented = false
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     var body: some View {
         NavigationStack {
@@ -53,9 +53,9 @@ struct UpcomingMeetupsView: View {
                             viewModel.requestedMeetups = []
                             
                             //try await viewModel.loadCurrentUser()
-                            try await viewModel.getAcceptedMeetups(meetupIds: user.rsvpMeetups ?? [])
-                            try await viewModel.getRequestedMeetups(meetupIds: user.rsvpRequests ?? [])
-                            try await viewModel.setHasNewAcceptanceFalse(userId: user.userId)
+                            try await viewModel.getAcceptedMeetups(meetupIds: userStateManager.currentUser?.rsvpMeetups ?? [])
+                            try await viewModel.getRequestedMeetups(meetupIds: userStateManager.currentUser?.rsvpRequests ?? [])
+                            try await viewModel.setHasNewAcceptanceFalse(userId: userStateManager.currentUser?.userId ?? "")
                         } catch {
                             isErrorAlertPresented = true
                         }
@@ -65,9 +65,9 @@ struct UpcomingMeetupsView: View {
                 if viewModel.isShowingUpcoming {
                         ForEach(viewModel.acceptedMeetups) { meetup in
                             NavigationLink {
-                                OtherAttendeesView(meetup: meetup, user: user)
+                                OtherAttendeesView(meetup: meetup)
                             } label: {
-                                UpcomingMeetupView(viewModel: viewModel, meetup: meetup, hostId: meetup.organizerId ?? "", user: user)
+                                UpcomingMeetupView(viewModel: viewModel, meetup: meetup, hostId: meetup.organizerId ?? "")
                             }
                             Spacer()
                         }
@@ -79,7 +79,7 @@ struct UpcomingMeetupsView: View {
                 } else if viewModel.isShowingRequested {
                 if viewModel.requestedMeetups.count > 0 {
                     ForEach(viewModel.requestedMeetups) { meetup in
-                        RequestedMeetupView(user: user, viewModel: viewModel, meetup: meetup)
+                        RequestedMeetupView(viewModel: viewModel, meetup: meetup)
                     }
                     Spacer()
                 } else {
@@ -100,5 +100,5 @@ struct UpcomingMeetupsView: View {
 }
 
 #Preview {
-    UpcomingMeetupsView(user: DBUser(userId: "123", firstName: "Max", lastName: "Roberts"))
+    UpcomingMeetupsView()
 }

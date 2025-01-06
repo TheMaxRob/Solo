@@ -27,7 +27,7 @@ struct OtherUserCellView: View {
     
     @StateObject var viewModel = OtherUserCellViewModel()
     var otherUser: DBUser
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     var body: some View {
         NavigationStack {
@@ -35,11 +35,11 @@ struct OtherUserCellView: View {
                 ZStack(alignment: .topLeading) {
                     VStack(alignment: .center) {
                         NavigationLink {
-                            PublicProfileView(profileUser: otherUser, user: user)
+                            PublicProfileView(profileUser: otherUser)
                         } label: {
-                            UserPFPView(user: user)
+                            UserPFPView(user: otherUser)
                         }
-                        Text("\(user.firstName ?? "") \(user.lastName ?? "")")
+                        Text("\(otherUser.firstName ?? "") \(otherUser.lastName ?? "")")
                             .bold()
                             .font(.title2)
                             .foregroundStyle(.black)
@@ -52,12 +52,12 @@ struct OtherUserCellView: View {
             //.background(.yellow)
             .shadow(radius: 5, x: 3, y: 3)
             .onAppear {
-                Task { try await viewModel.loadImage(from: user.photoURL ?? "") }
+                Task { try await viewModel.loadImage(from: otherUser.photoURL ?? "") }
             }
         }
     }
 }
 
 #Preview {
-    OtherUserCellView(otherUser: DBUser(userId: ""), user: DBUser(userId: "12345", firstName: "Max", lastName: "Roberts"))
+    OtherUserCellView(otherUser: DBUser(userId: ""))
 }

@@ -23,10 +23,10 @@ struct PublicProfileView: View {
     @State private var showReportSheet = false
     @State private var reportReason = ""
     private var isBlocked: Bool {
-        user.blockedUsers?.contains(viewModel.profileUser?.userId ?? "") == true ||
-        user.blockedBy?.contains(viewModel.profileUser?.userId ?? "") == true
+        userStateManager.currentUser?.blockedUsers?.contains(viewModel.profileUser?.userId ?? "") == true ||
+        userStateManager.currentUser?.blockedBy?.contains(viewModel.profileUser?.userId ?? "") == true
     }
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
 
     var body: some View {
         NavigationStack {
@@ -54,10 +54,10 @@ struct PublicProfileView: View {
                     // Message button
                     Button {
                         Task {
-                            if (user.blockedUsers?.contains(where: { $0 == viewModel.profileUser?.userId ?? "" }) == true) {
+                            if (userStateManager.currentUser?.blockedUsers?.contains(where: { $0 == viewModel.profileUser?.userId ?? "" }) == true) {
                                 alertMessage = "You have blocked this user."
                                 showMessageAlert = true
-                            } else if (user.blockedBy?.contains(where: { $0 == viewModel.profileUser?.userId ?? "" }) == true) {
+                            } else if (userStateManager.currentUser?.blockedBy?.contains(where: { $0 == viewModel.profileUser?.userId ?? "" }) == true) {
                                 alertMessage = "You have been blocked by this user."
                                 showMessageAlert = true
                             } else {
@@ -91,7 +91,7 @@ struct PublicProfileView: View {
                         .padding()
                     
                     // Report User Button
-                    if (profileUser?.userId ?? viewModel.profileUser?.userId ?? "" != user.userId) {
+                    if (profileUser?.userId ?? viewModel.profileUser?.userId ?? "" != userStateManager.currentUser?.userId) {
                         Button {
                             showReportSheet = true  // Show the report modal
                         } label: {
@@ -104,7 +104,7 @@ struct PublicProfileView: View {
                     }
                     
                     // Block & Unblock Button
-                    if (profileUser?.userId ?? viewModel.profileUser?.userId ?? "" != user.userId) {
+                    if (profileUser?.userId ?? viewModel.profileUser?.userId ?? "" != userStateManager.currentUser?.userId) {
                         Button {
                             showBlockAlert = true
                         } label: {
@@ -122,13 +122,13 @@ struct PublicProfileView: View {
                                     Task {
                                         if (!isBlocked) {
                                             do {
-                                                try await viewModel.blockUser(userId: user.userId, blockedUser: viewModel.profileUser?.userId ?? "")
+                                                try await viewModel.blockUser(userId: userStateManager.currentUser?.userId ?? "", blockedUser: viewModel.profileUser?.userId ?? "")
                                             } catch {
                                                 isErrorAlertPresented = true
                                             }
                                         } else {
                                             do {
-                                                try await viewModel.unblockUser(userId: user.userId, unblockedUser: viewModel.profileUser?.userId ?? "")
+                                                try await viewModel.unblockUser(userId: userStateManager.currentUser?.userId ?? "", unblockedUser: viewModel.profileUser?.userId ?? "")
                                             } catch {
                                                 isErrorAlertPresented = true
                                             }
@@ -170,14 +170,14 @@ struct PublicProfileView: View {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
             }
             .sheet(isPresented: $showReportSheet) {
-                ReportUserSheet(userId: user.userId, reportedUserId: viewModel.profileUser?.userId ?? "", viewModel: viewModel, isPresentingSheet: $showReportSheet)
+                ReportUserSheet(userId: userStateManager.currentUser?.userId ?? "", reportedUserId: viewModel.profileUser?.userId ?? "", viewModel: viewModel, isPresentingSheet: $showReportSheet)
             }
         }
     }
 }
 
 #Preview {
-    PublicProfileView(profileUser: DBUser(userId: ""), user: DBUser(userId: ""))
+    PublicProfileView(profileUser: DBUser(userId: ""))
 }
 
 

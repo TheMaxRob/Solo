@@ -232,10 +232,11 @@ final class UserManager {
     }
     
     
-    func uploadImageToFirebase(_ image: UIImage) async throws -> String {
+    func uploadImageToFirebase(_ image: UIImage, userId: String) async throws -> String {
         let fileName = UUID().uuidString
-        let storageRef = Storage.storage().reference().child("profile_pictures/\(fileName).jpg")
-        print("storageRef created")
+        print("userId: \(userId)")
+        let storageRef = Storage.storage().reference().child("profile_pictures/\(userId)/\(fileName).jpg")
+        print("storageRef created: \(storageRef)")
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw NSError(domain: "ImageConversionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to convert image to data."])
         }

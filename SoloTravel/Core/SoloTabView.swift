@@ -35,7 +35,7 @@ struct SoloTabView: View {
                     .tabItem { Label("Messages", systemImage: "message.fill") }
                     .tag(1)
                 
-                ProfileView(isNotAuthenticated: $isNotAuthenticated, user: user)
+                ProfileView(isNotAuthenticated: $isNotAuthenticated)
                     .tabItem { Label("Profile", systemImage: "person.crop.circle.fill") }
                     .tag(2)
             }

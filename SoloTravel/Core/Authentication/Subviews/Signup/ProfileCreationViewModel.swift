@@ -21,27 +21,17 @@ final class ProfileCreationViewModel: ObservableObject {
     @Published var selectedImage: UIImage? = nil
     @Published var imageSelection: PhotosPickerItem? = nil
     @Published var isShowingWelcomeView: Bool = false
-    @Published var errorMessage: String? = nil
+    @Published var errorMessage: String? = nil    
     
-    func loadCurrentUser() async throws {
-        do {
-            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            print("authDataResult created")
-            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        } catch {
-            handleError(error)
-        }
-    }
-    
-    
-    func saveUserProfile() async throws {
+    func saveUserProfile(userId: String) async throws {
         print("saveUserProfile called")
+        print("userId: \(userId)")
         do {
-            let photoURL = try await UserManager.shared.uploadImageToFirebase((selectedImage ?? UIImage(systemName: "person.circle")!))
+            let photoURL = try await UserManager.shared.uploadImageToFirebase((selectedImage ?? UIImage(systemName: "person.circle")!), userId: userId)
             print("uploadImagetoFirebase successful")
-            try await UserManager.shared.createUserProfile(userId: user.userId, firstName: firstName, lastName: lastName, country: homeCountry, bio: bio, age: age, photoURL: photoURL)
+            try await UserManager.shared.createUserProfile(userId: userId, firstName: firstName, lastName: lastName, country: homeCountry, bio: bio, age: age, photoURL: photoURL)
         } catch {
-            handleError(error)
+            print("error: \(error)")
         }
     }
     

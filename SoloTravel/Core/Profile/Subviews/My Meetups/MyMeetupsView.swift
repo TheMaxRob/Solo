@@ -12,16 +12,16 @@ struct MyMeetupsView: View {
     @State private var isErrorAlertPresented = false
     @State private var isConfirmDeleteMeetupAlertPresented = false
     @State private var selectedMeetup: Meetup? = nil
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     
     var body: some View {
         NavigationStack {
             VStack {
-                if (viewModel.meetups.count > 0 || user.createdMeetups?.count ?? 0 > 0) {
+                if (viewModel.meetups.count > 0 || userStateManager.currentUser?.createdMeetups?.count ?? 0 > 0) {
                     ForEach(viewModel.meetups) { meetup in
                         NavigationLink {
-                            MyMeetupView(meetup: meetup, user: user)
+                            MyMeetupView(meetup: meetup)
                         } label: {
                             MyOwnMeetupView(meetup: meetup)
                                 .overlay(Button {
@@ -59,7 +59,7 @@ struct MyMeetupsView: View {
             .onAppear {
                 Task {
                     do {
-                        try await viewModel.loadMeetups(userId: user.userId)
+                        try await viewModel.loadMeetups(userId: userStateManager.currentUser?.userId ?? "")
                     } catch {
                         isErrorAlertPresented = true
                     }
@@ -85,5 +85,5 @@ struct MyMeetupsView: View {
                    
 
 #Preview {
-    MyMeetupsView(user: DBUser(userId: ""))
+    MyMeetupsView()
 }

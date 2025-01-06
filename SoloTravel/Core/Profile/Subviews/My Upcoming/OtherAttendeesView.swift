@@ -23,14 +23,13 @@ struct OtherAttendeesView: View {
     
     @StateObject private var viewModel = OtherAttendeesViewModel()
     var meetup: Meetup
-    var user: DBUser
-    
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     var body: some View {
         NavigationStack {
             VStack {
                 ForEach(viewModel.attendees) { attendee in
-                    OtherUserCellView(otherUser: attendee, user: user)
+                    OtherUserCellView(otherUser: attendee)
                 }
             }
             .onAppear {

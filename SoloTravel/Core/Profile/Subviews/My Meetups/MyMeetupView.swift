@@ -13,7 +13,7 @@ import SwiftUI
 struct MyMeetupView: View {
     
     var meetup: Meetup
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     @StateObject var viewModel = MyMeetupViewModel()
     @State private var isErrorAlertPresented = false
     @State private var isRemoveUserAlertPresented = false
@@ -55,7 +55,7 @@ struct MyMeetupView: View {
                     if viewModel.attendees.count > 0 {
                         ScrollView {
                             ForEach(viewModel.attendees) { attendee in
-                                AcceptedUserCellView(viewModel: viewModel, user: user, meetupId: meetup.id, profileUser: attendee)
+                                AcceptedUserCellView(viewModel: viewModel, user: userStateManager.currentUser ?? DBUser(userId: ""), meetupId: meetup.id, profileUser: attendee)
                                     .overlay(Button {
                                         Task {
                                             isRemoveUserAlertPresented = true
@@ -81,7 +81,7 @@ struct MyMeetupView: View {
                 } else if viewModel.isShowingPendingView {
                     if viewModel.pendingUsers.count > 0 {
                         ForEach(viewModel.pendingUsers) { attendee in
-                            PendingUserCellView(viewModel: viewModel, user: user, meetupId: meetup.id, profileUser: attendee)
+                            PendingUserCellView(viewModel: viewModel, user: userStateManager.currentUser ?? DBUser(userId: ""), meetupId: meetup.id, profileUser: attendee)
                         }
                     } else {
                         Spacer()
@@ -141,7 +141,7 @@ struct MyMeetupView: View {
         attendees: [],
         pendingUsers: [],
         imageURL: ""
-    ), user: DBUser(userId: ""))
+    ))
 }
 
 
@@ -156,7 +156,7 @@ struct PendingUserCellView: View {
         NavigationStack {
             VStack(alignment: .center) {
                 NavigationLink {
-                    PublicProfileView(profileUser: profileUser, user: user)
+                    PublicProfileView(profileUser: profileUser)
                 } label: {
                     UserPFPView(user: user)
                 }
@@ -225,7 +225,7 @@ struct AcceptedUserCellView: View {
             VStack {
                 VStack(alignment: .center) {
                     NavigationLink {
-                        PublicProfileView(profileUser: profileUser, user: user)
+                        PublicProfileView(profileUser: profileUser)
                     } label: {
                         UserPFPView(user: user)
                     }

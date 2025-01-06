@@ -50,7 +50,7 @@ final class MeetupCreationViewModel: ObservableObject {
     func createMeetup(userId: String) async throws {
         if let selectedImage {
             do {
-                let imageURL = try await UserManager.shared.uploadImageToFirebase(selectedImage)
+                let imageURL = try await UserManager.shared.uploadImageToFirebase(selectedImage, userId: userId)
                 let newMeetup = Meetup(title: meetupTitle, description: meetupDescription, meetTime: meetTime, city: city, country: country, createdDate: createdDate, organizerId: user?.userId, meetSpot: meetSpot, attendees: [], pendingUsers: [], imageURL: imageURL)
                 try await UserManager.shared.createMeetup(userId: userId, meetup: newMeetup)
             } catch {

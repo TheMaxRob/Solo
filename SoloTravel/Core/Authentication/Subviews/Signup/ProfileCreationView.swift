@@ -15,6 +15,7 @@ struct ProfileCreationView: View {
     @Binding var isNotAuthenticated: Bool
     @State private var isImagePickerPresented = false
     @State private var showErrorAlert = false
+    @EnvironmentObject var userStateManager: UserStateManager
     
     
     var body: some View {
@@ -78,8 +79,9 @@ struct ProfileCreationView: View {
                     .simultaneousGesture(TapGesture().onEnded {
                         Task {
                             do {
-                                try await viewModel.loadCurrentUser()
-                                try await viewModel.saveUserProfile()
+                                try await userStateManager.loadUser()
+                                print("user loaded: \(String(describing: userStateManager.currentUser))")
+                                try await viewModel.saveUserProfile(userId: userStateManager.currentUser?.userId ?? "")
                             } catch {
                                 showErrorAlert = true
                             }

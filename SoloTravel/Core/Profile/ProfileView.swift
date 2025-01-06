@@ -6,17 +6,7 @@ final class ProfileViewModel: ObservableObject {
     @Published private(set) var user: DBUser? = nil
     @Published var profileImage: UIImage? = nil
     @Published var errorMessage: String? = nil
-    
-    func loadCurrentUser() async throws {
-        do {
-            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        } catch {
-            errorMessage = "Error loading your account."
-        }
-    }
-    
-    
+        
     func loadImage(from url: String) async throws {
         print("photoURL for loading: \(url)")
         profileImage = try await UserManager.shared.loadImage(from: url)
@@ -27,13 +17,13 @@ struct ProfileView: View {
     @StateObject var viewModel = ProfileViewModel()
     @State private var isErrorAlertPresented = false
     @Binding var isNotAuthenticated: Bool
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
 
     var body: some View {
         NavigationView {
             VStack {
                 VStack {
-                    if let profileImage = viewModel.profileImage {
+                    if let profileImage = userStateManager.profileImage {
                         Image(uiImage: profileImage)
                             .resizable()
                             .scaledToFill()
@@ -49,8 +39,7 @@ struct ProfileView: View {
                             .overlay(Circle().stroke(Color.gray, lineWidth: 2))
                             .shadow(radius: 5)
                     }
-                    
-                    Text("\(user.firstName ?? "") \(user.lastName ?? "")")
+                    Text("\(userStateManager.currentUser?.firstName ?? "") \(userStateManager.currentUser?.lastName ?? "")")
                         .font(.title)
                         .fontWeight(.bold)
                 }
@@ -58,37 +47,35 @@ struct ProfileView: View {
                 VStack {
                     // My Meetups
                     NavigationLink {
-                        MyMeetupsView(user: user)
+                        MyMeetupsView()
                     } label: {
                         ProfileListItem(
                             text: "My Meetups",
-                            isHighlighted: user.hasNewRequest == true,
-                            user: user
+                            isHighlighted: userStateManager.currentUser?.hasNewRequest == true
                         )
                     }
-                    .font(user.hasNewRequest == true ? .system(size: 18, weight: .bold) : .system(size: 16))
+                    .font(userStateManager.currentUser?.hasNewRequest == true ? .system(size: 18, weight: .bold) : .system(size: 16))
 
                     // Upcoming Meetups
                     NavigationLink {
-                        UpcomingMeetupsView(user: user)
+                        UpcomingMeetupsView()
                     } label: {
                         ProfileListItem(
                             text: "Upcoming Meetups",
-                            isHighlighted: user.hasNewAcceptance == true,
-                            user: user
+                            isHighlighted: userStateManager.currentUser?.hasNewAcceptance == true
                         )
                     }
-                    .font(user.hasNewAcceptance == true ? .system(size: 18, weight: .bold) : .system(size: 16))
+                    .font(userStateManager.currentUser?.hasNewAcceptance == true ? .system(size: 18, weight: .bold) : .system(size: 16))
 
                     NavigationLink {
-                        BookmarkedMeetupsView(user: user)
+                        BookmarkedMeetupsView()
                     } label: {
-                        ProfileListItem(text: "Bookmarked Meetups", isHighlighted: false, user: user)
+                        ProfileListItem(text: "Bookmarked Meetups", isHighlighted: false)
                     }
                     NavigationLink {
-                        PublicProfileView(profileUser: user, user: user)
+                        PublicProfileView(profileUser: userStateManager.currentUser)
                     } label: {
-                        ProfileListItem(text: "My Public Profile", isHighlighted: false, user: user)
+                        ProfileListItem(text: "My Public Profile", isHighlighted: false)
                     }
                     Divider()
                         .padding(8)
@@ -116,16 +103,10 @@ struct ProfileView: View {
             //.frame(width: 400)
             .onAppear {
                 Task {
-                    do {
-                        //try await viewModel.loadCurrentUser()
-                        if let photoURL = user.photoURL, !photoURL.isEmpty {
-                            try await viewModel.loadImage(from: photoURL)
-                            print("Profile image loaded")
-                        } else {
-                            print("No photo URL available for user")
-                        }
-                    } catch {
-                        isErrorAlertPresented = true
+                    if let photoURL = userStateManager.currentUser?.photoURL, !photoURL.isEmpty {
+                        print("Profile image loaded")
+                    } else {
+                        print("No photo URL available for user")
                     }
                 }
             }
@@ -152,7 +133,7 @@ struct ProfileView: View {
 
 
 #Preview {
-    ProfileView(isNotAuthenticated: .constant(false), user: DBUser(userId: ""))
+    ProfileView(isNotAuthenticated: .constant(false))
 }
 
 
@@ -160,7 +141,6 @@ struct ProfileListItem: View {
     @Environment(\.colorScheme) var colorScheme
     var text: String
     var isHighlighted: Bool
-    var user: DBUser
 
     var body: some View {
         ZStack {
@@ -178,7 +158,7 @@ struct ProfileListItem: View {
 }
 
 #Preview {
-    ProfileListItem(text: "Example Text", isHighlighted: false, user: DBUser(userId: ""))
+    ProfileListItem(text: "Example Text", isHighlighted: false)
         .previewLayout(.sizeThatFits)
         .padding()
 }

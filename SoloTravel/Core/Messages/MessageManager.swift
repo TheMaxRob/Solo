@@ -29,7 +29,6 @@ final class MessageManager {
     
     
     // Return all conversations a user is part of
-    
     func fetchConversations(userId: String) async throws -> [Conversation] {
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId

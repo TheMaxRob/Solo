@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BookmarkedMeetupsView: View {
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     var body: some View {
         NavigationStack {
             VStack {
@@ -26,5 +26,5 @@ struct BookmarkedMeetupsView: View {
 }
 
 #Preview {
-    BookmarkedMeetupsView(user: DBUser(userId: "12345"))
+    BookmarkedMeetupsView()
 }
