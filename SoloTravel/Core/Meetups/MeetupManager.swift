@@ -176,47 +176,14 @@ final class MeetupManager {
                 if let dict = snapshot.data() {
                     if let meetup = try? decoder.decode(Meetup.self, from: dict) {
                         return meetup
+                    } else {
+                        print("Error decodign meetup.")
                     }
-                    guard
-                        let _ = dict["id"] as? String,
-                        let title = dict["title"] as? String,
-                        let description = dict["description"] as? String?,
-                        let city = dict["city"] as? String,
-                        let country = dict["country"] as? String,
-                        let organizerId = dict["organizerId"] as? String,
-                        let meetSpot = dict["meetSpot"] as? String,
-                        let createdDateTimestamp = dict["createdDate"] as? Timestamp,
-                        let meetTimeTimestamp = dict["meetTime"] as? Timestamp,
-                        let attendees = dict["attendees"] as? [String]?,
-                        let pendingUsers = dict["pending_users"] as? [String]?
-                    else {
-                        print("Data parsing error for dict: \(dict)")
-                        return nil
-                    }
-                    let createdDate = createdDateTimestamp.dateValue()
-                    let meetTime = meetTimeTimestamp.dateValue()
-                    
-                    let meetup = Meetup(
-                        title: title,
-                        description: description,
-                        meetTime: meetTime,
-                        city: city,
-                        country: country,
-                        createdDate: createdDate,
-                        organizerId: organizerId,
-                        meetSpot: meetSpot,
-                        attendees: attendees,
-                        pendingUsers: pendingUsers,
-                        imageURL: ""
-                    )
-                    return meetup
+                } else {
+                    print("Error fetching dictionary info for meetup.")
+                }
             }
-               
-            
         }
-        
-        }
-        else { return nil }
         return nil
     }
     

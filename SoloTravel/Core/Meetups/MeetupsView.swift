@@ -56,7 +56,7 @@ struct MeetupsView: View {
             VStack {
                 Divider()
                 ForEach(viewModel.meetups) { meetup in
-                    NavigationLink(destination: MeetupDetailsView(meetup: meetup, user: viewModel.user ?? DBUser(userId: ""))) {
+                    NavigationLink(destination: MeetupDetailsView(meetup: meetup)) {
                         VStack {
                             MeetupView(meetup: meetup)
                             Divider()

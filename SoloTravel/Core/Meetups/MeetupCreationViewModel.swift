@@ -8,6 +8,7 @@
 import SwiftUI
 import _PhotosUI_SwiftUI
 
+@MainActor
 final class MeetupCreationViewModel: ObservableObject {
     @Published var alertItem: AlertItem?
     var meetupTitle: String = ""
@@ -22,17 +23,7 @@ final class MeetupCreationViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     
     
-    @Published private(set) var user: DBUser? = nil
-    
-    func loadCurrentUser() async throws {
-        do {
-            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        } catch {
-            errorMessage = "Error loading your account."
-        }
-    }
-    
+    @Published private(set) var user: DBUser? = nil    
     
     func loadImage(from item: PhotosPickerItem?) async throws  -> UIImage? {
         guard let item = item else { return nil }

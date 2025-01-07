@@ -70,6 +70,22 @@ struct Meetup: Identifiable, Codable, Equatable {
         case hasNewMember = "has_new_member"
     }
     
+    init () {
+        self.id = UUID().uuidString
+        self.title = ""
+        self.description = ""
+        self.meetTime = Date()
+        self.city = ""
+        self.country = ""
+        self.createdDate = Date()
+        self.organizerId = ""
+        self.meetSpot = ""
+        self.attendees = []
+        self.pendingUsers = []
+        self.imageURL = ""
+        self.hasNewMember = false
+    }
+    
     init(title: String?,
          description: String?,
          meetTime: Date?,

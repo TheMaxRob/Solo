@@ -11,10 +11,6 @@ import FirebaseFirestoreSwift
 import FirebaseAuth
 import FirebaseStorage
 
-
-
-
-
 final class UserManager {
     
     static let shared = UserManager()
@@ -95,7 +91,7 @@ final class UserManager {
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId
         }
-
+        
         let userRef = userCollection.document(userId)
         
         do {
@@ -128,7 +124,7 @@ final class UserManager {
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId
         }
-
+        
         let docRef = userCollection.document(userId)
         
         do {
@@ -143,22 +139,22 @@ final class UserManager {
                     "created_meetups" : [meetup.id]
                 ])
             }
-            print("meetup sent to MeetupManager addMeetup: \(meetup)")
+            //print("meetup sent to MeetupManager addMeetup: \(meetup)")
             try await MeetupManager.shared.addMeetup(meetup: meetup)
         } catch {
             print("Error creating meetup: \(error)")
             throw error
         }
     }
-
-
-
+    
+    
+    
     // Function to fetch existing meetups array from the user document
     func getCreatedUserMeetups(userId: String) async throws -> [Meetup] {
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId
         }
-
+        
         let userRef = userCollection.document(userId)
         var meetups: [Meetup] = []
         
@@ -193,8 +189,8 @@ final class UserManager {
         }
         
     }
-
-
+    
+    
     
     
     func createUserProfile(userId: String,
@@ -208,7 +204,7 @@ final class UserManager {
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId
         }
-
+        
         do {
             let snapshot = try await userCollection.document(userId).getDocument()
             if snapshot.exists {
@@ -272,296 +268,293 @@ final class UserManager {
                 return UIImage(systemName: "person.circle.fill")!
             }
             return UIImage(systemName: "person.circle.fill")!
-        } catch {
-            print("Error loading image: \(error)")
-            throw error
         }
     }
-
-    
-    func fetchUserNames(userIds: [String]) async throws -> [String] {
-        do {
-            var usernames: [String] = []
-            
-            try await withThrowingTaskGroup(of: String?.self) { group in
-                for userId in userIds {
-                    guard !userId.isEmpty else {
-                        throw UserManagerError.invalidUserId
-                    }
-
-                    group.addTask {
-                        let userRef = self.userCollection.document(userId)
-                        let document = try? await userRef.getDocument()
+        
+        func fetchUserNames(userIds: [String]) async throws -> [String] {
+            do {
+                var usernames: [String] = []
+                
+                try await withThrowingTaskGroup(of: String?.self) { group in
+                    for userId in userIds {
+                        guard !userId.isEmpty else {
+                            throw UserManagerError.invalidUserId
+                        }
                         
-                        if let data = document?.data(),
-                           let firstName = data[DBUser.CodingKeys.firstName.rawValue] as? String,
-                           let lastName = data[DBUser.CodingKeys.lastName.rawValue] as? String {
-                            return "\(firstName) \(lastName)"
-                        } else {
-                            return nil
+                        group.addTask {
+                            let userRef = self.userCollection.document(userId)
+                            let document = try? await userRef.getDocument()
+                            
+                            if let data = document?.data(),
+                               let firstName = data[DBUser.CodingKeys.firstName.rawValue] as? String,
+                               let lastName = data[DBUser.CodingKeys.lastName.rawValue] as? String {
+                                return "\(firstName) \(lastName)"
+                            } else {
+                                return nil
+                            }
+                        }
+                    }
+                    
+                    for try await username in group {
+                        if let username = username {
+                            usernames.append(username)
                         }
                     }
                 }
                 
-                for try await username in group {
-                    if let username = username {
-                        usernames.append(username)
-                    }
-                }
+                return usernames
+            } catch {
+                print("Error fetching user names: \(error)")
+                throw error
+            }
+        }
+        
+        
+        func updateUserInformation(userId: String, fields: [String : Any]) async throws {
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
             }
             
-            return usernames
-        } catch {
-            print("Error fetching user names: \(error)")
-            throw error
+            let userRef = userCollection.document(userId)
+            do {
+                try await userRef.updateData(fields)
+            } catch {
+                print("Error updating user \(userId)'s fields \(fields): \(error)")
+                throw error
+            }
         }
-    }
-    
-    
-    func updateUserInformation(userId: String, fields: [String : Any]) async throws {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-
-        let userRef = userCollection.document(userId)
-        do {
-            try await userRef.updateData(fields)
-        } catch {
-            print("Error updating user \(userId)'s fields \(fields): \(error)")
-            throw error
-        }
-    }
-    
-//    private func deleteStorageImage(url: String) async throws {
-//        let storageRef = storage.reference(forURL: url)
-//        try await storageRef.delete()
-//    }
-    
-    
-    func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-
-        do {
-            let userMeetups = try await getCreatedUserMeetups(userId: userId)
+        
+        //    private func deleteStorageImage(url: String) async throws {
+        //        let storageRef = storage.reference(forURL: url)
+        //        try await storageRef.delete()
+        //    }
+        
+        
+        func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
+            }
+            
+            do {
+                let userMeetups = try await getCreatedUserMeetups(userId: userId)
                 for userMeetup in userMeetups {
                     if userMeetup.title == meetupTitle && userMeetup.city == meetupCity {
                         return true
                     }
                 }
                 return false
-        } catch {
-            print("Error determining if user has created a meetup with the same name in that city: \(error)")
-            throw error
-        }
-    }
-    
-    private func fetchUserMeetupNames(userId: String) async throws -> [String] {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-
-        let userRef = userCollection.document(userId)
-        
-        do {
-            let snapshot = try await userRef.getDocument()
-            if snapshot.exists {
-                var meetupNames: [String] = []
-                meetupNames = snapshot.data()?[DBUser.CodingKeys.createdMeetups.rawValue] as? [String] ?? []
-                return meetupNames
-            } else { return [] }
-        } catch {
-            print("Error fetching user meetup names: \(error)")
-            throw error
-        }
-    }
-    
-    
-    func setUserMessagesRead(userId: String) async throws {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-        let userRef = userCollection.document(userId)
-        
-        do {
-            let snapshot = try await userRef.getDocument()
-            if snapshot.exists {
-                try await userRef.updateData([
-                    DBUser.CodingKeys.hasUnreadMessages.rawValue : false
-                ])
+            } catch {
+                print("Error determining if user has created a meetup with the same name in that city: \(error)")
+                throw error
             }
-        } catch {
-            print("Error setting user messages to read: \(error)")
-            throw error
-        }
-    }
-    
-    
-    func blockUser(userId: String, blockedUser: String) async throws {
-        
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-
-        guard !blockedUser.isEmpty else {
-            throw UserManagerError.invalidUserId
         }
         
-        let userRef = userCollection.document(userId)
-        let blockedUserRef = userCollection.document(blockedUser)
-
-        do {
-            let snapshot = try await userRef.getDocument()
-            if snapshot.exists {
-                do {
+        func fetchUserMeetupNames(userId: String) async throws -> [String] {
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
+            }
+            
+            let userRef = userCollection.document(userId)
+            
+            do {
+                let snapshot = try await userRef.getDocument()
+                if snapshot.exists {
+                    var meetupNames: [String] = []
+                    meetupNames = snapshot.data()?[DBUser.CodingKeys.createdMeetups.rawValue] as? [String] ?? []
+                    return meetupNames
+                } else { return [] }
+            } catch {
+                print("Error fetching user meetup names: \(error)")
+                throw error
+            }
+        }
+        
+        
+        func setUserMessagesRead(userId: String) async throws {
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
+            }
+            let userRef = userCollection.document(userId)
+            
+            do {
+                let snapshot = try await userRef.getDocument()
+                if snapshot.exists {
                     try await userRef.updateData([
-                        DBUser.CodingKeys.blockedUsers.rawValue : FieldValue.arrayUnion([blockedUser])
+                        DBUser.CodingKeys.hasUnreadMessages.rawValue : false
                     ])
-                } catch {
-                    print("Error blocking user: \(error)")
                 }
+            } catch {
+                print("Error setting user messages to read: \(error)")
+                throw error
+            }
+        }
+        
+        
+        func blockUser(userId: String, blockedUser: String) async throws {
+            
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
             }
             
-            let blockedUserSnapshot = try await blockedUserRef.getDocument()
-            if blockedUserSnapshot.exists {
-                do {
-                    try await blockedUserRef.updateData([
-                        DBUser.CodingKeys.blockedBy.rawValue : FieldValue.arrayUnion([userId])
-                    ])
-                } catch {
-                    print("Error blocking user: \(error)")
-                    throw error
-                }
+            guard !blockedUser.isEmpty else {
+                throw UserManagerError.invalidUserId
             }
-        } catch {
-            print("Error blocking user: \(error)")
-            throw error
+            
+            let userRef = userCollection.document(userId)
+            let blockedUserRef = userCollection.document(blockedUser)
+            
+            do {
+                let snapshot = try await userRef.getDocument()
+                if snapshot.exists {
+                    do {
+                        try await userRef.updateData([
+                            DBUser.CodingKeys.blockedUsers.rawValue : FieldValue.arrayUnion([blockedUser])
+                        ])
+                    } catch {
+                        print("Error blocking user: \(error)")
+                    }
+                }
+                
+                let blockedUserSnapshot = try await blockedUserRef.getDocument()
+                if blockedUserSnapshot.exists {
+                    do {
+                        try await blockedUserRef.updateData([
+                            DBUser.CodingKeys.blockedBy.rawValue : FieldValue.arrayUnion([userId])
+                        ])
+                    } catch {
+                        print("Error blocking user: \(error)")
+                        throw error
+                    }
+                }
+            } catch {
+                print("Error blocking user: \(error)")
+                throw error
+            }
         }
-    }
-    
-    
-    func unblockUser(userId: String, blockedUser: String) async throws {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-
-        guard !blockedUser.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-
         
-        let userRef = userCollection.document(userId)
-        let blockedUserRef = userCollection.document(blockedUser)
         
-        do {
-            let snapshot = try await userRef.getDocument()
-            if snapshot.exists {
-                do {
-                    print("removing \(blockedUser) from \(userId)'s blockedUsers list")
+        func unblockUser(userId: String, blockedUser: String) async throws {
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
+            }
+            
+            guard !blockedUser.isEmpty else {
+                throw UserManagerError.invalidUserId
+            }
+            
+            
+            let userRef = userCollection.document(userId)
+            let blockedUserRef = userCollection.document(blockedUser)
+            
+            do {
+                let snapshot = try await userRef.getDocument()
+                if snapshot.exists {
+                    do {
+                        print("removing \(blockedUser) from \(userId)'s blockedUsers list")
+                        try await userRef.updateData([
+                            DBUser.CodingKeys.blockedUsers.rawValue : FieldValue.arrayRemove([blockedUser])
+                        ])
+                    } catch {
+                        print("Error blocking user: \(error)")
+                        throw error
+                    }
+                }
+                
+                
+                let blockedUserSnapshot = try await blockedUserRef.getDocument()
+                if blockedUserSnapshot.exists {
+                    do {
+                        print("removing \(userId) from \(blockedUser)'s blockedBy list")
+                        try await blockedUserRef.updateData([
+                            DBUser.CodingKeys.blockedBy.rawValue : FieldValue.arrayRemove([userId])
+                        ])
+                    } catch {
+                        print("Error blocking user: \(error)")
+                    }
+                }
+            } catch {
+                print("Error unblocking user: \(error)")
+                throw error
+            }
+        }
+        
+        
+        func setHasNewAcceptanceFalse(userId: String) async throws {
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
+            }
+            let userRef = userCollection.document(userId)
+            
+            do {
+                let snapshot = try await userRef.getDocument()
+                if snapshot.exists {
                     try await userRef.updateData([
-                        DBUser.CodingKeys.blockedUsers.rawValue : FieldValue.arrayRemove([blockedUser])
+                        "has_new_acceptance" : false
                     ])
-                } catch {
-                    print("Error blocking user: \(error)")
-                    throw error
                 }
+            } catch {
+                print("Error setting hasNewAcceptance to false: \(error)")
+                throw error
+            }
+        }
+        
+        
+        func reportUser(userId: String, reportedUserId: String, content: String) async throws {
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
             }
             
+            let userRef = userCollection.document(userId)
             
-            let blockedUserSnapshot = try await blockedUserRef.getDocument()
-            if blockedUserSnapshot.exists {
-                do {
-                    print("removing \(userId) from \(blockedUser)'s blockedBy list")
-                    try await blockedUserRef.updateData([
-                        DBUser.CodingKeys.blockedBy.rawValue : FieldValue.arrayRemove([userId])
+            do {
+                let snapshot = try await userRef.getDocument()
+                
+                if snapshot.exists {
+                    // Add reported user to the user's reported list
+                    try await userRef.updateData([
+                        DBUser.CodingKeys.reportedUsers.rawValue : FieldValue.arrayUnion([reportedUserId])
                     ])
-                } catch {
-                    print("Error blocking user: \(error)")
+                    
+                    // Add a document to the "reports" collection with the reportedUserId as the document ID
+                    let reportData: [String: Any] = [
+                        "reported_by": userId,
+                        "timestamp": Timestamp(),
+                        "reason": content
+                    ]
+                    
+                    try await reportsCollection.document(reportedUserId).setData(reportData)
+                    
+                } else {
+                    throw UserManagerError.userNotFound
                 }
+            } catch {
+                print("Error reporting user: \(error)")
+                throw error
             }
-        } catch {
-            print("Error unblocking user: \(error)")
-            throw error
         }
-    }
-    
-    
-    func setHasNewAcceptanceFalse(userId: String) async throws {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-        let userRef = userCollection.document(userId)
         
-        do {
-            let snapshot = try await userRef.getDocument()
-            if snapshot.exists {
-                try await userRef.updateData([
-                    "has_new_acceptance" : false
-                ])
+        
+        func bookmarkMeetup(userId: String, meetupId: String) async throws {
+            guard !userId.isEmpty else {
+                throw UserManagerError.invalidUserId
             }
-        } catch {
-            print("Error setting hasNewAcceptance to false: \(error)")
-            throw error
-        }
-    }
-    
-    
-    func reportUser(userId: String, reportedUserId: String, content: String) async throws {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-        
-        let userRef = userCollection.document(userId)
-        
-        do {
-            let snapshot = try await userRef.getDocument()
             
-            if snapshot.exists {
-                // Add reported user to the user's reported list
-                try await userRef.updateData([
-                    DBUser.CodingKeys.reportedUsers.rawValue : FieldValue.arrayUnion([reportedUserId])
-                ])
-                
-                // Add a document to the "reports" collection with the reportedUserId as the document ID
-                let reportData: [String: Any] = [
-                    "reported_by": userId,
-                    "timestamp": Timestamp(),
-                    "reason": content
-                ]
-                
-                try await reportsCollection.document(reportedUserId).setData(reportData)
-                
-            } else {
-                throw UserManagerError.userNotFound
+            let userRef = userCollection.document(userId)
+            
+            do {
+                let snapshot = try await userRef.getDocument()
+                if snapshot.exists {
+                    try await userRef.updateData([
+                        DBUser.CodingKeys.bookmarkedMeetups.rawValue : FieldValue.arrayUnion([meetupId])])
+                }
+            } catch {
+                print("Error bookmarking meetup.")
+                throw error
             }
-        } catch {
-            print("Error reporting user: \(error)")
-            throw error
-        }
-    }
-    
-    
-    func bookmarkMeetup(userId: String, meetupId: String) async throws {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
         }
         
-        let userRef = userCollection.document(userId)
-        
-        do {
-            let snapshot = try await userRef.getDocument()
-            if snapshot.exists {
-                try await userRef.updateData([
-                    DBUser.CodingKeys.bookmarkedMeetups.rawValue : FieldValue.arrayUnion([meetupId])])
-            }
-        } catch {
-            print("Error bookmarking meetup.")
-            throw error
-        }
     }
-
-}
+    
 
 
 enum UserManagerError: Error {
@@ -569,3 +562,4 @@ enum UserManagerError: Error {
     case firestoreError(Error)
     case invalidUserId
 }
+

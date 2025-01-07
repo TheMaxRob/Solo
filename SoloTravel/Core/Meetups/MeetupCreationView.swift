@@ -14,6 +14,7 @@ struct MeetupCreationView: View {
     @State private var isImagePickerPresented = false
     var city: String?
     var country: String?
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     var body: some View {
         NavigationStack {
@@ -85,12 +86,12 @@ struct MeetupCreationView: View {
                     Button {
                         Task {
                             do {
-                                try await viewModel.loadCurrentUser()
-                                
-                                if (try await viewModel.hasCreatedMeetupWithSameNameAndCity(userId: viewModel.user?.userId ?? "", meetupTitle: viewModel.meetupTitle, meetupCity: viewModel.city)) {
+                                // Prevent user from duplicating meetups
+                                if (try await viewModel.hasCreatedMeetupWithSameNameAndCity(userId: userStateManager.currentUser?.userId ?? "", meetupTitle: viewModel.meetupTitle, meetupCity: viewModel.city)) {
                                     viewModel.alertItem = AlertItem(title: Text("Error"), message: Text("You've already created a meetup in this city with that name, please don't clutter!"), dismissButton: .default(Text("OK")))
                                 } else {
-                                    try await viewModel.createMeetup(userId: viewModel.user?.userId ?? "")
+                                    // If no duplicates
+                                    try await viewModel.createMeetup(userId: userStateManager.currentUser?.userId ?? "")
                                     dismiss()
                                 }
                                 

@@ -9,7 +9,7 @@ struct MeetupDetailsView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isErrorAlertPresented = false
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     var body: some View {
         NavigationStack {
@@ -42,18 +42,18 @@ struct MeetupDetailsView: View {
                         .font(.footnote)
                         .padding()
                     
-                    if user.userId != meetup.organizerId {
+                    if userStateManager.currentUser?.userId != meetup.organizerId {
                         HStack {
                             Button {
                                 Task {
-                                    if (user.blockedUsers?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
+                                    if (userStateManager.currentUser?.blockedUsers?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
                                         alertMessage = "You have blocked this user."
                                         showAlert = true
-                                    } else if (user.blockedBy?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
+                                    } else if (userStateManager.currentUser?.blockedBy?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
                                         alertMessage = "You have been blocked by this user."
                                         showAlert = true
                                     } else {
-                                        try await viewModel.requestRSVP(meetup: meetup, userId: user.userId)
+                                        try await viewModel.requestRSVP(meetup: meetup, userId: userStateManager.currentUser?.userId ?? "")
                                         withAnimation {
                                             isRSVPed = true
                                         }
@@ -69,7 +69,7 @@ struct MeetupDetailsView: View {
                                     .background(Color.green)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                                     .transition(.opacity.combined(with: .scale))
-                                } else if user.rsvpMeetups?.contains(where: { $0 == meetup.id }) == true || ((user.rsvpRequests?.contains(where: { $0 == meetup.id }) == true)) {
+                                } else if userStateManager.currentUser?.rsvpMeetups?.contains(where: { $0 == meetup.id }) == true || ((userStateManager.currentUser?.rsvpRequests?.contains(where: { $0 == meetup.id }) == true)) {
                                     HStack {
                                         Image(systemName: "checkmark")
                                             .foregroundColor(.white)
@@ -94,14 +94,14 @@ struct MeetupDetailsView: View {
                             
                             Button {
                                 Task {
-                                    if (user.blockedUsers?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
+                                    if (userStateManager.currentUser?.blockedUsers?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
                                         alertMessage = "You have blocked this user."
                                         showAlert = true
-                                    } else if (user.blockedBy?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
+                                    } else if (userStateManager.currentUser?.blockedBy?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
                                         alertMessage = "You have been blocked by this user."
                                         showAlert = true
                                     } else {
-                                        viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId ?? "", userId: user.userId)
+                                        viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId ?? "", userId: userStateManager.currentUser?.userId ?? "")
                                     }
                                 }
                             } label: {
@@ -122,7 +122,7 @@ struct MeetupDetailsView: View {
                     Button {
                         Task {
                             do {
-                                try await viewModel.bookmarkMeetup(userId: user.userId, meetupId: meetup.id)
+                                try await viewModel.bookmarkMeetup(userId: userStateManager.currentUser?.userId ?? "", meetupId: meetup.id)
                                 withAnimation {
                                     isBookmarked = true
                                 }
@@ -153,8 +153,8 @@ struct MeetupDetailsView: View {
                         try await viewModel.loadImage(from: meetup.imageURL ?? "")
                         
                         // Set the RSVP and Bookmark state on appear
-                        isRSVPed = user.rsvpMeetups?.contains(meetup.id) ?? false
-                        isBookmarked = user.bookmarkedMeetups?.contains(meetup.id) ?? false
+                        isRSVPed = userStateManager.currentUser?.rsvpMeetups?.contains(meetup.id) ?? false
+                        isBookmarked = userStateManager.currentUser?.bookmarkedMeetups?.contains(meetup.id) ?? false
                     } catch {
                         isErrorAlertPresented = true
                     }
