@@ -39,10 +39,11 @@ final class MeetupCreationViewModel: ObservableObject {
     
     
     func createMeetup(userId: String) async throws {
+        print("creating Meetup with userId \(userId)")
         if let selectedImage {
             do {
                 let imageURL = try await UserManager.shared.uploadImageToFirebase(selectedImage, userId: userId)
-                let newMeetup = Meetup(title: meetupTitle, description: meetupDescription, meetTime: meetTime, city: city, country: country, createdDate: createdDate, organizerId: user?.userId, meetSpot: meetSpot, attendees: [], pendingUsers: [], imageURL: imageURL)
+                let newMeetup = Meetup(title: meetupTitle, description: meetupDescription, meetTime: meetTime, city: city, country: country, createdDate: createdDate, organizerId: userId, meetSpot: meetSpot, attendees: [], pendingUsers: [], imageURL: imageURL)
                 try await UserManager.shared.createMeetup(userId: userId, meetup: newMeetup)
             } catch {
                 errorMessage = "Error creating meetup."

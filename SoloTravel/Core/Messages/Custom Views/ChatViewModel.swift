@@ -12,41 +12,26 @@ import FirebaseFirestoreSwift
 @MainActor
 final class ChatViewModel: ObservableObject {
     @Published var conversation: Conversation = Conversation(userIds: [], lastMessage: "", createdDate: Date())
-    @Published var user: DBUser?
     @Published var other: DBUser?
     @Published var profileImage: UIImage? = nil
     @Published var isLoadingUsers: Bool = true
     @Published var errorMessage: String? = nil
     
     
-    func canSendMessage() -> Bool {
-        guard let user = user, let other = other else {
-            return false
-        }
-        
-        let isBlockedByOther = other.blockedUsers?.contains(user.userId)
-        let hasBlockedOther = user.blockedUsers?.contains(other.userId)
+    func canSendMessage(user: DBUser) -> Bool {
+        let isBlockedByOther = other?.blockedUsers?.contains(user.userId)
+        let hasBlockedOther = user.blockedUsers?.contains(other?.userId ?? "")
         
         return !(isBlockedByOther == true || hasBlockedOther == true)
     }
     
-    
-    func loadCurrentUser() async throws {
-        do {
-            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        } catch {
-            errorMessage = "Error loding your account."
-        }
-    }
-    
-    
-    func fetchConversation(conversationId: String) async throws -> Conversation? {
+    func fetchConversation(conversationId: String, userId: String) async throws -> Conversation? {
         do {
             let conversation = try await MessageManager.shared.fetchConversation(conversationId: conversationId)
             
-            for userId in conversation.users {
-                if userId != self.user?.userId {
+            for otherUserId in conversation.users {
+                // This would need to change to accommodate group messaging
+                if otherUserId != userId {
                     other = try await UserManager.shared.fetchUser(userId: userId)
                     return conversation
                 }

@@ -101,6 +101,7 @@ struct MeetupDetailsView: View {
                                         alertMessage = "You have been blocked by this user."
                                         showAlert = true
                                     } else {
+                                        print("create Conversation")
                                         viewModel.conversationId = try await viewModel.createConversation(with: meetup.organizerId ?? "", userId: userStateManager.currentUser?.userId ?? "")
                                     }
                                 }

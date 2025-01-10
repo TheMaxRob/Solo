@@ -8,7 +8,6 @@
 import SwiftUI
 
 final class MeetupDetailsViewModel: ObservableObject {
-    @Published var user: DBUser? = nil
     @Published var conversationId: String?
     @Published var host: DBUser? = nil
     @Published var isShowingPersonalMessageView = false
@@ -21,12 +20,11 @@ final class MeetupDetailsViewModel: ObservableObject {
     
     
     func requestRSVP(meetup: Meetup, userId: String) async throws {
-        guard let user else {
-            print("No user found.")
+        guard !userId.isEmpty else {
+            print("userId is empty")
             return
         }
-        
-        if (user.userId == meetup.organizerId) {
+        if (userId == meetup.organizerId) {
             print("Cannot RSVP to your own meetup")
             return
         } else {
@@ -40,13 +38,18 @@ final class MeetupDetailsViewModel: ObservableObject {
     
     
     func createConversation(with organizerId: String, userId: String) async throws -> String? {
-        guard let user else { return nil }
+        print("user: \(userId)")
+        print("organizer: \(organizerId)")
+        guard !userId.isEmpty else { return nil }
+        guard !organizerId.isEmpty else { return nil }
+        print("createConversation VM, guard passed")
         
-        if (user.userId == organizerId) {
+        if (userId == organizerId) {
             print("Cannot create chat with yourself.")
             return nil
         } else {
             do {
+                print("entered do block")
                 let userIds = [userId, organizerId]
                 let conversationId = try await MessageManager.shared.createConversation(userIds: userIds)
                 isShowingPersonalMessageView = true

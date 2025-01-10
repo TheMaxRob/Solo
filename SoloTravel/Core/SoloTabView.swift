@@ -31,7 +31,7 @@ struct SoloTabView: View {
                     .tabItem { Label("Home", systemImage: "house.fill") }
                     .tag(0)
                 
-                MessagesView(user: user)
+                MessagesView()
                     .tabItem { Label("Messages", systemImage: "message.fill") }
                     .tag(1)
                 
