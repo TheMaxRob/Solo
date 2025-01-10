@@ -14,21 +14,10 @@ final class MessagesViewModel: ObservableObject {
     @Published var conversations: [Conversation] = []
     @Published var messages: [Message] = []
     @Published var selectedConversationId: String = ""
-    @Published var user: DBUser?
     @Published var userNames: [String] = []
     @Published var errorMessage: String? = nil
     private var listener: ListenerRegistration?
 
-    
-    func loadCurrentUser() async throws {
-        do {
-            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        } catch {
-            errorMessage = "Error loading your account."
-        }
-    }
-    
     
     func fetchConversations(for userId: String) async throws {
         do {
@@ -58,8 +47,8 @@ final class MessagesViewModel: ObservableObject {
     }
     
     
-    func fetchUserNames(userIds: [String]) async throws {
-        let filteredUserIds = userIds.filter { $0 != user?.userId }
+    func fetchUserNames(userIds: [String], selfUserId: String) async throws {
+        let filteredUserIds = userIds.filter { $0 != selfUserId }
         userNames = try await UserManager.shared.fetchUserNames(userIds: filteredUserIds)
     }
     

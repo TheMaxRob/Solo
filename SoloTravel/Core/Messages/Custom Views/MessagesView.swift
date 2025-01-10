@@ -26,7 +26,7 @@ struct MessagesView: View {
                                 .font(.title3)
                                 .onAppear {
                                     Task {
-                                        try await viewModel.fetchUserNames(userIds: conversation.users)
+                                        try await viewModel.fetchUserNames(userIds: conversation.users, selfUserId: userStateManager.currentUser?.userId ?? "")
                                     }
                                 }
                                 .padding(.bottom, 6)
@@ -62,7 +62,6 @@ struct MessagesView: View {
                 Task {
                     do {
                         if let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
-                            try await viewModel.loadCurrentUser()
                             try await viewModel.fetchConversations(for: userId)
                             try await viewModel.setUserMessagesRead(userId: userId)
                         }
