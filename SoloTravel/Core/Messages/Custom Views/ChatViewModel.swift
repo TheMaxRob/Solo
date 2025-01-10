@@ -32,7 +32,8 @@ final class ChatViewModel: ObservableObject {
             for otherUserId in conversation.users {
                 // This would need to change to accommodate group messaging
                 if otherUserId != userId {
-                    other = try await UserManager.shared.fetchUser(userId: userId)
+                    other = try await UserManager.shared.fetchUser(userId: otherUserId)
+                    print("other User: \(String(describing: other?.userId))")
                     return conversation
                 }
             }
