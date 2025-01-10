@@ -63,7 +63,7 @@ struct RequestedMeetupView: View {
             .overlay(Button {
                 Task {
                     do {
-                        try await viewModel.unRequest(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
+                        try await viewModel.unRequest(meetupId: meetup.id, userId: userStateManager.currentUser?.userId ?? "")
                     } catch {
                         isErrorAlertPresented = true
                     }

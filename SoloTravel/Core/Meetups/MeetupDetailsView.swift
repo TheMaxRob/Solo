@@ -154,7 +154,7 @@ struct MeetupDetailsView: View {
                         try await viewModel.loadImage(from: meetup.imageURL ?? "")
                         
                         // Set the RSVP and Bookmark state on appear
-                        isRSVPed = userStateManager.currentUser?.rsvpMeetups?.contains(meetup.id) ?? false
+                        isRSVPed = userStateManager.currentUser?.rsvpRequests?.contains(meetup.id) ?? false
                         isBookmarked = userStateManager.currentUser?.bookmarkedMeetups?.contains(meetup.id) ?? false
                     } catch {
                         isErrorAlertPresented = true
