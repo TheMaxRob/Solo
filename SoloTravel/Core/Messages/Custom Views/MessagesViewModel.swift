@@ -16,9 +16,7 @@ final class MessagesViewModel: ObservableObject {
     @Published var selectedConversationId: String = ""
     @Published var userNames: [String] = []
     @Published var errorMessage: String? = nil
-    private var listener: ListenerRegistration?
 
-    
     func fetchConversations(for userId: String) async throws {
         do {
             conversations = try await MessageManager.shared.fetchConversations(userId: userId)
@@ -55,10 +53,6 @@ final class MessagesViewModel: ObservableObject {
     
     func setUserMessagesRead(userId: String) async throws {
         try await UserManager.shared.setUserMessagesRead(userId: userId)
-    }
-
-    deinit {
-        listener?.remove()
     }
 }
 

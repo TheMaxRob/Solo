@@ -22,7 +22,7 @@ struct ChatView: View {
                 VStack {
                     Spacer().frame(height: 55)
                     if let otherUser = viewModel.other {
-                        UserPFPView(user: otherUser)
+                        UserPFPView(photoURL: userStateManager.currentUser?.photoURL ?? "")
                         Text("\(otherUser.firstName ?? "") \(otherUser.lastName ?? "")")
                             .font(.headline)
                     }

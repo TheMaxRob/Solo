@@ -184,6 +184,7 @@ final class MeetupManager {
                 }
             }
         }
+        print("An error occurred while fetching meetup.")
         return nil
     }
     

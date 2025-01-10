@@ -37,7 +37,7 @@ struct OtherUserCellView: View {
                         NavigationLink {
                             PublicProfileView(profileUser: otherUser)
                         } label: {
-                            UserPFPView(user: otherUser)
+                            UserPFPView(photoURL: userStateManager.currentUser?.photoURL ?? "")
                         }
                         Text("\(otherUser.firstName ?? "") \(otherUser.lastName ?? "")")
                             .bold()

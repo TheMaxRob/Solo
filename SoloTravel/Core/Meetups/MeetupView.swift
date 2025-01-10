@@ -9,62 +9,57 @@ import SwiftUI
 
 @MainActor
 final class MeetupViewModel: ObservableObject {
-    
-    @Published private(set) var user: DBUser? = nil
     @Published private(set) var host: DBUser = DBUser(userId: "")
     @Published var profileImage: UIImage? = nil
     @Published var errorMessage: String? = nil
-    
-    func loadCurrentUser() async throws {
-        do {
-            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        } catch {
-            errorMessage = "Error loading your account."
-        }
-    }
-    
+    private var loadingTask: Task<Void, Error>?
     
     func getHost(userId: String) async throws {
-        do {
-            host = try await UserManager.shared.fetchUser(userId: userId)
-        } catch {
-            errorMessage = "Error loading organizer's profile."
+        // Cancel any existing loading task
+        loadingTask?.cancel()
+        
+        loadingTask = Task {
+            do {
+                host = try await UserManager.shared.fetchUser(userId: userId)
+                if let photoURL = host.photoURL, !photoURL.isEmpty {
+                    try await loadImage(from: photoURL)
+                }
+            } catch {
+                if !Task.isCancelled {
+                    errorMessage = "Error loading organizer's profile."
+                    throw error
+                }
+            }
         }
-        if let photoURL = host.photoURL, !photoURL.isEmpty {
-            try await loadImage(from: photoURL)
-        }
+        
+        try await loadingTask?.value
     }
         
     func loadImage(from url: String) async throws {
         profileImage = try await UserManager.shared.loadImage(from: url)
-        print("loaded Image")
+    }
+    
+    deinit {
+        loadingTask?.cancel()
     }
 }
 
-
 struct MeetupView: View {
-    
     @StateObject var viewModel = MeetupViewModel()
     @State private var isErrorAlertPresented = false
     var meetup: Meetup
-    
+
     var body: some View {
         HStack {
-            // Show profile image when loaded
-            if let profileImage = viewModel.profileImage {
-                Image(uiImage: profileImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 50, height: 50)
-                    .clipShape(Circle())
-                    .shadow(radius: 5)
-            } else {
-                UserPFPView(user: viewModel.host)
+            NavigationLink {
+                PublicProfileView(profileUser: viewModel.host)
+            } label: {
+                UserPFPView(photoURL: viewModel.host.photoURL ?? "")
+                    .id(meetup.organizerId) // Add explicit ID
             }
-            
+
             Spacer()
-            
+
             VStack {
                 Text(meetup.title)
                     .font(.headline)
@@ -76,20 +71,20 @@ struct MeetupView: View {
         .frame(width: 350)
         .clipShape(RoundedRectangle(cornerRadius: 15))
         .shadow(radius: 10, x: 3, y: 5)
-        .onAppear {
-            Task {
-                do {
-                    try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
-                } catch {
-                    isErrorAlertPresented = true
-                }
+        .task(id: meetup.organizerId) { // Use task with ID instead of onAppear
+            do {
+                try await viewModel.getHost(userId: meetup.organizerId ?? "Unknown")
+            } catch {
+                isErrorAlertPresented = true
             }
         }
         .alert(isPresented: $isErrorAlertPresented) {
-            Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
+            Alert(title: Text("Error"),
+                  message: Text(viewModel.errorMessage ?? "Something went wrong."),
+                  dismissButton: .default(Text("OK")))
         }
     }
-    
+
     private func formatDayAndTime(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEE, MMM d, yyyy h:mm a"

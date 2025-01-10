@@ -158,7 +158,7 @@ struct PendingUserCellView: View {
                 NavigationLink {
                     PublicProfileView(profileUser: profileUser)
                 } label: {
-                    UserPFPView(user: user)
+                    UserPFPView(photoURL: user.photoURL ?? "")
                 }
                 Text("\(user.firstName ?? "") \(user.lastName ?? "")")
                     .bold()
@@ -227,7 +227,7 @@ struct AcceptedUserCellView: View {
                     NavigationLink {
                         PublicProfileView(profileUser: profileUser)
                     } label: {
-                        UserPFPView(user: user)
+                        UserPFPView(photoURL: user.photoURL ?? "")
                     }
                     Text("\(user.firstName ?? "") \(user.lastName ?? "")")
                         .bold()

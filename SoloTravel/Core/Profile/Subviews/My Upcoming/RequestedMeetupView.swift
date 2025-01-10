@@ -24,7 +24,7 @@ struct RequestedMeetupView: View {
                     PublicProfileView(profileUser: profileUser)
                 } label: {
                     if let image = viewModel.profileImage {
-                        UserPFPView(user: viewModel.host)
+                        UserPFPView(photoURL: viewModel.host.photoURL ?? "")
 //                        Image(uiImage: image)
 //                            .resizable()
 //                            .scaledToFit()
