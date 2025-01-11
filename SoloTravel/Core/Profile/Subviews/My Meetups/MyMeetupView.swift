@@ -98,7 +98,6 @@ struct MyMeetupView: View {
             .onAppear {
                 Task {
                     do {
-                        try await viewModel.loadCurrentUser()
                         try await viewModel.setNoNewMembers(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
                         try await viewModel.loadAttendees(userIds: meetup.attendees ?? [])
                         try await viewModel.loadPendingUsers(userIds: meetup.pendingUsers ?? [])
@@ -106,6 +105,9 @@ struct MyMeetupView: View {
                         isErrorAlertPresented = true
                     }
                 }
+            }
+            .onDisappear {
+                Task { try await userStateManager.refreshUser() }
             }
             .alert(isPresented: $isErrorAlertPresented) {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))

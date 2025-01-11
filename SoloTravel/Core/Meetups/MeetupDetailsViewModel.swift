@@ -66,6 +66,9 @@ final class MeetupDetailsViewModel: ObservableObject {
         try await UserManager.shared.bookmarkMeetup(userId: userId, meetupId: meetupId)
     }
     
+    func removeBookmark(userId: String, meetupId: String) async throws {
+        try await UserManager.shared.unBookmark(userId: userId, meetupId: meetupId)
+    }
     
     func getHost(userId: String) async throws {
         do {

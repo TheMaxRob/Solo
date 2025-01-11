@@ -552,6 +552,27 @@ final class UserManager {
                 throw error
             }
         }
+    
+    
+    func unBookmark(userId: String, meetupId: String) async throws {
+        guard !userId.isEmpty else {
+            throw UserManagerError.invalidUserId
+        }
+        
+        let userRef = userCollection.document(userId)
+        
+        do {
+            let snapshot = try await userRef.getDocument()
+            if snapshot.exists {
+                try await userRef.updateData([
+                    DBUser.CodingKeys.bookmarkedMeetups.rawValue : FieldValue.arrayRemove([meetupId])])
+            }
+        } catch {
+            print("Error removing bookmark from meetup.")
+            throw error
+        }
+
+    }
         
     }
     

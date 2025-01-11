@@ -89,6 +89,7 @@ struct ChatView: View {
             if (viewModel.conversation.messages == nil) {
                 Task { try await viewModel.deleteConversation(conversationId: conversationId) }
             }
+            Task { try await userStateManager.refreshUser() }
             // Task { try await viewModel.setMessagesRead(conversationId: conversationId) }
         }
         .alert(isPresented: $isErrorAlertPresented) {

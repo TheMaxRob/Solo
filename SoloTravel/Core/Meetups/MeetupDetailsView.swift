@@ -4,6 +4,7 @@ struct MeetupDetailsView: View {
     
     @StateObject private var viewModel = MeetupDetailsViewModel()
     @State private var isConfirmingUnRSVP = false // Confirmation alert
+    @State private var isConfirmingUnbookmark = false // Confirmation alert for bookmark
     @State private var isRSVPed = false
     @State private var isBookmarked = false
     var meetup: Meetup
@@ -67,18 +68,9 @@ struct MeetupDetailsView: View {
                                             print("Error requesting RSVP")
                                         }
                                         
-                                        // Handle unrequest
+                                        // Show confirmation alert for un-RSVP
                                     } else {
-                                        do {
-                                            try await viewModel.unrequest(meetupId: meetup.id, userId: userStateManager.currentUser?.userId ?? "")
-                                            withAnimation {
-                                                isRSVPed = false
-                                            }
-                                            try await userStateManager.refreshUser()
-                                        } catch {
-                                            print("Error removing RSVP request")
-                                        }
-                                       
+                                        isConfirmingUnRSVP = true
                                     }
                                 }
                             } label: {
@@ -144,27 +136,68 @@ struct MeetupDetailsView: View {
                 .overlay(alignment: .topTrailing, content: {
                     Button {
                         Task {
-                            do {
-                                try await viewModel.bookmarkMeetup(userId: userStateManager.currentUser?.userId ?? "", meetupId: meetup.id)
-                                withAnimation {
-                                    isBookmarked = true
+                            if isBookmarked {
+                                // Show confirmation alert instead of immediately removing
+                                isConfirmingUnbookmark = true
+                            } else {
+                                do {
+                                    try await viewModel.bookmarkMeetup(userId: userStateManager.currentUser?.userId ?? "", meetupId: meetup.id)
+                                    withAnimation {
+                                        isBookmarked = true
+                                    }
+                                } catch {
+                                    isErrorAlertPresented = true
                                 }
-                            } catch {
-                                isErrorAlertPresented = true
                             }
                         }
                     } label: {
                         Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                             .padding()
-                            .animation(.easeInOut, value: isBookmarked) // Animation for bookmark
+                            .animation(.easeInOut, value: isBookmarked)
                     }
                 })
                 Spacer()
-                .navigationTitle("Meetup Details")
+                    .navigationTitle("Meetup Details")
             }
             .alert(isPresented: $showAlert, content: {
                 Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             })
+            .alert("Remove RSVP", isPresented: $isConfirmingUnRSVP) {
+                Button("Cancel", role: .cancel) {}
+                Button("Remove", role: .destructive) {
+                    Task {
+                        do {
+                            try await viewModel.unrequest(meetupId: meetup.id, userId: userStateManager.currentUser?.userId ?? "")
+                            withAnimation {
+                                isRSVPed = false
+                            }
+                            try await userStateManager.refreshUser()
+                        } catch {
+                            print("Error removing RSVP request")
+                        }
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to remove your RSVP request for this meetup?")
+            }
+            .alert("Remove Bookmark", isPresented: $isConfirmingUnbookmark) {
+                Button("Cancel", role: .cancel) {}
+                Button("Remove", role: .destructive) {
+                    Task {
+                        do {
+                            try await viewModel.removeBookmark(userId: userStateManager.currentUser?.userId ?? "", meetupId: meetup.id)
+                            withAnimation {
+                                isBookmarked = false
+                            }
+                        } catch {
+                            print("Error removing bookmark")
+                            isErrorAlertPresented = true
+                        }
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to remove this meetup from your bookmarks?")
+            }
             .padding(.horizontal, 50)
             .navigationDestination(isPresented: $viewModel.isShowingPersonalMessageView) {
                 ChatView(conversationId: viewModel.conversationId ?? "")
@@ -175,7 +208,6 @@ struct MeetupDetailsView: View {
                         try await viewModel.getHost(userId: meetup.organizerId ?? "")
                         try await viewModel.loadImage(from: meetup.imageURL ?? "")
                         
-                        // Set the RSVP and Bookmark state on appear
                         isRSVPed = userStateManager.currentUser?.rsvpRequests?.contains(meetup.id) ?? false
                         isBookmarked = userStateManager.currentUser?.bookmarkedMeetups?.contains(meetup.id) ?? false
                     } catch {
