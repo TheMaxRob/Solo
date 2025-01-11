@@ -3,6 +3,7 @@ import SwiftUI
 struct MeetupDetailsView: View {
     
     @StateObject private var viewModel = MeetupDetailsViewModel()
+    @State private var isConfirmingUnRSVP = false // Confirmation alert
     @State private var isRSVPed = false
     @State private var isBookmarked = false
     var meetup: Meetup
@@ -46,17 +47,38 @@ struct MeetupDetailsView: View {
                         HStack {
                             Button {
                                 Task {
+                                    // Handle User Blocks
                                     if (userStateManager.currentUser?.blockedUsers?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
                                         alertMessage = "You have blocked this user."
                                         showAlert = true
                                     } else if (userStateManager.currentUser?.blockedBy?.contains(where: { $0 == viewModel.host?.userId ?? "" }) == true) {
                                         alertMessage = "You have been blocked by this user."
                                         showAlert = true
-                                    } else {
-                                        try await viewModel.requestRSVP(meetup: meetup, userId: userStateManager.currentUser?.userId ?? "")
-                                        withAnimation {
-                                            isRSVPed = true
+                                        
+                                        // Handle RSVP
+                                    } else if !isRSVPed {
+                                        do {
+                                            try await viewModel.requestRSVP(meetup: meetup, userId: userStateManager.currentUser?.userId ?? "")
+                                            withAnimation {
+                                                isRSVPed = true
+                                            }
+                                            try await userStateManager.refreshUser()
+                                        } catch {
+                                            print("Error requesting RSVP")
                                         }
+                                        
+                                        // Handle unrequest
+                                    } else {
+                                        do {
+                                            try await viewModel.unrequest(meetupId: meetup.id, userId: userStateManager.currentUser?.userId ?? "")
+                                            withAnimation {
+                                                isRSVPed = false
+                                            }
+                                            try await userStateManager.refreshUser()
+                                        } catch {
+                                            print("Error removing RSVP request")
+                                        }
+                                       
                                     }
                                 }
                             } label: {

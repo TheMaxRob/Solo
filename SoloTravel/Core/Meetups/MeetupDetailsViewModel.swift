@@ -75,4 +75,14 @@ final class MeetupDetailsViewModel: ObservableObject {
         }
     }
     
+    
+    func unrequest(meetupId: String, userId: String) async throws {
+        do {
+            try await MeetupManager.shared.unRequest(meetupId: meetupId, userId: userId)
+        } catch {
+            errorMessage = "Error removing RSVP request."
+        }
+        
+    }
+    
 }
