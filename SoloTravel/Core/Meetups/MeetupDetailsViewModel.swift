@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 final class MeetupDetailsViewModel: ObservableObject {
     @Published var conversationId: String?
     @Published var host: DBUser? = nil
@@ -14,8 +15,8 @@ final class MeetupDetailsViewModel: ObservableObject {
     @Published var image: UIImage? = nil
     @Published var errorMessage: String? = nil
     
-    func loadImage(from url: String) async throws {
-        image = try await UserManager.shared.loadImage(from: url)
+    func loadImage(from url: String, userStateManager: UserStateManager) async throws {
+        image = try await userStateManager.fetchImage(from: url)
     }
     
     

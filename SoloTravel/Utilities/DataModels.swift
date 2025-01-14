@@ -7,6 +7,8 @@
 
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import MapboxMaps
+import CoreLocation
 
 
 struct Message: Codable, Identifiable {
@@ -39,16 +41,15 @@ struct Message: Codable, Identifiable {
 
 
 
-struct Meetup: Identifiable, Codable, Equatable {
+struct Meetup: Identifiable, Codable, Equatable, Hashable {
     let id: String
     let title: String
     let description: String?
     let meetTime: Date?
     let city: String?
-    let country: String?
     let createdDate: Date?
     let organizerId: String?
-    let meetSpot: String?
+    let location: CLLocationCoordinate2D
     let attendees: [String]?
     let pendingUsers: [String]?
     let imageURL: String?
@@ -60,10 +61,9 @@ struct Meetup: Identifiable, Codable, Equatable {
         case description = "description"
         case meetTime = "meet_time"
         case city = "city"
-        case country = "country"
         case createdDate = "created_date"
         case organizerId = "organizer_id"
-        case meetSpot = "meet_spot"
+        case location = "location"
         case attendees = "attendees"
         case pendingUsers = "pending_users"
         case imageURL = "image_url"
@@ -76,10 +76,9 @@ struct Meetup: Identifiable, Codable, Equatable {
         self.description = ""
         self.meetTime = Date()
         self.city = ""
-        self.country = ""
         self.createdDate = Date()
         self.organizerId = ""
-        self.meetSpot = ""
+        self.location = CLLocationCoordinate2D()
         self.attendees = []
         self.pendingUsers = []
         self.imageURL = ""
@@ -90,10 +89,9 @@ struct Meetup: Identifiable, Codable, Equatable {
          description: String?,
          meetTime: Date?,
          city: String?,
-         country: String?,
          createdDate: Date?,
          organizerId: String?,
-         meetSpot: String?,
+         location: CLLocationCoordinate2D,
          attendees: [String]?,
          pendingUsers: [String]?,
          imageURL: String?
@@ -105,10 +103,9 @@ struct Meetup: Identifiable, Codable, Equatable {
         self.description = description ?? ""
         self.meetTime = meetTime ?? Date()
         self.city = city ?? ""
-        self.country = country ?? ""
         self.createdDate = createdDate ?? Date()
         self.organizerId = organizerId ?? ""
-        self.meetSpot = meetSpot ?? ""
+        self.location = location
         self.attendees = []
         self.pendingUsers = []
         self.imageURL = imageURL ?? ""
@@ -122,14 +119,17 @@ struct Meetup: Identifiable, Codable, Equatable {
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
         self.meetTime = try container.decodeIfPresent(Date.self, forKey: .meetTime)
         self.city = try container.decodeIfPresent(String.self, forKey: .city)
-        self.country = try container.decodeIfPresent(String.self, forKey: .country)
         self.createdDate = try container.decodeIfPresent(Date.self, forKey: .createdDate)
         self.organizerId = try container.decodeIfPresent(String.self, forKey: .organizerId)
-        self.meetSpot = try container.decodeIfPresent(String.self, forKey: .meetSpot)
         self.attendees = try container.decodeIfPresent([String].self, forKey: .attendees)
         self.pendingUsers = try container.decodeIfPresent([String].self, forKey: .pendingUsers)
         self.imageURL = try container.decodeIfPresent(String.self, forKey: .imageURL)
         self.hasNewMember = try container.decodeIfPresent(Bool.self, forKey: .hasNewMember)
+        if let geoPoint = try container.decodeIfPresent(GeoPoint.self, forKey: .location) {
+            self.location = CLLocationCoordinate2D(latitude: geoPoint.latitude, longitude: geoPoint.longitude)
+        } else {
+            throw DecodingError.dataCorruptedError(forKey: .location, in: container, debugDescription: "Location is missing or invalid")
+        }
     }
     
     func encode(to encoder: Encoder) throws {
@@ -141,12 +141,31 @@ struct Meetup: Identifiable, Codable, Equatable {
         try container.encodeIfPresent(city, forKey: .city)
         try container.encodeIfPresent(createdDate, forKey: .createdDate)
         try container.encodeIfPresent(organizerId, forKey: .organizerId)
-        try container.encodeIfPresent(meetSpot, forKey: .meetSpot)
         try container.encodeIfPresent(attendees, forKey: .attendees)
         try container.encodeIfPresent(pendingUsers, forKey: .pendingUsers)
         try container.encodeIfPresent(imageURL, forKey: .imageURL)
         try container.encodeIfPresent(hasNewMember, forKey: .hasNewMember)
+        
+        let geoPoint = GeoPoint(latitude: location.latitude, longitude: location.longitude)
+        try container.encode(geoPoint, forKey: .location)
+
     }
+    
+    func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+            hasher.combine(title)
+            hasher.combine(description)
+            hasher.combine(meetTime)
+            hasher.combine(city)
+            hasher.combine(createdDate)
+            hasher.combine(organizerId)
+            hasher.combine(location.latitude)
+            hasher.combine(location.longitude)
+            hasher.combine(attendees)
+            hasher.combine(pendingUsers)
+            hasher.combine(imageURL)
+            hasher.combine(hasNewMember)
+        }
 }
 
 

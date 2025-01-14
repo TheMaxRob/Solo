@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapboxMaps
 
 @MainActor
 final class MeetupViewModel: ObservableObject {
@@ -93,5 +94,5 @@ struct MeetupView: View {
 }
 
 #Preview {
-    MeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", country: "France", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot", attendees: [], pendingUsers: [], imageURL: ""))
+    MeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", location: CLLocationCoordinate2D(), attendees: [], pendingUsers: [], imageURL: ""))
 }

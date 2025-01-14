@@ -31,7 +31,7 @@ struct MeetupDetailsView: View {
                     Text("Created by: \(viewModel.host?.firstName ?? "Unknown") \(viewModel.host?.lastName ?? "")")
                         .padding(.bottom)
                     
-                    Text("Meet At \(meetup.meetSpot ?? "")")
+                    Text("\(meetup.location)")
                         .bold()
                         .font(.subheadline)
                     
@@ -206,7 +206,7 @@ struct MeetupDetailsView: View {
                 Task {
                     do {
                         try await viewModel.getHost(userId: meetup.organizerId ?? "")
-                        try await viewModel.loadImage(from: meetup.imageURL ?? "")
+                        try await viewModel.loadImage(from: meetup.imageURL ?? "", userStateManager: userStateManager)
                         
                         isRSVPed = userStateManager.currentUser?.rsvpRequests?.contains(meetup.id) ?? false
                         isBookmarked = userStateManager.currentUser?.bookmarkedMeetups?.contains(meetup.id) ?? false

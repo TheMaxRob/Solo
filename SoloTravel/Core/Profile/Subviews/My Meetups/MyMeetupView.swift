@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-
-
+import MapboxMaps
 
 
 struct MyMeetupView: View {
@@ -130,20 +129,7 @@ struct MyMeetupView: View {
 }
 
 #Preview {
-    MyMeetupView(meetup: Meetup(
-        
-        title: "Title",
-        description: "description",
-        meetTime: Date(),
-        city: "Paris",
-        country: "France",
-        createdDate: Date(),
-        organizerId: "organizerId",
-        meetSpot: "Spot",
-        attendees: [],
-        pendingUsers: [],
-        imageURL: ""
-    ))
+    MyMeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", location: CLLocationCoordinate2D(), attendees: [], pendingUsers: [], imageURL: ""))
 }
 
 

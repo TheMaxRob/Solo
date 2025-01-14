@@ -27,8 +27,8 @@ struct SoloTabView: View {
     var body: some View {
         NavigationStack {
             TabView(selection: $selectedTab) {
-                HomeView(isNotAuthenticated: $isNotAuthenticated)
-                    .tabItem { Label("Home", systemImage: "house.fill") }
+                MapView()
+                    .tabItem { Label("Home", systemImage: "globe") }
                     .tag(0)
                 
                 MessagesView()
@@ -41,6 +41,7 @@ struct SoloTabView: View {
                     .tag(2)
                     .badge((userStateManager.currentUser?.hasNewRequest ?? false || userStateManager.currentUser?.hasNewAcceptance ?? false) ? "" : nil)
             }
+            .background(.clear)
             .tint(.blue)
             .navigationTitle(tabTitle)
             //.navigationBarTitleDisplayMode(.inline)

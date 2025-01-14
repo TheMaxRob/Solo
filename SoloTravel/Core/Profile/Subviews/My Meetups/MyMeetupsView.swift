@@ -41,7 +41,7 @@ struct MyMeetupsView: View {
                         .frame(width: 400)
                     
                     NavigationLink {
-                        MeetupCreationView()
+                        //MeetupCreationView()
                     } label: {
                         Text("Create a Meetup")
                             .foregroundStyle(.white)

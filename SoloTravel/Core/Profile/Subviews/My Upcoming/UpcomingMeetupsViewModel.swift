@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapboxMaps
 
 @MainActor
 final class UpcomingMeetupsViewModel: ObservableObject {
@@ -76,7 +77,7 @@ final class UpcomingMeetupsViewModel: ObservableObject {
         do {
             if meetupIds.isEmpty { return }
             for meetupId in meetupIds {
-                try await requestedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "", description: "", meetTime: Date(), city: "", country: "", createdDate: Date(), organizerId: "", meetSpot: "", attendees: [], pendingUsers: [], imageURL: ""))
+                try await requestedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", location: CLLocationCoordinate2D(), attendees: [], pendingUsers: [], imageURL: ""))
             }
         } catch {
             errorMessage = "Error fetching your RSVP requests."
@@ -88,7 +89,7 @@ final class UpcomingMeetupsViewModel: ObservableObject {
         do {
             if meetupIds.isEmpty { return }
             for meetupId in meetupIds {
-                try await acceptedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "", description: "", meetTime: Date(), city: "", country: "", createdDate: Date(), organizerId: "", meetSpot: "", attendees: [], pendingUsers: [], imageURL: ""))
+                try await acceptedMeetups.append(MeetupManager.shared.getMeetup(meetupId: meetupId) ?? Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", location: CLLocationCoordinate2D(), attendees: [], pendingUsers: [], imageURL: ""))
             }
         } catch {
             errorMessage = "Error fetching your upcoming meetups."
