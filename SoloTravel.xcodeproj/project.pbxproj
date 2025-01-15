@@ -76,6 +76,8 @@
 		92E3AE022C3B350D004BC645 /* MyMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3AE012C3B350D004BC645 /* MyMeetupView.swift */; };
 		92E5A8422C423B7400C6AD77 /* MyMeetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E5A8412C423B7400C6AD77 /* MyMeetupViewModel.swift */; };
 		92E87A052C6066D6009759A3 /* UpcomingMeetupsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E87A042C6066D6009759A3 /* UpcomingMeetupsViewModel.swift */; };
+		92EE32A02D381C9A00C304AF /* SearchSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EE329F2D381C9A00C304AF /* SearchSheetView.swift */; };
+		92EE32A22D381CB700C304AF /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EE32A12D381CB700C304AF /* LocationService.swift */; };
 		92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */; };
 		92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */; };
 		92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F4875B2C1A422A00E82EA3 /* ChatView.swift */; };
@@ -167,6 +169,8 @@
 		92E3AE012C3B350D004BC645 /* MyMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupView.swift; sourceTree = "<group>"; };
 		92E5A8412C423B7400C6AD77 /* MyMeetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMeetupViewModel.swift; sourceTree = "<group>"; };
 		92E87A042C6066D6009759A3 /* UpcomingMeetupsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupsViewModel.swift; sourceTree = "<group>"; };
+		92EE329F2D381C9A00C304AF /* SearchSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSheetView.swift; sourceTree = "<group>"; };
+		92EE32A12D381CB700C304AF /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupCreationView.swift; sourceTree = "<group>"; };
 		92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupManager.swift; sourceTree = "<group>"; };
 		92F4875B2C1A422A00E82EA3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
@@ -461,6 +465,8 @@
 				92DC6B7E2BF65428001B2680 /* MeetupDetailsView.swift */,
 				92736A222C43125200D8266C /* MeetupDetailsViewModel.swift */,
 				92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */,
+				92EE329F2D381C9A00C304AF /* SearchSheetView.swift */,
+				92EE32A12D381CB700C304AF /* LocationService.swift */,
 				92736A202C4308B900D8266C /* MeetupCreationViewModel.swift */,
 				9212B0512D35FC7A004E249D /* MeetupView.swift */,
 				92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */,
@@ -644,6 +650,7 @@
 				920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */,
 				925AC4F92C41BDBE001FC6CC /* LoadingView.swift in Sources */,
 				92DA73512C238370004D271A /* CreateAccountView.swift in Sources */,
+				92EE32A22D381CB700C304AF /* LocationService.swift in Sources */,
 				92BA7ADE2D3809F000301943 /* MapPin.swift in Sources */,
 				92E87A052C6066D6009759A3 /* UpcomingMeetupsViewModel.swift in Sources */,
 				92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */,
@@ -668,6 +675,7 @@
 				92A8FF982C3DD3400025FAA9 /* MyOwnMeetupView.swift in Sources */,
 				92E3AE002C3B32C2004BC645 /* MyMeetupsViewModel.swift in Sources */,
 				925B35F42BE2EC3500DAF991 /* AuthenticationManager.swift in Sources */,
+				92EE32A02D381C9A00C304AF /* SearchSheetView.swift in Sources */,
 				925181002C260149003F8ACA /* WelcomeView.swift in Sources */,
 				92D732A62BE7FDA7005629CB /* ProfileView.swift in Sources */,
 				92DC6B612BF64D46001B2680 /* UserManager.swift in Sources */,

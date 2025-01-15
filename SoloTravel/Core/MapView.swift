@@ -25,18 +25,35 @@ struct MapView: View {
     @State private var selectedMeetup: Meetup? = nil
     @State private var showingCreationView = false
     @State private var tappedLocation: CLLocationCoordinate2D? = nil
+    @State private var selectedLocation: SearchResult?
     @State private var showingDatePicker = false
     @StateObject private var viewModel = MapViewModel()
     @EnvironmentObject private var userStateManager: UserStateManager
+    @State private var position = MapCameraPosition.automatic
+    @State private var searchResults = [SearchResult]()
+    @State private var isSheetPresented: Bool = true
+    @State private var scene: MKLookAroundScene?
     
     var body: some View {
         NavigationStack {
             ZStack {
                 MapReader { proxy in
-                    Map {
+                    Map(position: $position, selection: $selectedLocation) {
+                        ForEach(searchResults) { result in
+                            Marker(coordinate: result.location) {
+                                Image(systemName: "mappin")
+                                    .onTapGesture {
+                                        position = .region(MKCoordinateRegion(
+                                                        center: result.location,
+                                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                                                    ))
+                                    }
+                            }
+                            .tag(result)
+                        }
                         ForEach(viewModel.meetups) { meetup in
                             Annotation(meetup.title, coordinate: meetup.location) {
-                                Image(systemName: "mappin.circle.fill")
+                                Image(systemName: "mappin")
                                     .font(.largeTitle)
                                     .onTapGesture {
                                         selectedMeetup = meetup
@@ -51,23 +68,53 @@ struct MapView: View {
                         tappedLocation = proxy.convert(position, from: .local)
                         showingCreationView = true
                     }
+                    .onChange(of: selectedLocation) {
+                        if let selectedLocation {
+                            Task {
+                                scene = try? await fetchScene(for: selectedLocation.location)
+                            }
+                        }
+                        isSheetPresented = selectedLocation == nil
+                    }
+                    .onChange(of: searchResults) {
+                        if let firstResult = searchResults.first, searchResults.count == 1 {
+                            selectedLocation = firstResult
+                        }
+                    }
+                    .sheet(isPresented: $isSheetPresented, content: {
+                        SheetView(searchResults: $searchResults)
+                    })
                     .ignoresSafeArea()
                 }
                 // Date Range Button Overlay
                 VStack {
-                    Button {
-                        showingDatePicker.toggle()
-                    } label: {
-                        HStack {
-                            Image(systemName: "calendar")
-                            Text("\(viewModel.startDate.formatted(date: .abbreviated, time: .omitted)) - \(viewModel.endDate.formatted(date: .abbreviated, time: .omitted))")
+                    
+                    HStack {
+                        
+                        Button {
+                            showingDatePicker.toggle()
+                        } label: {
+                            HStack {
+                                Image(systemName: "calendar")
+                                Text("\(viewModel.startDate.formatted(date: .abbreviated, time: .omitted)) - \(viewModel.endDate.formatted(date: .abbreviated, time: .omitted))")
+                            }
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 15))
                         }
                         .padding()
-                        .background(.ultraThinMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 15))
+                        
+                        
+                        Button {
+                            isSheetPresented = true
+                        } label: {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 20))
+                                .padding()
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                        }
                     }
-                    .padding()
-                    
                     Spacer()
                 }
                 
@@ -138,5 +185,10 @@ struct MapView: View {
         }
         //.ignoresSafeArea()
         .animation(.spring(), value: showingDatePicker)
+    }
+    
+    private func fetchScene(for coordinate: CLLocationCoordinate2D) async throws -> MKLookAroundScene? {
+        let lookAroundScene = MKLookAroundSceneRequest(coordinate: coordinate)
+        return try await lookAroundScene.scene
     }
 }
