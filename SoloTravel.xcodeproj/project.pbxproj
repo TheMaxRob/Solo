@@ -44,6 +44,7 @@
 		92A8FF982C3DD3400025FAA9 /* MyOwnMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */; };
 		92A8FF9A2C3E1A410025FAA9 /* UpcomingMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */; };
 		92ABF79D2CAA4D9500D4DCDD /* UserStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92ABF79C2CAA4D9500D4DCDD /* UserStateManager.swift */; };
+		92BA7ADE2D3809F000301943 /* MapPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BA7ADD2D3809F000301943 /* MapPin.swift */; };
 		92BD682A2BE2F7B5000BACB3 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BD68292BE2F7B5000BACB3 /* MessagesView.swift */; };
 		92C4794A2BCEA94C0020EB10 /* SoloTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C479492BCEA94C0020EB10 /* SoloTabView.swift */; };
 		92C87E252C45DF8100254F99 /* PublicProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C87E242C45DF8100254F99 /* PublicProfileViewModel.swift */; };
@@ -133,6 +134,7 @@
 		92A8FF972C3DD3400025FAA9 /* MyOwnMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyOwnMeetupView.swift; sourceTree = "<group>"; };
 		92A8FF992C3E1A410025FAA9 /* UpcomingMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupView.swift; sourceTree = "<group>"; };
 		92ABF79C2CAA4D9500D4DCDD /* UserStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStateManager.swift; sourceTree = "<group>"; };
+		92BA7ADD2D3809F000301943 /* MapPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPin.swift; sourceTree = "<group>"; };
 		92BD68292BE2F7B5000BACB3 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		92C479492BCEA94C0020EB10 /* SoloTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloTabView.swift; sourceTree = "<group>"; };
 		92C87E242C45DF8100254F99 /* PublicProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileViewModel.swift; sourceTree = "<group>"; };
@@ -402,6 +404,7 @@
 			isa = PBXGroup;
 			children = (
 				92F761DD2D336B540041FF14 /* MapView.swift */,
+				92BA7ADD2D3809F000301943 /* MapPin.swift */,
 				92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */,
 				92DC6B602BF64D46001B2680 /* UserManager.swift */,
 				925B35ED2BE2EBCC00DAF991 /* RootView.swift */,
@@ -641,6 +644,7 @@
 				920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */,
 				925AC4F92C41BDBE001FC6CC /* LoadingView.swift in Sources */,
 				92DA73512C238370004D271A /* CreateAccountView.swift in Sources */,
+				92BA7ADE2D3809F000301943 /* MapPin.swift in Sources */,
 				92E87A052C6066D6009759A3 /* UpcomingMeetupsViewModel.swift in Sources */,
 				92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */,
 				923E942A2C3E34EB002AE12B /* UserPFPView.swift in Sources */,

@@ -27,6 +27,8 @@ struct MeetupDetailsView: View {
                         .font(.title)
                         .bold()
                         .padding()
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
                     
                     Text("Created by: \(viewModel.host?.firstName ?? "Unknown") \(viewModel.host?.lastName ?? "")")
                         .padding(.bottom)

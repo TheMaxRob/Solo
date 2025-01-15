@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import MapboxMaps
+import MapKit
 
 @MainActor
 final class MapViewModel: ObservableObject {
@@ -17,7 +17,7 @@ final class MapViewModel: ObservableObject {
     
     func fetchMeetups(userStateManager: UserStateManager) async throws {
         meetups = try await userStateManager.fetchMeetups(start: startDate, end: endDate)
-        //print("meetups assigned in MapViewModel: \(meetups)")
+        print("meetups assigned in MapViewModel: \(meetups)")
     }
 }
 
@@ -32,23 +32,27 @@ struct MapView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Map(initialViewport: .camera(center: CLLocationCoordinate2D(latitude: 39.5, longitude: -98.0), zoom: 2, bearing: 0, pitch: 0)) {
-                    ForEvery(viewModel.meetups) { meetup in
-                        CircleAnnotation(centerCoordinate: meetup.location)
-                            .circleRadius(5)
-                            .circleColor(StyleColor(.systemBlue))
-                            .onTapGesture {
-                                selectedMeetup = meetup
+                MapReader { proxy in
+                    Map {
+                        ForEach(viewModel.meetups) { meetup in
+                            Annotation(meetup.title, coordinate: meetup.location) {
+                                Image(systemName: "mappin.circle.fill")
+                                    .font(.largeTitle)
+                                    .onTapGesture {
+                                        selectedMeetup = meetup
+                                    }
+
                             }
-                        PointAnnotation(coordinate: meetup.location)
+                                
+                            //PointAnnotation(coordinate: meetup.location)
+                        }
                     }
-                }
-                    .onMapTapGesture { context in
-                        tappedLocation = context.coordinate
+                    .onTapGesture { position in
+                        tappedLocation = proxy.convert(position, from: .local)
                         showingCreationView = true
                     }
                     .ignoresSafeArea()
-                
+                }
                 // Date Range Button Overlay
                 VStack {
                     Button {
