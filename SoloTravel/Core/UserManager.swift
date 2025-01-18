@@ -14,7 +14,6 @@ import FirebaseStorage
 final class UserManager {
     
     static let shared = UserManager()
-    
     private init() { }
     
     private let userCollection = Firestore.firestore().collection("users")
@@ -154,31 +153,18 @@ final class UserManager {
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId
         }
-        
+
         let userRef = userCollection.document(userId)
         var meetups: [Meetup] = []
-        
+
         do {
             let userDocument = try await userRef.getDocument()
             if userDocument.exists {
-                if let data = userDocument.data() {
-                    if let meetupIds = data["created_meetups"] as? [String] {
-                        for meetupId in meetupIds {
-                            let indexRef = meetupsIndexCollection.document(meetupId)
-                            let indexSnapshot = try await indexRef.getDocument()
-                            if let indexData = indexSnapshot.data() {
-                                if
-                                    let city = indexData["city"] as? String,
-                                    let country = indexData["country"] as? String {
-                                    let snapshot = try await meetupsCollection.document(country).collection(city).document(meetupId).getDocument()
-                                    if let dict = snapshot.data() {
-                                        if let meetup = try? decoder.decode(Meetup.self, from: dict) {
-                                            meetups.append(meetup)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                if let createdMeetupIds = userDocument.data()?[DBUser.CodingKeys.createdMeetups.rawValue] as? [String] {
+                    // Fetch all meetups using the IDs from created_meetups
+                    for meetupId in createdMeetupIds {
+                        let meetup = try await MeetupManager.shared.fetchMeetup(meetupId: meetupId)
+                        meetups.append(meetup ?? Meetup())
                     }
                 }
             }
@@ -187,7 +173,6 @@ final class UserManager {
             print("Error fetching created meetups: \(error)")
             throw error
         }
-        
     }
     
     

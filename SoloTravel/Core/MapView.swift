@@ -17,11 +17,12 @@ final class MapViewModel: ObservableObject {
     
     func fetchMeetups(userStateManager: UserStateManager) async throws {
         meetups = try await userStateManager.fetchMeetups(start: startDate, end: endDate)
-        print("meetups assigned in MapViewModel: \(meetups)")
+        //print("meetups assigned in MapViewModel: \(meetups)")
     }
 }
 
 struct MapView: View {
+    @StateObject private var locationManager = LocationManager()
     @State private var selectedMeetup: Meetup? = nil
     @State private var showingCreationView = false
     @State private var tappedLocation: CLLocationCoordinate2D? = nil
@@ -34,58 +35,24 @@ struct MapView: View {
     @State private var isSheetPresented: Bool = true
     @State private var scene: MKLookAroundScene?
     
+    @State private var region = MKCoordinateRegion(
+        center: LocationManager.defaultLocation,
+        span: MKCoordinateSpan(latitudeDelta: 180, longitudeDelta: 180)
+    )
+    
     var body: some View {
         NavigationStack {
             ZStack {
-                MapReader { proxy in
-                    Map(position: $position, selection: $selectedLocation) {
-                        ForEach(searchResults) { result in
-                            Marker(coordinate: result.location) {
-                                Image(systemName: "mappin")
-                                    .onTapGesture {
-                                        position = .region(MKCoordinateRegion(
-                                                        center: result.location,
-                                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                                                    ))
-                                    }
-                            }
-                            .tag(result)
-                        }
-                        ForEach(viewModel.meetups) { meetup in
-                            Annotation(meetup.title, coordinate: meetup.location) {
-                                Image(systemName: "mappin")
-                                    .font(.largeTitle)
-                                    .onTapGesture {
-                                        selectedMeetup = meetup
-                                    }
-
-                            }
-                                
-                            //PointAnnotation(coordinate: meetup.location)
-                        }
+                ClusterMapViewRepresentable(
+                    meetups: viewModel.meetups,
+                    region: $region,
+                    selectedMeetup: $selectedMeetup,
+                    tappedLocation: $tappedLocation,
+                    onClusterTap: { cluster in
+                        zoomInOnCluster(cluster)
                     }
-                    .onTapGesture { position in
-                        tappedLocation = proxy.convert(position, from: .local)
-                        showingCreationView = true
-                    }
-                    .onChange(of: selectedLocation) {
-                        if let selectedLocation {
-                            Task {
-                                scene = try? await fetchScene(for: selectedLocation.location)
-                            }
-                        }
-                        isSheetPresented = selectedLocation == nil
-                    }
-                    .onChange(of: searchResults) {
-                        if let firstResult = searchResults.first, searchResults.count == 1 {
-                            selectedLocation = firstResult
-                        }
-                    }
-                    .sheet(isPresented: $isSheetPresented, content: {
-                        SheetView(searchResults: $searchResults)
-                    })
-                    .ignoresSafeArea()
-                }
+                )
+                .ignoresSafeArea()
                 // Date Range Button Overlay
                 VStack {
                     
@@ -176,7 +143,18 @@ struct MapView: View {
                 MeetupCreationView(location: location)
             }
         }
+        .onChange(of: tappedLocation) { _, newValue in
+            if newValue != nil {
+                showingCreationView = true
+            }
+        }
         .task {
+            if let location = locationManager.location {
+                region = MKCoordinateRegion(
+                    center: location.coordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 180, longitudeDelta: 180)
+                )
+            }
             do {
                 try await viewModel.fetchMeetups(userStateManager: userStateManager)
             } catch {
@@ -190,5 +168,20 @@ struct MapView: View {
     private func fetchScene(for coordinate: CLLocationCoordinate2D) async throws -> MKLookAroundScene? {
         let lookAroundScene = MKLookAroundSceneRequest(coordinate: coordinate)
         return try await lookAroundScene.scene
+    }
+    
+    
+    private func zoomInOnCluster(_ cluster: MKClusterAnnotation) {
+        let annotations = cluster.memberAnnotations
+        guard !annotations.isEmpty else { return }
+        
+        let mapRects = annotations.map { MKMapRect(origin: MKMapPoint($0.coordinate), size: MKMapSize(width: 0, height: 0)) }
+
+        let fittingRect = mapRects.reduce(MKMapRect.null) { $0.union($1) }
+        
+        var regionThatFits = MKCoordinateRegion(fittingRect)
+        regionThatFits.span.latitudeDelta *= 2
+        regionThatFits.span.longitudeDelta *= 2
+        region = regionThatFits
     }
 }

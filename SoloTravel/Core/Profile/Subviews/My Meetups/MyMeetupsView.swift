@@ -56,13 +56,11 @@ struct MyMeetupsView: View {
             }
             //.background(.yellow)
             .navigationTitle("My Meetups")
-            .onAppear {
-                Task {
-                    do {
-                        try await viewModel.loadMeetups(userId: userStateManager.currentUser?.userId ?? "")
-                    } catch {
-                        isErrorAlertPresented = true
-                    }
+            .task {
+                do {
+                    try await viewModel.loadMeetups(userStateManager: userStateManager)
+                } catch {
+                    isErrorAlertPresented = true
                 }
             }
             .alert(isPresented: $isErrorAlertPresented) {
@@ -72,7 +70,7 @@ struct MyMeetupsView: View {
                 Alert(title: Text("Delete Meetup"), message: Text("Are you sure you want to delete this meetup?"), primaryButton: .destructive(Text("Confirm")) {
                     Task {
                         do {
-                            try await viewModel.deleteMeetup(meetupId: selectedMeetup?.id ?? "")
+                            try await viewModel.deleteMeetup(meetupId: selectedMeetup?.id ?? "", userStateManager: userStateManager)
                         } catch {
                             isErrorAlertPresented = true
                         }

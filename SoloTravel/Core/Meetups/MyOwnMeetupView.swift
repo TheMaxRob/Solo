@@ -35,6 +35,9 @@ struct MyOwnMeetupView: View {
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .shadow(radius: 10, x: 3, y: 5)
         }
+        .onAppear {
+            print("MyOwnMeetup: \(meetup)")
+        }
     }
 }
     

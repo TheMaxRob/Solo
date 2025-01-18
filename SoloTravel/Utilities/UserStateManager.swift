@@ -47,6 +47,7 @@ final class UserStateManager: ObservableObject {
         }
     }
     
+    
     func refreshUser() async throws {
         guard let userId = currentUser?.userId else { return }
         self.currentUser = try await UserManager.shared.fetchUser(userId: userId)
@@ -56,6 +57,7 @@ final class UserStateManager: ObservableObject {
             try await loadProfileImage(from: currentUser?.photoURL ?? "")
         }
     }
+    
     
     private func loadProfileImage(from url: String) async throws {
         guard let imageURL = URL(string: url) else { return }
@@ -68,6 +70,12 @@ final class UserStateManager: ObservableObject {
             print("Failed to load profile image: \(error)")
             self.profileImage = nil // Clear cache on failure
         }
+    }
+    
+    
+    func deleteMeetup(meetupId: String) async throws {
+        meetupCache.removeValue(forKey: meetupId)
+        try await MeetupManager.shared.deleteMeetup(meetupId: meetupId)
     }
     
     
