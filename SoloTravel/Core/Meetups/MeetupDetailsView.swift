@@ -3,8 +3,8 @@ import SwiftUI
 struct MeetupDetailsView: View {
     
     @StateObject private var viewModel = MeetupDetailsViewModel()
-    @State private var isConfirmingUnRSVP = false
-    @State private var isConfirmingUnbookmark = false
+    @State private var isConfirmingUnRSVP = false // Confirmation alert
+    @State private var isConfirmingUnbookmark = false // Confirmation alert for bookmark
     @State private var isRSVPed = false
     @State private var isBookmarked = false
     var meetup: Meetup

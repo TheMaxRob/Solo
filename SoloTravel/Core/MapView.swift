@@ -17,12 +17,11 @@ final class MapViewModel: ObservableObject {
     
     func fetchMeetups(userStateManager: UserStateManager) async throws {
         meetups = try await userStateManager.fetchMeetups(start: startDate, end: endDate)
-        //print("meetups assigned in MapViewModel: \(meetups)")
+        print("meetups assigned in MapViewModel: \(meetups)")
     }
 }
 
 struct MapView: View {
-    @StateObject private var locationManager = LocationManager()
     @State private var selectedMeetup: Meetup? = nil
     @State private var showingCreationView = false
     @State private var tappedLocation: CLLocationCoordinate2D? = nil
@@ -36,13 +35,14 @@ struct MapView: View {
     @State private var scene: MKLookAroundScene?
     
     @State private var region = MKCoordinateRegion(
-        center: LocationManager.defaultLocation,
-        span: MKCoordinateSpan(latitudeDelta: 180, longitudeDelta: 180)
-    )
+            center: CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515),
+            span: MKCoordinateSpan(latitudeDelta: 150, longitudeDelta: 150)
+        )
     
     var body: some View {
         NavigationStack {
             ZStack {
+
                 ClusterMapViewRepresentable(
                     meetups: viewModel.meetups,
                     region: $region,
@@ -53,6 +53,7 @@ struct MapView: View {
                     }
                 )
                 .ignoresSafeArea()
+                
                 // Date Range Button Overlay
                 VStack {
                     
@@ -135,53 +136,47 @@ struct MapView: View {
 
             }
         }
-        .navigationDestination(item: $selectedMeetup) { meetup in
-            MeetupDetailsView(meetup: meetup)
-        }
-        .navigationDestination(isPresented: $showingCreationView) {
-            if let location = tappedLocation {
-                MeetupCreationView(location: location)
+            .navigationDestination(item: $selectedMeetup) { meetup in
+                MeetupDetailsView(meetup: meetup)
+            }
+            .navigationDestination(isPresented: $showingCreationView) {
+                if let location = tappedLocation {
+                    MeetupCreationView(location: location)
+                }
+            }
+            .onChange(of: tappedLocation) { _, newValue in
+                // If there's a new tapped location, show the creation view
+                if newValue != nil {
+                    showingCreationView = true
+                }
+            }
+            // 6) Data fetch
+            .task {
+                do {
+                    try await viewModel.fetchMeetups(userStateManager: userStateManager)
+                    print("AFTER fetchMeetups: \(viewModel.meetups)")
+                } catch {
+                    print("Failed to fetch meetups: \(error)")
+                }
             }
         }
-        .onChange(of: tappedLocation) { _, newValue in
-            if newValue != nil {
-                showingCreationView = true
-            }
-        }
-        .task {
-            if let location = locationManager.location {
-                region = MKCoordinateRegion(
-                    center: location.coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 180, longitudeDelta: 180)
-                )
-            }
-            do {
-                try await viewModel.fetchMeetups(userStateManager: userStateManager)
-            } catch {
-                print("Failed to fetch meetups: \(error)")
-            }
-        }
-        //.ignoresSafeArea()
-        .animation(.spring(), value: showingDatePicker)
-    }
-    
-    private func fetchScene(for coordinate: CLLocationCoordinate2D) async throws -> MKLookAroundScene? {
-        let lookAroundScene = MKLookAroundSceneRequest(coordinate: coordinate)
-        return try await lookAroundScene.scene
-    }
     
     
+    /// Example: zoom in on the cluster's bounding region
     private func zoomInOnCluster(_ cluster: MKClusterAnnotation) {
         let annotations = cluster.memberAnnotations
         guard !annotations.isEmpty else { return }
         
+        // Create a MKMapRect that includes all member annotations
         let mapRects = annotations.map { MKMapRect(origin: MKMapPoint($0.coordinate), size: MKMapSize(width: 0, height: 0)) }
-
         let fittingRect = mapRects.reduce(MKMapRect.null) { $0.union($1) }
         
+        // Convert to region (with some padding)
         var regionThatFits = MKCoordinateRegion(fittingRect)
+        // Optional: adjust span or add a little extra delta
         regionThatFits.span.latitudeDelta *= 2
         regionThatFits.span.longitudeDelta *= 2
+        
         region = regionThatFits
     }
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92037BC02D3C795900CA83A1 /* ClusterMapViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92037BBF2D3C795900CA83A1 /* ClusterMapViewRepresentable.swift */; };
 		920D08532BDABCE400B2466C /* MessageCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920D08522BDABCE400B2466C /* MessageCellView.swift */; };
 		920D08592BDAC55000B2466C /* MessageBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920D08582BDAC55000B2466C /* MessageBubbleView.swift */; };
 		920E50312C0C144400368677 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 920E50302C0C144400368677 /* GoogleService-Info.plist */; };
@@ -14,7 +15,6 @@
 		9212B0522D35FC7A004E249D /* MeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9212B0512D35FC7A004E249D /* MeetupView.swift */; };
 		923E94282C3E2F58002AE12B /* RequestedMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */; };
 		923E942A2C3E34EB002AE12B /* UserPFPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94292C3E34EB002AE12B /* UserPFPView.swift */; };
-		924847222D3C62F7005D8E45 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924847212D3C62F7005D8E45 /* LocationManager.swift */; };
 		925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */; };
 		925181002C260149003F8ACA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FF2C260149003F8ACA /* WelcomeView.swift */; };
 		925AC4F52C41B41F001FC6CC /* ForgotPasswordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */; };
@@ -79,7 +79,6 @@
 		92E87A052C6066D6009759A3 /* UpcomingMeetupsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E87A042C6066D6009759A3 /* UpcomingMeetupsViewModel.swift */; };
 		92EE32A02D381C9A00C304AF /* SearchSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EE329F2D381C9A00C304AF /* SearchSheetView.swift */; };
 		92EE32A22D381CB700C304AF /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EE32A12D381CB700C304AF /* LocationService.swift */; };
-		92EE32A42D38288900C304AF /* ClusterMapViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EE32A32D38288900C304AF /* ClusterMapViewRepresentable.swift */; };
 		92F1A70B2C0FA6DD00649E6D /* MeetupCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */; };
 		92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */; };
 		92F4875C2C1A422A00E82EA3 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F4875B2C1A422A00E82EA3 /* ChatView.swift */; };
@@ -106,6 +105,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		92037BBF2D3C795900CA83A1 /* ClusterMapViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterMapViewRepresentable.swift; sourceTree = "<group>"; };
 		920D08522BDABCE400B2466C /* MessageCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCellView.swift; sourceTree = "<group>"; };
 		920D08582BDAC55000B2466C /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
 		920E50302C0C144400368677 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -113,7 +113,6 @@
 		9212B0512D35FC7A004E249D /* MeetupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupView.swift; sourceTree = "<group>"; };
 		923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestedMeetupView.swift; sourceTree = "<group>"; };
 		923E94292C3E34EB002AE12B /* UserPFPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPFPView.swift; sourceTree = "<group>"; };
-		924847212D3C62F7005D8E45 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicturesCreationView.swift; sourceTree = "<group>"; };
 		925180FF2C260149003F8ACA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		925AC4F42C41B41F001FC6CC /* ForgotPasswordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordButton.swift; sourceTree = "<group>"; };
@@ -174,7 +173,6 @@
 		92E87A042C6066D6009759A3 /* UpcomingMeetupsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMeetupsViewModel.swift; sourceTree = "<group>"; };
 		92EE329F2D381C9A00C304AF /* SearchSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSheetView.swift; sourceTree = "<group>"; };
 		92EE32A12D381CB700C304AF /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
-		92EE32A32D38288900C304AF /* ClusterMapViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterMapViewRepresentable.swift; sourceTree = "<group>"; };
 		92F1A70A2C0FA6DD00649E6D /* MeetupCreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupCreationView.swift; sourceTree = "<group>"; };
 		92F1A70C2C0FC6B000649E6D /* MeetupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupManager.swift; sourceTree = "<group>"; };
 		92F4875B2C1A422A00E82EA3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
@@ -309,7 +307,6 @@
 		92D2F8002BCE7DCB0057534B = {
 			isa = PBXGroup;
 			children = (
-				924847212D3C62F7005D8E45 /* LocationManager.swift */,
 				92D2F80B2BCE7DCB0057534B /* SoloTravel */,
 				920E50302C0C144400368677 /* GoogleService-Info.plist */,
 				92D2F81C2BCE7DCD0057534B /* SoloTravelTests */,
@@ -413,7 +410,7 @@
 			isa = PBXGroup;
 			children = (
 				92F761DD2D336B540041FF14 /* MapView.swift */,
-				92EE32A32D38288900C304AF /* ClusterMapViewRepresentable.swift */,
+				92037BBF2D3C795900CA83A1 /* ClusterMapViewRepresentable.swift */,
 				92BA7ADD2D3809F000301943 /* MapPin.swift */,
 				92D2F80C2BCE7DCB0057534B /* SoloTravelApp.swift */,
 				92DC6B602BF64D46001B2680 /* UserManager.swift */,
@@ -649,7 +646,7 @@
 				92DC6B7F2BF65428001B2680 /* MeetupDetailsView.swift in Sources */,
 				925B35EE2BE2EBCC00DAF991 /* RootView.swift in Sources */,
 				9287213A2C29338A004176B6 /* BookmarkedMeetupsView.swift in Sources */,
-				92EE32A42D38288900C304AF /* ClusterMapViewRepresentable.swift in Sources */,
+				92037BC02D3C795900CA83A1 /* ClusterMapViewRepresentable.swift in Sources */,
 				92736A232C43125200D8266C /* MeetupDetailsViewModel.swift in Sources */,
 				92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */,
 				92A8FF8C2C3C40980025FAA9 /* CheckMarkButton.swift in Sources */,
@@ -662,7 +659,6 @@
 				92E87A052C6066D6009759A3 /* UpcomingMeetupsViewModel.swift in Sources */,
 				92A5EEC32C2A4AEA00C611B5 /* PublicProfileView.swift in Sources */,
 				923E942A2C3E34EB002AE12B /* UserPFPView.swift in Sources */,
-				924847222D3C62F7005D8E45 /* LocationManager.swift in Sources */,
 				92F761DE2D336B540041FF14 /* MapView.swift in Sources */,
 				92DA73572C2396D0004D271A /* ProfileCreationViewModel.swift in Sources */,
 				92D53E6A2C0E12900085B3EF /* MessageManager.swift in Sources */,

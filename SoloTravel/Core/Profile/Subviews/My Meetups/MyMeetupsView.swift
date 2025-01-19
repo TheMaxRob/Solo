@@ -56,11 +56,13 @@ struct MyMeetupsView: View {
             }
             //.background(.yellow)
             .navigationTitle("My Meetups")
-            .task {
-                do {
-                    try await viewModel.loadMeetups(userStateManager: userStateManager)
-                } catch {
-                    isErrorAlertPresented = true
+            .onAppear {
+                Task {
+                    do {
+                        try await viewModel.loadMeetups(userId: userStateManager.currentUser?.userId ?? "")
+                    } catch {
+                        isErrorAlertPresented = true
+                    }
                 }
             }
             .alert(isPresented: $isErrorAlertPresented) {

@@ -367,14 +367,12 @@ final class MeetupManager {
                 ])
                 print("has_new_member set to false")
                 
-                if !userId.isEmpty {
-                    let userRef = userCollection.document(userId)
-                    let userSnapshot = try await userRef.getDocument()
-                    if userSnapshot.exists {
-                        try await userRef.updateData([
-                            "has_new_request" : false
-                        ])
-                    }
+                let userRef = userCollection.document(userId)
+                let userSnapshot = try await userRef.getDocument()
+                if userSnapshot.exists {
+                    try await userRef.updateData([
+                        "has_new_request" : false
+                    ])
                 }
                 
             } else {
