@@ -10,6 +10,7 @@ import MapKit
 
 struct ClusterMapViewRepresentable: UIViewRepresentable {
     let meetups: [Meetup]
+    let searchResults: [SearchResult]
     @Binding var region: MKCoordinateRegion
     @Binding var selectedMeetup: Meetup?
     @Binding var tappedLocation: CLLocationCoordinate2D?
@@ -42,23 +43,35 @@ struct ClusterMapViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        // If region changed, update the map
+        
         context.coordinator.parent = self
+        
+        // Update the region
         uiView.setRegion(region, animated: true)
         
-        // Remove old annotations
+        // Remove all annotations
         uiView.removeAnnotations(uiView.annotations)
         
-        // Add new ones from our meetups array
-        let annotations = meetups.map { meetup -> MKPointAnnotation in
+        // Add annotations for meetups
+        let meetupAnnotations = meetups.map { meetup -> MKPointAnnotation in
             let annotation = MKPointAnnotation()
             annotation.coordinate = meetup.location
             annotation.title = meetup.title
             return annotation
         }
-        uiView.addAnnotations(annotations)
+        uiView.addAnnotations(meetupAnnotations)
+        
+        // Add annotations for search results
+        let searchAnnotations = searchResults.map { result -> MKPointAnnotation in
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = result.location
+            annotation.title = "Search Result"
+            return annotation
+        }
+        uiView.addAnnotations(searchAnnotations)
     }
-    
+
+
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
     }
@@ -100,25 +113,32 @@ struct ClusterMapViewRepresentable: UIViewRepresentable {
             if annotation is MKUserLocation {
                 return nil
             }
-            
+
             // If it's a cluster
             if let cluster = annotation as? MKClusterAnnotation {
                 let identifier = NSStringFromClass(MKClusterAnnotation.self)
                 let clusterView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier, for: cluster) as? MKMarkerAnnotationView
-                // Customize cluster color, glyph, etc.
-                clusterView?.markerTintColor = .systemOrange
+                clusterView?.markerTintColor = .systemOrange // Customize color for clusters
                 clusterView?.glyphText = "\(cluster.memberAnnotations.count)"
                 return clusterView
             }
-            
-            // Else, it's a normal annotation
+
+            // If it's a normal annotation
             let identifier = NSStringFromClass(MKMarkerAnnotationView.self)
             let markerView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier, for: annotation) as? MKMarkerAnnotationView
             markerView?.canShowCallout = false
-            markerView?.markerTintColor = .systemBlue
+
+            // Check if this annotation is a search result
+            if let pin = annotation as? MKPointAnnotation {
+                if parent.searchResults.contains(where: { $0.location.latitude == pin.coordinate.latitude && $0.location.longitude == pin.coordinate.longitude }) {
+                    markerView?.markerTintColor = .systemGreen // Use green for search results
+                } else {
+                    markerView?.markerTintColor = .systemBlue // Default blue for meetups
+                }
+            }
             return markerView
         }
-        
+
         // MARK: - Tap on empty space
         @objc func handleMapTap(_ gesture: UITapGestureRecognizer) {
             let mapView = gesture.view as! MKMapView

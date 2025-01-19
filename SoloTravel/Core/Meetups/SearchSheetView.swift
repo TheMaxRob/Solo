@@ -12,6 +12,8 @@ struct SheetView: View {
     @State private var locationService = LocationService(completer: .init())
     @State private var search: String = ""
     @Binding var searchResults: [SearchResult]
+    @Binding var isSheetPresented: Bool
+    var zoomToLocation: (CLLocationCoordinate2D) -> Void
 
     var body: some View {
         VStack {
@@ -62,12 +64,15 @@ struct SheetView: View {
     
     private func didTapOnCompletion(_ completion: SearchCompletions) {
         Task {
-            if let singleLocation = try? await locationService.search(with: "\(completion.title) \(completion.subTitle)").first {
+            if let singleLocation = try? await locationService.search(
+                with: "\(completion.title) \(completion.subTitle)"
+            ).first {
                 searchResults = [singleLocation]
+                isSheetPresented = false
+                zoomToLocation(singleLocation.location)
             }
         }
     }
-
 }
 
 

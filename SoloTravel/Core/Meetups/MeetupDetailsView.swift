@@ -19,8 +19,19 @@ struct MeetupDetailsView: View {
                 if let meetupImage = viewModel.image {
                     Image(uiImage: meetupImage)
                         .resizable()
-                        .scaledToFill()
-                        .frame(minHeight: 400)
+                        .aspectRatio(16/9, contentMode: .fill)
+                        .frame(width: UIScreen.main.bounds.width, height: 200)
+                        .clipped() // Crop excess content
+//                        .overlay(
+//                            Rectangle()
+//                                .fill(
+//                                    LinearGradient(
+//                                        gradient: Gradient(colors: [Color.black.opacity(0.4), Color.clear]),
+//                                        startPoint: .bottom,
+//                                        endPoint: .top
+//                                    )
+//                                )
+//                        )
                 }
                 VStack {
                     Text("\(meetup.title)")

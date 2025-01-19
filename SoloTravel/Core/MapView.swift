@@ -45,6 +45,7 @@ struct MapView: View {
 
                 ClusterMapViewRepresentable(
                     meetups: viewModel.meetups,
+                    searchResults: searchResults,
                     region: $region,
                     selectedMeetup: $selectedMeetup,
                     tappedLocation: $tappedLocation,
@@ -53,6 +54,28 @@ struct MapView: View {
                     }
                 )
                 .ignoresSafeArea()
+                .sheet(isPresented: $isSheetPresented) {
+                    SheetView(
+                        searchResults: $searchResults,
+                        isSheetPresented: $isSheetPresented,
+                        zoomToLocation: { location in
+                            region = MKCoordinateRegion(
+                                center: location,
+                                span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+                            )
+                        }
+                    )
+                        .onChange(of: searchResults) { _, results in
+                            if let firstResult = results.first {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    region = MKCoordinateRegion(
+                                        center: firstResult.location,
+                                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                                    )
+                                }
+                            }
+                        }
+                }
                 
                 // Date Range Button Overlay
                 VStack {
@@ -136,30 +159,30 @@ struct MapView: View {
 
             }
         }
-            .navigationDestination(item: $selectedMeetup) { meetup in
-                MeetupDetailsView(meetup: meetup)
-            }
-            .navigationDestination(isPresented: $showingCreationView) {
-                if let location = tappedLocation {
-                    MeetupCreationView(location: location)
-                }
-            }
-            .onChange(of: tappedLocation) { _, newValue in
-                // If there's a new tapped location, show the creation view
-                if newValue != nil {
-                    showingCreationView = true
-                }
-            }
-            // 6) Data fetch
-            .task {
-                do {
-                    try await viewModel.fetchMeetups(userStateManager: userStateManager)
-                    print("AFTER fetchMeetups: \(viewModel.meetups)")
-                } catch {
-                    print("Failed to fetch meetups: \(error)")
-                }
+        .navigationDestination(item: $selectedMeetup) { meetup in
+            MeetupDetailsView(meetup: meetup)
+        }
+        .navigationDestination(isPresented: $showingCreationView) {
+            if let location = tappedLocation {
+                MeetupCreationView(location: location)
             }
         }
+        .onChange(of: tappedLocation) { _, newValue in
+            // If there's a new tapped location, show the creation view
+            if newValue != nil {
+                showingCreationView = true
+            }
+        }
+        // Data fetch
+        .task {
+            do {
+                try await viewModel.fetchMeetups(userStateManager: userStateManager)
+                print("AFTER fetchMeetups: \(viewModel.meetups)")
+            } catch {
+                print("Failed to fetch meetups: \(error)")
+            }
+        }
+    }
     
     
     /// Example: zoom in on the cluster's bounding region
