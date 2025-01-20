@@ -15,7 +15,7 @@ struct RootView: View {
     var body: some View {
         ZStack {
             NavigationStack {
-                SoloTabView(isNotAuthenticated: $isNotAuthenticated, user: userStateManager.currentUser ?? DBUser(userId: ""))
+                SoloTabView(isNotAuthenticated: $isNotAuthenticated)
             }
         }
         .onAppear {

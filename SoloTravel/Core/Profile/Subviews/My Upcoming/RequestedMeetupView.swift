@@ -23,8 +23,8 @@ struct RequestedMeetupView: View {
                 NavigationLink {
                     PublicProfileView(profileUser: profileUser)
                 } label: {
-                    if let image = viewModel.profileImage {
-                        UserPFPView(user: viewModel.host)
+                    if let _ = viewModel.profileImage {
+                        UserPFPView(photoURL: viewModel.host.photoURL ?? "")
 //                        Image(uiImage: image)
 //                            .resizable()
 //                            .scaledToFit()
@@ -63,7 +63,7 @@ struct RequestedMeetupView: View {
             .overlay(Button {
                 Task {
                     do {
-                        try await viewModel.unRequest(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
+                        try await viewModel.unRequest(meetupId: meetup.id, userId: userStateManager.currentUser?.userId ?? "")
                     } catch {
                         isErrorAlertPresented = true
                     }

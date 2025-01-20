@@ -7,6 +7,7 @@
 
 import SwiftUI
 import _PhotosUI_SwiftUI
+import MapboxMaps
 
 @MainActor
 final class MeetupCreationViewModel: ObservableObject {
@@ -15,7 +16,6 @@ final class MeetupCreationViewModel: ObservableObject {
     var meetupDescription: String = ""
     var meetTime: Date = Date()
     var createdDate: Date = Date()
-    var meetSpot: String = ""
     @Published var city: String = ""
     @Published var country: String = ""
     @Published var imageSelection: PhotosPickerItem? = nil
@@ -35,14 +35,22 @@ final class MeetupCreationViewModel: ObservableObject {
             return nil
         }
     }
-
     
     
-    func createMeetup(userId: String) async throws {
+    func hasCreatedMeetupNearLocation(userId: String, meetupTitle: String, location: CLLocationCoordinate2D) async throws -> Bool {
+            // Implement logic to check for nearby meetups
+            // You might want to check within a certain radius (e.g., 100 meters)
+            // Return true if a meetup exists nearby
+            return false // Placeholder
+    }
+    
+    
+    func createMeetup(userId: String, location: CLLocationCoordinate2D) async throws {
+        print("creating Meetup with userId \(userId)")
         if let selectedImage {
             do {
                 let imageURL = try await UserManager.shared.uploadImageToFirebase(selectedImage, userId: userId)
-                let newMeetup = Meetup(title: meetupTitle, description: meetupDescription, meetTime: meetTime, city: city, country: country, createdDate: createdDate, organizerId: user?.userId, meetSpot: meetSpot, attendees: [], pendingUsers: [], imageURL: imageURL)
+                let newMeetup = Meetup(title: meetupTitle, description: meetupDescription, meetTime: meetTime, city: city, createdDate: createdDate, organizerId: userId, location: location, attendees: [], pendingUsers: [], imageURL: imageURL)
                 try await UserManager.shared.createMeetup(userId: userId, meetup: newMeetup)
             } catch {
                 errorMessage = "Error creating meetup."
@@ -51,9 +59,9 @@ final class MeetupCreationViewModel: ObservableObject {
     }
     
     
-    func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
-        return try await UserManager.shared.hasCreatedMeetupWithSameNameAndCity(userId: userId, meetupTitle: meetupTitle, meetupCity: meetupCity)
-    }
+//    func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
+//        return try await UserManager.shared.hasCreatedMeetupWithSameNameAndCity(userId: userId, meetupTitle: meetupTitle, meetupCity: meetupCity)
+//    }
     
     
     func setCity(city: String) {

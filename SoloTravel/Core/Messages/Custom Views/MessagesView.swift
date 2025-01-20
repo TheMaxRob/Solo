@@ -10,7 +10,7 @@ import SwiftUI
 struct MessagesView: View {
     @StateObject var viewModel = MessagesViewModel()
     @State private var isErrorAlertPresented = false
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     var body: some View {
         NavigationStack {
@@ -26,18 +26,18 @@ struct MessagesView: View {
                                 .font(.title3)
                                 .onAppear {
                                     Task {
-                                        try await viewModel.fetchUserNames(userIds: conversation.users)
+                                        try await viewModel.fetchUserNames(userIds: conversation.users, selfUserId: userStateManager.currentUser?.userId ?? "")
                                     }
                                 }
                                 .padding(.bottom, 6)
                             
                             Text("\(conversation.lastMessage ?? "")")
                                 .font(.subheadline)
-                                .fontWeight(conversation.hasUnreadMessages && user.userId != conversation.mostRecentSenderId ? .bold : .regular)
+                                .fontWeight(conversation.hasUnreadMessages && userStateManager.currentUser?.userId ?? "" != conversation.mostRecentSenderId ? .bold : .regular)
                         }
                        
                         Spacer()
-                        if conversation.hasUnreadMessages && user.userId != conversation.mostRecentSenderId {
+                        if conversation.hasUnreadMessages && userStateManager.currentUser?.userId ?? "" != conversation.mostRecentSenderId {
                                     Circle()
                                         .fill(Color.blue)
                                         .frame(width: 10, height: 10)
@@ -62,7 +62,6 @@ struct MessagesView: View {
                 Task {
                     do {
                         if let userId = try? AuthenticationManager.shared.getAuthenticatedUser().uid {
-                            try await viewModel.loadCurrentUser()
                             try await viewModel.fetchConversations(for: userId)
                             try await viewModel.setUserMessagesRead(userId: userId)
                         }

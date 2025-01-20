@@ -21,6 +21,7 @@ struct SoloTravelApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(userStateManager)
+            //MapView()
         }
     }
 }

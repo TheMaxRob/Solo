@@ -17,15 +17,6 @@ final class MyMeetupViewModel: ObservableObject {
     @Published var user: DBUser? = nil
     @Published var errorMessage: String? = nil
     
-    
-    func loadCurrentUser() async throws {
-        do {
-            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-            self.user = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        } catch {
-            errorMessage = "Error loading your profile."
-        }
-    }
 
     func loadPendingUsers(userIds: [String]) async throws {
         do {

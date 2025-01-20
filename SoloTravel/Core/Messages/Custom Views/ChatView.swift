@@ -12,6 +12,7 @@ struct ChatView: View {
     @State private var messageText: String = ""
     @State private var isErrorAlertPresented = false
     var conversationId: String
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     
     var body: some View {
@@ -21,7 +22,7 @@ struct ChatView: View {
                 VStack {
                     Spacer().frame(height: 55)
                     if let otherUser = viewModel.other {
-                        UserPFPView(user: otherUser)
+                        UserPFPView(photoURL: userStateManager.currentUser?.photoURL ?? "")
                         Text("\(otherUser.firstName ?? "") \(otherUser.lastName ?? "")")
                             .font(.headline)
                     }
@@ -37,29 +38,25 @@ struct ChatView: View {
                         ForEach(viewModel.conversation.messages ?? []) { message in
                             MessageBubbleView(
                                 text: message.content,
-                                isCurrentUser: message.senderId == viewModel.user?.userId
+                                isCurrentUser: message.senderId == userStateManager.currentUser?.userId ?? ""
                             )
                         }
                     }
                 }
                 .padding(.horizontal)
                 
-                if viewModel.canSendMessage() {
+                if (viewModel.canSendMessage(user: userStateManager.currentUser ?? DBUser(userId: ""))) {
                     HStack {
                         TextField("Message", text: $messageText)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                         
                         Button("Send") {
                             Task {
-                                if viewModel.user == nil {
-                                    print("User == nil")
-                                    try await viewModel.loadCurrentUser()
-                                }
                                 try await viewModel.sendMessage(
                                     to: conversationId,
                                     content: messageText,
-                                    senderId: viewModel.user?.userId ?? "",
-                                    recipientId: viewModel.conversation.users.filter { $0 != viewModel.user?.userId }.first ?? ""
+                                    senderId: userStateManager.currentUser?.userId ?? "",
+                                    recipientId: viewModel.conversation.users.filter { $0 != userStateManager.currentUser?.userId }.first ?? ""
                                 )
                                 //print("viewModel.sendMessage successful")
                                 messageText = ""
@@ -80,9 +77,8 @@ struct ChatView: View {
         .onAppear {
             Task {
                 do {
-                    try await viewModel.loadCurrentUser()
                     print("conversationId on load: \(conversationId)")
-                    viewModel.conversation = try await viewModel.fetchConversation(conversationId: conversationId) ?? Conversation(userIds: [], lastMessage: "", createdDate: Date())
+                    viewModel.conversation = try await viewModel.fetchConversation(conversationId: conversationId, userId: userStateManager.currentUser?.userId ?? "") ?? Conversation(userIds: [], lastMessage: "", createdDate: Date())
                     try await viewModel.fetchMessages(conversationId: conversationId)
                 } catch {
                     isErrorAlertPresented = true
@@ -93,6 +89,7 @@ struct ChatView: View {
             if (viewModel.conversation.messages == nil) {
                 Task { try await viewModel.deleteConversation(conversationId: conversationId) }
             }
+            Task { try await userStateManager.refreshUser() }
             // Task { try await viewModel.setMessagesRead(conversationId: conversationId) }
         }
         .alert(isPresented: $isErrorAlertPresented) {

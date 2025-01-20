@@ -8,30 +8,50 @@
 import SwiftUI
 import _PhotosUI_SwiftUI
 
+
 @MainActor
 final class UserPFPViewModel: ObservableObject {
     @Published var profileImage: UIImage? = nil
     @Published var isShowingWelcomeView: Bool = false
+    private var currentLoadingTask: Task<Void, Error>?
     
-    func loadImage(from url: String) async throws {
-        profileImage = try await UserManager.shared.loadImage(from: url)
+    
+    func loadImage(from url: String, userStateManager: UserStateManager) async throws {
+        // Cancel any existing loading task
+        currentLoadingTask?.cancel()
+        
+        currentLoadingTask = Task {
+            do {
+                profileImage = try await userStateManager.fetchImage(from: url)
+            } catch {
+                if !Task.isCancelled {
+                    throw error
+                }
+            }
+        }
+        
+        try await currentLoadingTask?.value
+    }
+    
+    deinit {
+        currentLoadingTask?.cancel()
     }
 }
 
 struct UserPFPView: View {
-    
     @StateObject private var viewModel = UserPFPViewModel()
-    var user: DBUser
-    
+    var photoURL: String
+    @EnvironmentObject private var userStateManager: UserStateManager
+
     var body: some View {
-        NavigationStack {
+        Group {
             if let selectedImage = viewModel.profileImage {
-                    Image(uiImage: selectedImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
-                        .shadow(radius: 5)
+                Image(uiImage: selectedImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipShape(Circle())
+                    .shadow(radius: 5)
             } else {
                 Image(systemName: "person.circle.fill")
                     .foregroundStyle(.gray)
@@ -39,14 +59,19 @@ struct UserPFPView: View {
                     .clipShape(Circle())
                     .shadow(radius: 5)
             }
-            
         }
-        .onAppear {
-            Task { try await viewModel.loadImage(from: user.photoURL ?? "") }
+        .task(id: photoURL) { 
+            if !photoURL.isEmpty {
+                try? await viewModel.loadImage(from: photoURL, userStateManager: userStateManager)
+            }
         }
     }
 }
 
+
 #Preview {
-    UserPFPView(user: DBUser(userId: "12345", firstName: "Max", lastName: "Roberts"))
+    UserPFPView(photoURL: "")
+}
+#Preview {
+    UserPFPView(photoURL: "")
 }

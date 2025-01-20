@@ -23,7 +23,7 @@ struct UpcomingMeetupView: View {
                 NavigationLink {
                     PublicProfileView(profileUserId: hostId)
                 } label: {
-                    UserPFPView(user: viewModel.host)
+                    UserPFPView(photoURL: viewModel.host.photoURL ?? "")
                 }
                 VStack {
                     Text("\(String(describing: meetup.title))")

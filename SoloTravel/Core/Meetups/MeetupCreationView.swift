@@ -6,15 +6,14 @@
 //
 
 import SwiftUI
+import MapboxMaps
 
 struct MeetupCreationView: View {
-    
     @StateObject private var viewModel = MeetupCreationViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var isImagePickerPresented = false
-    var city: String?
-    var country: String?
     @EnvironmentObject private var userStateManager: UserStateManager
+    var location: CLLocationCoordinate2D
     
     var body: some View {
         NavigationStack {
@@ -36,10 +35,10 @@ struct MeetupCreationView: View {
                             
                             VStack {
                                 Image(systemName: "camera.viewfinder")
-                                     .font(.system(size: 75))
-                                     .foregroundStyle(.gray)
-                                 
-                                 Text("Upload a picture for your meetup!")
+                                    .font(.system(size: 75))
+                                    .foregroundStyle(.gray)
+                                
+                                Text("Upload a picture for your meetup!")
                                     .foregroundStyle(.gray)
                             }
                         }
@@ -49,28 +48,16 @@ struct MeetupCreationView: View {
                         .padding(.bottom)
                     }
                     
-                    
                     BottomLineTextField(placeholder: "Meetup Title", text: $viewModel.meetupTitle)
                     
-                    Menu {
-                        ForEach(MeetupManager.cities, id: \.self) { city in
-                            Button {
-                                viewModel.setCity(city: city)
-                            } label: {
-                                Text(city)
-                            }
-                        }
-                    } label: {
-                        if !viewModel.city.isEmpty {
-                            Text("\(viewModel.city), \(viewModel.country)")
-                                .font(.headline)
-                        } else {
-                            Text("Select a city")
-                                .font(.headline)
-                        }
+                    HStack {
+                        Image(systemName: "mappin.circle.fill")
+                            .foregroundStyle(.gray)
+                        Text("Location: \(String(format: "%.4f", location.latitude)), \(String(format: "%.4f", location.longitude))")
+                            .font(.subheadline)
+                            .foregroundStyle(.gray)
                     }
                     .padding(.vertical, 20)
-                    
                     
                     DatePicker("Select a date:", selection: $viewModel.meetTime, displayedComponents: [.date])
                         .padding(.top)
@@ -86,20 +73,28 @@ struct MeetupCreationView: View {
                     Button {
                         Task {
                             do {
-                                // Prevent user from duplicating meetups
-                                if (try await viewModel.hasCreatedMeetupWithSameNameAndCity(userId: userStateManager.currentUser?.userId ?? "", meetupTitle: viewModel.meetupTitle, meetupCity: viewModel.city)) {
-                                    viewModel.alertItem = AlertItem(title: Text("Error"), message: Text("You've already created a meetup in this city with that name, please don't clutter!"), dismissButton: .default(Text("OK")))
+                                // Modify the duplicate check to use location instead of city
+                                if (try await viewModel.hasCreatedMeetupNearLocation(
+                                    userId: userStateManager.currentUser?.userId ?? "",
+                                    meetupTitle: viewModel.meetupTitle,
+                                    location: location
+                                )) {
+                                    viewModel.alertItem = AlertItem(
+                                        title: Text("Error"),
+                                        message: Text("You've already created a meetup near this location. Please choose a different location!"),
+                                        dismissButton: .default(Text("OK"))
+                                    )
                                 } else {
-                                    // If no duplicates
-                                    try await viewModel.createMeetup(userId: userStateManager.currentUser?.userId ?? "")
+                                    try await viewModel.createMeetup(
+                                        userId: userStateManager.currentUser?.userId ?? "",
+                                        location: location
+                                    )
                                     dismiss()
                                 }
-                                
                             } catch {
-                                print("Error ocurred: \(error)")
+                                print("Error occurred: \(error)")
                             }
                         }
-                        
                     } label: {
                         Text("Post Meetup")
                             .padding()
@@ -123,19 +118,10 @@ struct MeetupCreationView: View {
                     }
                 }
             }
-            .onAppear {
-                if let city {
-                    if let country {
-                        let cityCountry = city + ", " + country
-                        viewModel.setCity(city: cityCountry)
-                    }
-                }
-            }
         }
     }
 }
 
-
 #Preview {
-    MeetupCreationView()
+    MeetupCreationView(location: CLLocationCoordinate2D())
 }
