@@ -12,9 +12,10 @@ final class MyMeetupsViewModel: ObservableObject {
     @Published var meetups: [Meetup] = []
     @Published var errorMessage: String? = nil
     
-    func loadMeetups(userId: String) async throws {
+    func loadMeetups(userId: String, userStateManager: UserStateManager) async throws {
         do {
-            meetups = try await UserManager.shared.getCreatedUserMeetups(userId: userId)
+            meetups = try await userStateManager.fetchMyMeetups(userId: userId)
+            print("fetched meetups")
         } catch {
             errorMessage = "Error loading meetups."
         }

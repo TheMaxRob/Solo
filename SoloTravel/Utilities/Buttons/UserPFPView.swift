@@ -15,13 +15,14 @@ final class UserPFPViewModel: ObservableObject {
     @Published var isShowingWelcomeView: Bool = false
     private var currentLoadingTask: Task<Void, Error>?
     
-    func loadImage(from url: String) async throws {
+    
+    func loadImage(from url: String, userStateManager: UserStateManager) async throws {
         // Cancel any existing loading task
         currentLoadingTask?.cancel()
         
         currentLoadingTask = Task {
             do {
-                profileImage = try await UserManager.shared.loadImage(from: url)
+                profileImage = try await userStateManager.fetchImage(from: url)
             } catch {
                 if !Task.isCancelled {
                     throw error
@@ -40,6 +41,7 @@ final class UserPFPViewModel: ObservableObject {
 struct UserPFPView: View {
     @StateObject private var viewModel = UserPFPViewModel()
     var photoURL: String
+    @EnvironmentObject private var userStateManager: UserStateManager
 
     var body: some View {
         Group {
@@ -60,7 +62,7 @@ struct UserPFPView: View {
         }
         .task(id: photoURL) { 
             if !photoURL.isEmpty {
-                try? await viewModel.loadImage(from: photoURL)
+                try? await viewModel.loadImage(from: photoURL, userStateManager: userStateManager)
             }
         }
     }

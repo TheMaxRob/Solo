@@ -36,6 +36,20 @@ final class UserStateManager: ObservableObject {
     }
     
     
+    func fetchMyMeetups(userId: String) async throws -> [Meetup] {
+        var meetups: [Meetup] = []
+        let meetupIds = try await UserManager.shared.fetchUserMeetupIds(userId: userId)
+        for meetupId in meetupIds {
+            if let cachedMeetup = meetupCache[meetupId] {
+                meetups.append(cachedMeetup)
+            } else {
+                let meetup = try await MeetupManager.shared.fetchMeetup(meetupId: meetupId)
+                meetups.append(meetup ?? Meetup())
+            }
+        }
+        return meetups
+    }
+    
     
     func loadUser() async throws {
         let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()

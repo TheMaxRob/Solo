@@ -37,8 +37,8 @@ final class MeetupManager {
     
     
     func getMeetupRef(meetupId: String) async throws -> DocumentReference? {
-            let meetupRef = meetupsCollection.document(meetupId)
-            return meetupRef
+        let meetupRef = meetupsCollection.document(meetupId)
+        return meetupRef
     }
     
     
@@ -144,35 +144,47 @@ final class MeetupManager {
     
     
     func acceptUserToMeetup(meetupId: String, userId: String) async throws {
-            print("acceptUserToMeetup")
-        
-            // Move user from pending to accepted
+        print("acceptUserToMeetup")
+    
+        // Move user from pending to accepted
+        do {
             if let meetupRef = try await getMeetupRef(meetupId: meetupId) {
                 let meetupSnapshot = try await meetupRef.getDocument()
                 if meetupSnapshot.exists {
+                    print("meetup snapshot exists for id \(meetupId)")
                     try await meetupRef.updateData([
                         Meetup.CodingKeys.pendingUsers.rawValue : FieldValue.arrayRemove([userId]),
                         Meetup.CodingKeys.attendees.rawValue : FieldValue.arrayUnion([userId]),
                     ])
+                    print("meetupref updated for user \(userId)")
                 } else {
                     print("meetupRef does not exist – acceptUserToMeetup()")
                 }
             }
-            
+        } catch {
+            print("couldn't move user to accepted")
+        }
+        
+        do {
             // Move meetup from requested to upcoming
             let userRef = userCollection.document(userId)
             let userSnapshot = try await userRef.getDocument()
             if userSnapshot.exists {
+                print("usersnapshot exists")
                 try await userRef.updateData([
-                    DBUser.CodingKeys.rsvpRequests.rawValue : FieldValue.arrayRemove([meetupId]),
-                    DBUser.CodingKeys.rsvpMeetups.rawValue : FieldValue.arrayUnion([meetupId]),
-                    "has_new_acceptance" : true
+                    DBUser.CodingKeys.rsvpRequests.rawValue: FieldValue.arrayRemove([meetupId]),
+                    DBUser.CodingKeys.rsvpMeetups.rawValue: FieldValue.arrayUnion([meetupId]),
+                    Meetup.CodingKeys.hasNewMember.rawValue: true
                 ])
+                print("userref updated")
             } else {
                 print("userRef does not exist – acceptUserToMeetup()")
             }
-        
+        } catch {
+            print("Couldn't move meetup from requested to upcoming.")
         }
+    
+    }
 
 
     

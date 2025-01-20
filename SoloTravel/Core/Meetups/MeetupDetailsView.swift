@@ -3,8 +3,8 @@ import SwiftUI
 struct MeetupDetailsView: View {
     
     @StateObject private var viewModel = MeetupDetailsViewModel()
-    @State private var isConfirmingUnRSVP = false // Confirmation alert
-    @State private var isConfirmingUnbookmark = false // Confirmation alert for bookmark
+    @State private var isConfirmingUnRSVP = false
+    @State private var isConfirmingUnbookmark = false
     @State private var isRSVPed = false
     @State private var isBookmarked = false
     var meetup: Meetup
@@ -52,6 +52,63 @@ struct MeetupDetailsView: View {
                         .font(.subheadline)
                         .padding(.bottom)
                         .bold()
+                    
+                    // Who's Going Section
+                    HStack {
+                            // Host
+                            VStack {
+                                Text("Host")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                NavigationLink {
+                                    PublicProfileView(profileUser: viewModel.host)
+                                } label: {
+                                    UserPFPView(photoURL: viewModel.host?.photoURL ?? "")
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.gray, lineWidth: 1)
+                                        )
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            // Attendees
+                            VStack {
+                                Text("Attendees")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                NavigationLink {
+                                    AttendeesListView(attendees: viewModel.attendeeImages)
+                                } label: {
+                                    HStack {
+                                        ForEach(meetup.attendees ?? [], id: \.self) { attendeeId in
+                                            if let image = viewModel.attendeeImages[attendeeId] {
+                                                Image(uiImage: image)
+                                                    .resizable()
+                                                    .frame(width: 40, height: 40)
+                                                    .clipShape(Circle())
+                                            } else {
+                                                ProgressView()
+                                                    .frame(width: 40, height: 40)
+                                                    .clipShape(Circle())
+                                            }
+                                        }
+                                        if let attendees = meetup.attendees, attendees.count > 3 {
+                                            Text("+\(attendees.count - 3)")
+                                                .font(.caption)
+                                                .foregroundColor(.gray)
+                                                .padding(.leading, 4)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .padding()
+
+                    
                     
                     Text("\(meetup.description ?? "")")
                         .font(.footnote)
@@ -220,6 +277,7 @@ struct MeetupDetailsView: View {
                     do {
                         try await viewModel.getHost(userId: meetup.organizerId ?? "")
                         try await viewModel.loadImage(from: meetup.imageURL ?? "", userStateManager: userStateManager)
+                        try await viewModel.preloadAttendeeImages(attendees: meetup.attendees ?? [], userStateManager: userStateManager)
                         
                         isRSVPed = userStateManager.currentUser?.rsvpRequests?.contains(meetup.id) ?? false
                         isBookmarked = userStateManager.currentUser?.bookmarkedMeetups?.contains(meetup.id) ?? false
@@ -231,3 +289,31 @@ struct MeetupDetailsView: View {
         }
     }
 }
+
+struct AttendeesListView: View {
+    var attendees: [String: UIImage]
+
+    var body: some View {
+        List(attendees.keys.sorted(), id: \.self) { attendeeId in
+            NavigationLink {
+                PublicProfileView(profileUserId: attendeeId, profileImage: attendees[attendeeId])
+            } label: {
+                HStack {
+                    if let image = attendees[attendeeId] {
+                        Image(uiImage: image)
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                    } else {
+                        ProgressView()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                    }
+                    Text(attendeeId)
+                }
+            }
+        }
+        .navigationTitle("Attendees")
+    }
+}
+

@@ -59,7 +59,7 @@ struct MyMeetupsView: View {
             .onAppear {
                 Task {
                     do {
-                        try await viewModel.loadMeetups(userId: userStateManager.currentUser?.userId ?? "")
+                        try await viewModel.loadMeetups(userId: userStateManager.currentUser?.userId ?? "", userStateManager: userStateManager)
                     } catch {
                         isErrorAlertPresented = true
                     }

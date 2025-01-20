@@ -14,6 +14,7 @@ final class MeetupDetailsViewModel: ObservableObject {
     @Published var isShowingPersonalMessageView = false
     @Published var image: UIImage? = nil
     @Published var errorMessage: String? = nil
+    @Published var attendeeImages: [String: UIImage] = [:]
     
     func loadImage(from url: String, userStateManager: UserStateManager) async throws {
         image = try await userStateManager.fetchImage(from: url)
@@ -59,6 +60,14 @@ final class MeetupDetailsViewModel: ObservableObject {
                 errorMessage = "Error creating conversation."
                 return ""
             }
+        }
+    }
+    
+    
+    func preloadAttendeeImages(attendees: [String], userStateManager: UserStateManager) async throws {
+        for attendee in attendees {
+            let image = try await userStateManager.fetchImage(from: try await UserManager.shared.fetchImageURL(userId: attendee))
+            attendeeImages[attendee] = image
         }
     }
     

@@ -44,7 +44,6 @@ struct MyMeetupView: View {
                                 .frame(width: 155, height: 30)
                                 .foregroundStyle(viewModel.isShowingPendingView ? .gray.opacity(0.7) : .gray.opacity(0.4))
                             Text("Requests")
-                                .foregroundStyle(viewModel.isShowingPendingView ? .black : .gray)
                         }
                     }
                 }
@@ -54,7 +53,7 @@ struct MyMeetupView: View {
                     if viewModel.attendees.count > 0 {
                         ScrollView {
                             ForEach(viewModel.attendees) { attendee in
-                                AcceptedUserCellView(viewModel: viewModel, user: userStateManager.currentUser ?? DBUser(userId: ""), meetupId: meetup.id, profileUser: attendee)
+                                AcceptedUserCellView(viewModel: viewModel,  meetupId: meetup.id, profileUser: attendee)
                                     .overlay(Button {
                                         Task {
                                             isRemoveUserAlertPresented = true
@@ -80,7 +79,7 @@ struct MyMeetupView: View {
                 } else if viewModel.isShowingPendingView {
                     if viewModel.pendingUsers.count > 0 {
                         ForEach(viewModel.pendingUsers) { attendee in
-                            PendingUserCellView(viewModel: viewModel, user: userStateManager.currentUser ?? DBUser(userId: ""), meetupId: meetup.id, profileUser: attendee)
+                            PendingUserCellView(viewModel: viewModel, meetupId: meetup.id, profileUser: attendee)
                         }
                     } else {
                         Spacer()
@@ -97,7 +96,7 @@ struct MyMeetupView: View {
             .onAppear {
                 Task {
                     do {
-                        try await viewModel.setNoNewMembers(meetupId: meetup.id, userId: viewModel.user?.userId ?? "")
+                        try await viewModel.setNoNewMembers(meetupId: meetup.id, userId: userStateManager.currentUser?.userId ?? "")
                         try await viewModel.loadAttendees(userIds: meetup.attendees ?? [])
                         try await viewModel.loadPendingUsers(userIds: meetup.pendingUsers ?? [])
                     } catch {
@@ -136,7 +135,7 @@ struct MyMeetupView: View {
 struct PendingUserCellView: View {
     
     var viewModel: MyMeetupViewModel
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     var meetupId: String
     var profileUser: DBUser
     
@@ -146,9 +145,9 @@ struct PendingUserCellView: View {
                 NavigationLink {
                     PublicProfileView(profileUser: profileUser)
                 } label: {
-                    UserPFPView(photoURL: user.photoURL ?? "")
+                    UserPFPView(photoURL: profileUser.photoURL ?? "")
                 }
-                Text("\(user.firstName ?? "") \(user.lastName ?? "")")
+                Text("\(userStateManager.currentUser?.firstName ?? "") \(userStateManager.currentUser?.lastName ?? "")")
                     .bold()
                     .font(.title2)
                     .foregroundStyle(.black)
@@ -156,7 +155,7 @@ struct PendingUserCellView: View {
                     Button(action: {
                         Task {
                             print("Accept Button Pressed")
-                            try await viewModel.acceptRSVP(meetupId: meetupId, userId: user.userId)
+                            try await viewModel.acceptRSVP(meetupId: meetupId, userId: profileUser.userId)
                         }
                     }) {
                         ZStack {
@@ -172,7 +171,7 @@ struct PendingUserCellView: View {
                     Button(action: {
                         Task {
                             print("Decline Button Pressed")
-                            try await viewModel.declineRSVP(meetupId: meetupId, userId: user.userId)
+                            try await viewModel.declineRSVP(meetupId: meetupId, userId: userStateManager.currentUser?.userId ?? "")
                         }
                     }) {
                         ZStack {
@@ -194,7 +193,7 @@ struct PendingUserCellView: View {
         .shadow(radius: 10, x: 3, y: 5)
         .onAppear {
             Task {
-                try await viewModel.loadImage(from: user.photoURL ?? "")
+                try await viewModel.loadImage(from: userStateManager.currentUser?.photoURL ?? "")
             }
         }
     }
@@ -204,7 +203,7 @@ struct PendingUserCellView: View {
 struct AcceptedUserCellView: View {
     
     var viewModel: MyMeetupViewModel
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     var meetupId: String
     var profileUser: DBUser
     
@@ -215,9 +214,9 @@ struct AcceptedUserCellView: View {
                     NavigationLink {
                         PublicProfileView(profileUser: profileUser)
                     } label: {
-                        UserPFPView(photoURL: user.photoURL ?? "")
+                        UserPFPView(photoURL: userStateManager.currentUser?.photoURL ?? "")
                     }
-                    Text("\(user.firstName ?? "") \(user.lastName ?? "")")
+                    Text("\(userStateManager.currentUser?.firstName ?? "") \(userStateManager.currentUser?.lastName ?? "")")
                         .bold()
                         .font(.title2)
                         .foregroundStyle(.black)
@@ -227,7 +226,7 @@ struct AcceptedUserCellView: View {
             //.background(.yellow)
             .shadow(radius: 5, x: 3, y: 3)
             .onAppear {
-                Task { try await viewModel.loadImage(from: user.photoURL ?? "") }
+                Task { try await viewModel.loadImage(from: userStateManager.currentUser?.photoURL ?? "") }
             }
             
         }
@@ -235,5 +234,5 @@ struct AcceptedUserCellView: View {
 }
 
 #Preview(body: {
-    AcceptedUserCellView(viewModel: MyMeetupViewModel(), user: DBUser(userId: ""), meetupId: "", profileUser: DBUser(userId: ""))
+    AcceptedUserCellView(viewModel: MyMeetupViewModel(), meetupId: "", profileUser: DBUser(userId: ""))
 })

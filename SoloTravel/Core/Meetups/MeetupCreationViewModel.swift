@@ -59,9 +59,9 @@ final class MeetupCreationViewModel: ObservableObject {
     }
     
     
-    func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
-        return try await UserManager.shared.hasCreatedMeetupWithSameNameAndCity(userId: userId, meetupTitle: meetupTitle, meetupCity: meetupCity)
-    }
+//    func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
+//        return try await UserManager.shared.hasCreatedMeetupWithSameNameAndCity(userId: userId, meetupTitle: meetupTitle, meetupCity: meetupCity)
+//    }
     
     
     func setCity(city: String) {
