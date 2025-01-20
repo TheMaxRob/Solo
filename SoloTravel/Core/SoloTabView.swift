@@ -22,23 +22,26 @@ struct SoloTabView: View {
     @StateObject private var viewModel = SoloTabViewModel()
     @Binding var isNotAuthenticated: Bool
     @State private var selectedTab = 0
-    var user: DBUser
+    @EnvironmentObject private var userStateManager: UserStateManager
     
     var body: some View {
         NavigationStack {
             TabView(selection: $selectedTab) {
-                HomeView(isNotAuthenticated: $isNotAuthenticated, user: user)
-                    .tabItem { Label("Home", systemImage: "house.fill") }
+                MapView()
+                    .tabItem { Label("Home", systemImage: "globe") }
                     .tag(0)
                 
-                MessagesView(user: user)
+                MessagesView()
                     .tabItem { Label("Messages", systemImage: "message.fill") }
                     .tag(1)
+                    .badge(userStateManager.currentUser?.hasUnreadMessages == true ? "" : nil)
                 
                 ProfileView(isNotAuthenticated: $isNotAuthenticated)
                     .tabItem { Label("Profile", systemImage: "person.crop.circle.fill") }
                     .tag(2)
+                    .badge((userStateManager.currentUser?.hasNewRequest ?? false || userStateManager.currentUser?.hasNewAcceptance ?? false) ? "" : nil)
             }
+            .background(.clear)
             .tint(.blue)
             .navigationTitle(tabTitle)
             //.navigationBarTitleDisplayMode(.inline)

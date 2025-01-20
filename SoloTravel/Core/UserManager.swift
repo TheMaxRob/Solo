@@ -148,51 +148,6 @@ final class UserManager {
     }
     
     
-    
-    // Function to fetch existing meetups array from the user document
-    func getCreatedUserMeetups(userId: String) async throws -> [Meetup] {
-        guard !userId.isEmpty else {
-            throw UserManagerError.invalidUserId
-        }
-        
-        let userRef = userCollection.document(userId)
-        var meetups: [Meetup] = []
-        
-        do {
-            let userDocument = try await userRef.getDocument()
-            if userDocument.exists {
-                if let data = userDocument.data() {
-                    if let meetupIds = data["created_meetups"] as? [String] {
-                        for meetupId in meetupIds {
-                            let indexRef = meetupsIndexCollection.document(meetupId)
-                            let indexSnapshot = try await indexRef.getDocument()
-                            if let indexData = indexSnapshot.data() {
-                                if
-                                    let city = indexData["city"] as? String,
-                                    let country = indexData["country"] as? String {
-                                    let snapshot = try await meetupsCollection.document(country).collection(city).document(meetupId).getDocument()
-                                    if let dict = snapshot.data() {
-                                        if let meetup = try? decoder.decode(Meetup.self, from: dict) {
-                                            meetups.append(meetup)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return meetups
-        } catch {
-            print("Error fetching created meetups: \(error)")
-            throw error
-        }
-        
-    }
-    
-    
-    
-    
     func createUserProfile(userId: String,
                            firstName: String,
                            lastName: String,
@@ -250,6 +205,25 @@ final class UserManager {
             print("Error uploading image: \(error)")
             throw error
         }
+    }
+    
+    
+    func fetchImageURL(userId: String) async throws -> String {
+        guard !userId.isEmpty else {
+            throw UserManagerError.invalidUserId
+        }
+
+        do {
+            let snapshot = try await userCollection.document(userId).getDocument()
+            if snapshot.exists {
+                let url = snapshot[DBUser.CodingKeys.photoURL.rawValue] as? String
+                return url ?? ""
+            }
+        } catch {
+            print("Error fetching URL from user \(userId).")
+            return ""
+        }
+        return ""
     }
     
     
@@ -330,26 +304,27 @@ final class UserManager {
         //    }
         
         
-        func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
-            guard !userId.isEmpty else {
-                throw UserManagerError.invalidUserId
-            }
-            
-            do {
-                let userMeetups = try await getCreatedUserMeetups(userId: userId)
-                for userMeetup in userMeetups {
-                    if userMeetup.title == meetupTitle && userMeetup.city == meetupCity {
-                        return true
-                    }
-                }
-                return false
-            } catch {
-                print("Error determining if user has created a meetup with the same name in that city: \(error)")
-                throw error
-            }
-        }
+//        func hasCreatedMeetupWithSameNameAndCity(userId: String, meetupTitle: String, meetupCity: String) async throws -> Bool {
+//            guard !userId.isEmpty else {
+//                throw UserManagerError.invalidUserId
+//            }
+//            
+//            do {
+//                let userMeetups = try await fetchUserMeetupIds(userId: userId)
+//                for userMeetup in userMeetups {
+//                    if userMeetup.title == meetupTitle && userMeetup.city == meetupCity {
+//                        return true
+//                    }
+//                }
+//                return false
+//            } catch {
+//                print("Error determining if user has created a meetup with the same name in that city: \(error)")
+//                throw error
+//            }
+//        }
         
-        func fetchUserMeetupNames(userId: String) async throws -> [String] {
+    
+        func fetchUserMeetupIds(userId: String) async throws -> [String] {
             guard !userId.isEmpty else {
                 throw UserManagerError.invalidUserId
             }
@@ -552,6 +527,27 @@ final class UserManager {
                 throw error
             }
         }
+    
+    
+    func unBookmark(userId: String, meetupId: String) async throws {
+        guard !userId.isEmpty else {
+            throw UserManagerError.invalidUserId
+        }
+        
+        let userRef = userCollection.document(userId)
+        
+        do {
+            let snapshot = try await userRef.getDocument()
+            if snapshot.exists {
+                try await userRef.updateData([
+                    DBUser.CodingKeys.bookmarkedMeetups.rawValue : FieldValue.arrayRemove([meetupId])])
+            }
+        } catch {
+            print("Error removing bookmark from meetup.")
+            throw error
+        }
+
+    }
         
     }
     

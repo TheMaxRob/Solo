@@ -120,6 +120,7 @@ final class MessageManager {
     
     
     func createConversation(userIds: [String]) async throws -> String? {
+        print("Creating conversation between \(userIds)")
         for userId in userIds {
             guard !userId.isEmpty else {
                 throw UserManagerError.invalidUserId

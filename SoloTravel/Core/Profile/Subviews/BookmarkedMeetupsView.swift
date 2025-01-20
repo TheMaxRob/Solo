@@ -32,6 +32,9 @@ struct BookmarkedMeetupsView: View {
                 }
             }
         }
+        .navigationTitle("Saved Meetups")
+        .padding(.top, 15)
+        Spacer()
         .task {
             await loadMeetups()
         }

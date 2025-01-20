@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapboxMaps
 
 struct MyOwnMeetupView: View {
     var meetup: Meetup
@@ -21,10 +22,6 @@ struct MyOwnMeetupView: View {
                     .fontWeight(meetup.hasNewMember ?? false ? .bold : .regular)
                     .foregroundStyle(.black)
                     .font(.footnote)
-                Text(((meetup.country?.isEmpty) == nil) ? "\(meetup.city ?? "") \(meetup.country ?? "")" : "\(meetup.city ?? "")")
-                    .fontWeight(meetup.hasNewMember ?? false ? .bold : .regular)
-                    .font(.footnote)
-                    .foregroundStyle(.black)
                 if meetup.hasNewMember ?? false {
                     Circle()
                         .fill(Color.blue)
@@ -49,5 +46,5 @@ private func formatDayAndTime(date: Date) -> String {
 }
 
 #Preview {
-    MyOwnMeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", country: "France", createdDate: Date(), organizerId: "organizerId", meetSpot: "Spot", attendees: [], pendingUsers: [], imageURL: ""))
+    MyOwnMeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", location: CLLocationCoordinate2D(), attendees: [], pendingUsers: [], imageURL: ""))
 }

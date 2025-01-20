@@ -41,7 +41,7 @@ struct MyMeetupsView: View {
                         .frame(width: 400)
                     
                     NavigationLink {
-                        MeetupCreationView()
+                        //MeetupCreationView()
                     } label: {
                         Text("Create a Meetup")
                             .foregroundStyle(.white)
@@ -59,7 +59,7 @@ struct MyMeetupsView: View {
             .onAppear {
                 Task {
                     do {
-                        try await viewModel.loadMeetups(userId: userStateManager.currentUser?.userId ?? "")
+                        try await viewModel.loadMeetups(userId: userStateManager.currentUser?.userId ?? "", userStateManager: userStateManager)
                     } catch {
                         isErrorAlertPresented = true
                     }
@@ -72,7 +72,7 @@ struct MyMeetupsView: View {
                 Alert(title: Text("Delete Meetup"), message: Text("Are you sure you want to delete this meetup?"), primaryButton: .destructive(Text("Confirm")) {
                     Task {
                         do {
-                            try await viewModel.deleteMeetup(meetupId: selectedMeetup?.id ?? "")
+                            try await viewModel.deleteMeetup(meetupId: selectedMeetup?.id ?? "", userStateManager: userStateManager)
                         } catch {
                             isErrorAlertPresented = true
                         }
