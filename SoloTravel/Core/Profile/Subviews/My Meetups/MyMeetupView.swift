@@ -32,7 +32,7 @@ struct MyMeetupView: View {
                                 .frame(width: 155, height: 30)
                                 .foregroundStyle(viewModel.isShowingAttendeesView ? .gray.opacity(0.7) : .gray.opacity(0.4))
                             Text("Accepted")
-                                .foregroundStyle(viewModel.isShowingAttendeesView ? .black : .gray)
+                                .foregroundStyle(viewModel.isShowingAttendeesView ? Color(.systemBackground) : .gray)
                         }
                     }
                     Button {
@@ -44,6 +44,7 @@ struct MyMeetupView: View {
                                 .frame(width: 155, height: 30)
                                 .foregroundStyle(viewModel.isShowingPendingView ? .gray.opacity(0.7) : .gray.opacity(0.4))
                             Text("Requests")
+                                .foregroundStyle(viewModel.isShowingAttendeesView ? Color(.systemBackground) : .gray)
                         }
                     }
                 }
@@ -94,15 +95,21 @@ struct MyMeetupView: View {
             .frame(width: 350)
             // .background(Color.yellow.edgesIgnoringSafeArea(.all))
             .onAppear {
-                Task {
-                    do {
-                        try await viewModel.setNoNewMembers(meetupId: meetup.id, userId: userStateManager.currentUser?.userId ?? "")
-                        try await viewModel.loadAttendees(userIds: meetup.attendees ?? [])
-                        try await viewModel.loadPendingUsers(userIds: meetup.pendingUsers ?? [])
-                    } catch {
-                        isErrorAlertPresented = true
+                print("appear mymeetupview")
+                    Task {
+                        do {
+                            // Clear arrays before reloading to prevent duplication
+                            viewModel.attendees.removeAll()
+                            viewModel.pendingUsers.removeAll()
+
+                            try await viewModel.setNoNewMembers(meetupId: meetup.id, userId: userStateManager.currentUser?.userId ?? "")
+                            try await viewModel.loadAttendees(userIds: meetup.attendees ?? [])
+                            try await viewModel.loadPendingUsers(userIds: meetup.pendingUsers ?? [])
+                        } catch {
+                            isErrorAlertPresented = true
+                        }
                     }
-                }
+
             }
             .onDisappear {
                 Task { try await userStateManager.refreshUser() }
@@ -147,10 +154,10 @@ struct PendingUserCellView: View {
                 } label: {
                     UserPFPView(photoURL: profileUser.photoURL ?? "")
                 }
-                Text("\(userStateManager.currentUser?.firstName ?? "") \(userStateManager.currentUser?.lastName ?? "")")
+                Text("\(profileUser.firstName ?? "") \(profileUser.lastName ?? "")")
                     .bold()
                     .font(.title2)
-                    .foregroundStyle(.black)
+
                 HStack {
                     Button(action: {
                         Task {
@@ -193,7 +200,7 @@ struct PendingUserCellView: View {
         .shadow(radius: 10, x: 3, y: 5)
         .onAppear {
             Task {
-                try await viewModel.loadImage(from: userStateManager.currentUser?.photoURL ?? "")
+                try await viewModel.loadImage(from: userStateManager.currentUser?.photoURL ?? "", userStateManager: userStateManager)
             }
         }
     }
@@ -214,19 +221,18 @@ struct AcceptedUserCellView: View {
                     NavigationLink {
                         PublicProfileView(profileUser: profileUser)
                     } label: {
-                        UserPFPView(photoURL: userStateManager.currentUser?.photoURL ?? "")
+                        UserPFPView(photoURL: profileUser.photoURL ?? "")
                     }
-                    Text("\(userStateManager.currentUser?.firstName ?? "") \(userStateManager.currentUser?.lastName ?? "")")
+                    Text("\(profileUser.firstName ?? "") \(profileUser.lastName ?? "")")
                         .bold()
                         .font(.title2)
-                        .foregroundStyle(.black)
                 }
             }
             .frame(width: 345, height: 130)
             //.background(.yellow)
             .shadow(radius: 5, x: 3, y: 3)
             .onAppear {
-                Task { try await viewModel.loadImage(from: userStateManager.currentUser?.photoURL ?? "") }
+                Task { try await viewModel.loadImage(from: userStateManager.currentUser?.photoURL ?? "", userStateManager: userStateManager) }
             }
             
         }

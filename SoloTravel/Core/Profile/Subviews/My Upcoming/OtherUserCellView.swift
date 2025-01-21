@@ -42,7 +42,6 @@ struct OtherUserCellView: View {
                         Text("\(otherUser.firstName ?? "") \(otherUser.lastName ?? "")")
                             .bold()
                             .font(.title2)
-                            .foregroundStyle(.black)
                     }
                 }
                 

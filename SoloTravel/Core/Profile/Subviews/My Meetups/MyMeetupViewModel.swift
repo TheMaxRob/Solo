@@ -30,8 +30,8 @@ final class MyMeetupViewModel: ObservableObject {
     }
     
     
-    func loadImage(from url: String) async throws {
-        profileImage = try await UserManager.shared.loadImage(from: url)
+    func loadImage(from url: String, userStateManager: UserStateManager) async throws {
+        profileImage = try await userStateManager.fetchImage(from: url)
     }
     
     
