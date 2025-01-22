@@ -14,10 +14,21 @@ final class MapViewModel: ObservableObject {
     @Published var startDate = Date()
     @Published var endDate = Date().addingTimeInterval(7 * 24 * 60 * 60)
     @Published var meetupPoints: [CLLocationCoordinate2D] = []
+    @Published var desiredTags: Set<Tag> = []
     
     func fetchMeetups(userStateManager: UserStateManager) async throws {
-        meetups = try await userStateManager.fetchMeetups(start: startDate, end: endDate)
+        let allMeetups = try await userStateManager.fetchMeetups(start: startDate, end: endDate)
         print("meetups assigned in MapViewModel: \(meetups)")
+        if desiredTags.isEmpty {
+            self.meetups = allMeetups
+        } else {
+            print("filtering based on tags...")
+            self.meetups = allMeetups.filter { meetup in
+                guard let meetupTags = meetup.tags else { return false }
+                return !Set(meetupTags).isDisjoint(with: desiredTags)
+            }
+            print("meetups displayed: \(meetups)")
+        }
     }
 }
 

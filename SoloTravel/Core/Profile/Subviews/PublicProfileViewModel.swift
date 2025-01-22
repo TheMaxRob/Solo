@@ -24,6 +24,7 @@ final class PublicProfileViewModel: ObservableObject {
     func getUser(userId: String) async throws {
         do {
             profileUser = try await UserManager.shared.fetchUser(userId: userId)
+            print("profileUser.interests: \(profileUser?.interests ?? [])")
         } catch {
             errorMessage = "Error fetching user's profile."
         }

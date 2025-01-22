@@ -75,6 +75,7 @@ final class UserManager {
             let document = try await userCollection.document(userId).getDocument()
             if document.exists, let data = document.data() {
                 let user = try decoder.decode(DBUser.self, from: data)
+                print("user.interests: \(user.interests ?? [])")
                 return user
             } else {
                 print("document not found – fetchUser")
@@ -154,7 +155,8 @@ final class UserManager {
                            country: String,
                            bio: String,
                            age: String,
-                           photoURL: String) async throws {
+                           photoURL: String,
+                           selectedInterests: [Tag]) async throws {
         print("createUserProfile called")
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId
@@ -163,13 +165,16 @@ final class UserManager {
         do {
             let snapshot = try await userCollection.document(userId).getDocument()
             if snapshot.exists {
+                let selectedInterestNames = selectedInterests.map { $0.rawValue }
+                print("selectedInterestNames: \(selectedInterestNames)")
                 let userProfile: [String: Any] = [
-                    "first_name": firstName,
-                    "last_name": lastName,
-                    "home_country": country,
-                    "bio": bio,
-                    "age": age,
-                    "photo_url": photoURL
+                    DBUser.CodingKeys.firstName.rawValue: firstName,
+                    DBUser.CodingKeys.lastName.rawValue: lastName,
+                    DBUser.CodingKeys.homeCountry.rawValue: country,
+                    DBUser.CodingKeys.bio.rawValue: bio,
+                    DBUser.CodingKeys.age.rawValue: age,
+                    DBUser.CodingKeys.photoURL.rawValue: photoURL,
+                    DBUser.CodingKeys.interests.rawValue: selectedInterestNames
                 ]
                 try await userCollection.document(userId).updateData(userProfile)
             } else {

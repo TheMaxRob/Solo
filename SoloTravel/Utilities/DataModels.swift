@@ -11,6 +11,25 @@ import MapboxMaps
 import CoreLocation
 
 
+enum Tag: String, Codable, CaseIterable, Equatable {
+    case hiking = "Hiking"
+    case cooking = "Cooking"
+    case reading = "Reading"
+    case sightseeing = "Sightseeing"
+    case nightlife = "Nightlife"
+    case photography = "Photography"
+    case sports = "Sports"
+    case gaming = "Gaming"
+    case food = "Food"
+    case party = "Party"
+    case workshop = "Workshop"
+    case museum = "Museum"
+    case beach = "Beach"
+    case coffee = "Coffee"
+    case concert = "Concert"
+}
+
+
 struct Message: Codable, Identifiable {
     @DocumentID var id: String?
     let senderId: String
@@ -54,6 +73,7 @@ struct Meetup: Identifiable, Codable, Equatable, Hashable {
     let pendingUsers: [String]?
     let imageURL: String?
     let hasNewMember: Bool?
+    let tags: [Tag]?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -68,6 +88,7 @@ struct Meetup: Identifiable, Codable, Equatable, Hashable {
         case pendingUsers = "pending_users"
         case imageURL = "image_url"
         case hasNewMember = "has_new_member"
+        case tags = "tags"
     }
     
     init () {
@@ -83,6 +104,7 @@ struct Meetup: Identifiable, Codable, Equatable, Hashable {
         self.pendingUsers = []
         self.imageURL = ""
         self.hasNewMember = false
+        self.tags = []
     }
     
     init(title: String?,
@@ -94,7 +116,8 @@ struct Meetup: Identifiable, Codable, Equatable, Hashable {
          location: CLLocationCoordinate2D,
          attendees: [String]?,
          pendingUsers: [String]?,
-         imageURL: String?
+         imageURL: String?,
+         tags: [Tag]?
     )
     
     {
@@ -110,6 +133,7 @@ struct Meetup: Identifiable, Codable, Equatable, Hashable {
         self.pendingUsers = []
         self.imageURL = imageURL ?? ""
         self.hasNewMember = false
+        self.tags = tags
     }
     
     init(from decoder: Decoder) throws {
@@ -125,6 +149,7 @@ struct Meetup: Identifiable, Codable, Equatable, Hashable {
         self.pendingUsers = try container.decodeIfPresent([String].self, forKey: .pendingUsers)
         self.imageURL = try container.decodeIfPresent(String.self, forKey: .imageURL)
         self.hasNewMember = try container.decodeIfPresent(Bool.self, forKey: .hasNewMember)
+        self.tags = try container.decodeIfPresent([Tag].self, forKey: .tags)
         if let geoPoint = try container.decodeIfPresent(GeoPoint.self, forKey: .location) {
             self.location = CLLocationCoordinate2D(latitude: geoPoint.latitude, longitude: geoPoint.longitude)
         } else {
@@ -145,6 +170,7 @@ struct Meetup: Identifiable, Codable, Equatable, Hashable {
         try container.encodeIfPresent(pendingUsers, forKey: .pendingUsers)
         try container.encodeIfPresent(imageURL, forKey: .imageURL)
         try container.encodeIfPresent(hasNewMember, forKey: .hasNewMember)
+        try container.encodeIfPresent(tags, forKey: .tags)
         
         let geoPoint = GeoPoint(latitude: location.latitude, longitude: location.longitude)
         try container.encode(geoPoint, forKey: .location)
@@ -152,20 +178,21 @@ struct Meetup: Identifiable, Codable, Equatable, Hashable {
     }
     
     func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-            hasher.combine(title)
-            hasher.combine(description)
-            hasher.combine(meetTime)
-            hasher.combine(city)
-            hasher.combine(createdDate)
-            hasher.combine(organizerId)
-            hasher.combine(location.latitude)
-            hasher.combine(location.longitude)
-            hasher.combine(attendees)
-            hasher.combine(pendingUsers)
-            hasher.combine(imageURL)
-            hasher.combine(hasNewMember)
-        }
+        hasher.combine(id)
+        hasher.combine(title)
+        hasher.combine(description)
+        hasher.combine(meetTime)
+        hasher.combine(city)
+        hasher.combine(createdDate)
+        hasher.combine(organizerId)
+        hasher.combine(location.latitude)
+        hasher.combine(location.longitude)
+        hasher.combine(attendees)
+        hasher.combine(pendingUsers)
+        hasher.combine(imageURL)
+        hasher.combine(hasNewMember)
+        hasher.combine(tags)
+    }
 }
 
 
@@ -251,6 +278,7 @@ struct DBUser: Codable, Identifiable, Equatable {
     var hasNewRequest: Bool?
     var reportedUsers: [String]?
     var bookmarkedMeetups: [String]?
+    var interests: [Tag]?
     
     
     init(auth: AuthDataResultModel) {
@@ -270,6 +298,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.hasUnreadMessages = false
         self.reportedUsers = []
         self.bookmarkedMeetups = []
+        self.interests = []
     }
     
     init(
@@ -282,7 +311,8 @@ struct DBUser: Codable, Identifiable, Equatable {
         conversations: [String]? = [],
         homeCountry: String? = nil,
         age: String? = nil,
-        bio: String? = nil
+        bio: String? = nil,
+        interests: [Tag]? = nil
     ) {
         self.userId = userId
         self.email = email
@@ -304,6 +334,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.hasNewRequest = false
         self.reportedUsers = []
         self.bookmarkedMeetups = []
+        self.interests = interests
     }
     
     enum CodingKeys: String, CodingKey {
@@ -327,6 +358,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         case hasNewRequest = "has_new_request"
         case reportedUsers = "reported_users"
         case bookmarkedMeetups = "bookmarked_meetups"
+        case interests = "interests"
     }
     
     
@@ -352,6 +384,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.hasNewRequest = try container.decodeIfPresent(Bool.self, forKey: .hasNewRequest)
         self.reportedUsers = try container.decodeIfPresent([String].self, forKey: .reportedUsers)
         self.bookmarkedMeetups = try container.decodeIfPresent([String].self, forKey: .bookmarkedMeetups)
+        self.interests = try container.decodeIfPresent([Tag].self, forKey: .interests)
     }
     
     
@@ -377,6 +410,9 @@ struct DBUser: Codable, Identifiable, Equatable {
         try container.encodeIfPresent(self.hasNewRequest, forKey: .hasNewRequest)
         try container.encodeIfPresent(self.reportedUsers, forKey: .reportedUsers)
         try container.encodeIfPresent(self.bookmarkedMeetups, forKey: .bookmarkedMeetups)
+        try container.encodeIfPresent(self.interests, forKey: .interests)
     }
-    
 }
+
+
+

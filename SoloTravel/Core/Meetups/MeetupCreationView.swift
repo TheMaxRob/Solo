@@ -14,6 +14,7 @@ struct MeetupCreationView: View {
     @State private var isImagePickerPresented = false
     @EnvironmentObject private var userStateManager: UserStateManager
     var location: CLLocationCoordinate2D
+    @State private var selectedTags: Set<Tag> = []
     
     var body: some View {
         NavigationStack {
@@ -64,6 +65,25 @@ struct MeetupCreationView: View {
                         .padding(.horizontal)
                         .foregroundStyle(.gray.opacity(0.8))
                     
+                    
+                    // Tags Section
+                    Text("Select Tags for Your Meetup")
+                        .font(.headline)
+                        .padding(.bottom, 10) // Add space below the title
+
+                    ScrollView {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                            ForEach(Tag.allCases, id: \.self) { tag in
+                                tagView(for: tag)
+                            }
+                        }
+                        .padding()
+                    }
+                    .frame(height: 200) 
+
+                    
+                    .frame(height: 200)
+                    
                     TextField("Description", text: $viewModel.meetupDescription, axis: .vertical)
                         .lineLimit(5)
                         .padding(5)
@@ -87,7 +107,8 @@ struct MeetupCreationView: View {
                                 } else {
                                     try await viewModel.createMeetup(
                                         userId: userStateManager.currentUser?.userId ?? "",
-                                        location: location
+                                        location: location,
+                                        selectedTags: selectedTags
                                     )
                                     dismiss()
                                 }
@@ -120,8 +141,44 @@ struct MeetupCreationView: View {
             }
         }
     }
+    func tagView(for tag: Tag) -> some View {
+        Text(tag.rawValue)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(selectedTags.contains(tag) ? Color.green.opacity(0.2) : Color.gray.opacity(0.2))
+            .foregroundColor(selectedTags.contains(tag) ? .green : .gray)
+            .font(.footnote)
+            .clipShape(Capsule())
+            .onTapGesture {
+                if selectedTags.contains(tag) {
+                    selectedTags.remove(tag)
+                } else {
+                    selectedTags.insert(tag)
+                }
+            }
+    }
+
 }
 
 #Preview {
     MeetupCreationView(location: CLLocationCoordinate2D())
 }
+
+//
+//struct MultipleSelectionRow: View {
+//    let label: String
+//    let isSelected: Bool
+//    let onTap: () -> Void
+//    
+//    var body: some View {
+//        Button(action: onTap) {
+//            HStack {
+//                Text(label)
+//                Spacer()
+//                if isSelected {
+//                    Image(systemName: "checkmark")
+//                }
+//            }
+//        }
+//    }
+//}

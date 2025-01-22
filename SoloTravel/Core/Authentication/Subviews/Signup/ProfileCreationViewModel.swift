@@ -22,6 +22,7 @@ final class ProfileCreationViewModel: ObservableObject {
     @Published var imageSelection: PhotosPickerItem? = nil
     @Published var isShowingWelcomeView: Bool = false
     @Published var errorMessage: String? = nil    
+    @Published var selectedTags: Set<Tag> = []
     
     func saveUserProfile(userId: String) async throws {
         print("saveUserProfile called")
@@ -29,7 +30,7 @@ final class ProfileCreationViewModel: ObservableObject {
         do {
             let photoURL = try await UserManager.shared.uploadImageToFirebase((selectedImage ?? UIImage(systemName: "person.circle")!), userId: userId)
             print("uploadImagetoFirebase successful")
-            try await UserManager.shared.createUserProfile(userId: userId, firstName: firstName, lastName: lastName, country: homeCountry, bio: bio, age: age, photoURL: photoURL)
+            try await UserManager.shared.createUserProfile(userId: userId, firstName: firstName, lastName: lastName, country: homeCountry, bio: bio, age: age, photoURL: photoURL, selectedInterests: Array(selectedTags))
         } catch {
             print("error: \(error)")
         }
