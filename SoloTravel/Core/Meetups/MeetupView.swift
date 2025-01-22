@@ -94,5 +94,5 @@ struct MeetupView: View {
 }
 
 #Preview {
-    MeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", location: CLLocationCoordinate2D(), attendees: [], pendingUsers: [], imageURL: ""))
+    MeetupView(meetup: Meetup())
 }

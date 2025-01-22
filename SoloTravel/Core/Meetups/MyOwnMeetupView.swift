@@ -15,12 +15,10 @@ struct MyOwnMeetupView: View {
         NavigationStack {
             VStack {
                 Text("\(String(describing: meetup.title))")
-                    .foregroundStyle(.black)
                     .font(.headline)
                     .fontWeight(meetup.hasNewMember ?? false ? .bold : .regular)
                 Text("\(formatDayAndTime(date: meetup.meetTime ?? Date()))")
                     .fontWeight(meetup.hasNewMember ?? false ? .bold : .regular)
-                    .foregroundStyle(.black)
                     .font(.footnote)
                 if meetup.hasNewMember ?? false {
                     Circle()
@@ -46,5 +44,5 @@ private func formatDayAndTime(date: Date) -> String {
 }
 
 #Preview {
-    MyOwnMeetupView(meetup: Meetup(title: "Title", description: "description", meetTime: Date(), city: "Paris", createdDate: Date(), organizerId: "organizerId", location: CLLocationCoordinate2D(), attendees: [], pendingUsers: [], imageURL: ""))
+    MyOwnMeetupView(meetup: Meetup())
 }

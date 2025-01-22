@@ -14,6 +14,7 @@ struct MeetupCreationView: View {
     @State private var isImagePickerPresented = false
     @EnvironmentObject private var userStateManager: UserStateManager
     var location: CLLocationCoordinate2D
+    @State private var selectedTags: Set<Tag> = []
     
     var body: some View {
         NavigationStack {
@@ -64,6 +65,21 @@ struct MeetupCreationView: View {
                         .padding(.horizontal)
                         .foregroundStyle(.gray.opacity(0.8))
                     
+                    Section("Tags") {
+                        List {
+                            ForEach(Tag.allCases, id: \.self) { tag in
+                                MultipleSelectionRow(label: tag.rawValue, isSelected: selectedTags.contains(tag)) {
+                                    if selectedTags.contains(tag) {
+                                        selectedTags.remove(tag)
+                                    } else {
+                                        selectedTags.insert(tag)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .frame(height: 200)
+                    
                     TextField("Description", text: $viewModel.meetupDescription, axis: .vertical)
                         .lineLimit(5)
                         .padding(5)
@@ -87,7 +103,8 @@ struct MeetupCreationView: View {
                                 } else {
                                     try await viewModel.createMeetup(
                                         userId: userStateManager.currentUser?.userId ?? "",
-                                        location: location
+                                        location: location,
+                                        selectedTags: selectedTags
                                     )
                                     dismiss()
                                 }
@@ -124,4 +141,23 @@ struct MeetupCreationView: View {
 
 #Preview {
     MeetupCreationView(location: CLLocationCoordinate2D())
+}
+
+
+struct MultipleSelectionRow: View {
+    let label: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack {
+                Text(label)
+                Spacer()
+                if isSelected {
+                    Image(systemName: "checkmark")
+                }
+            }
+        }
+    }
 }

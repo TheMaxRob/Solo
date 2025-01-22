@@ -15,11 +15,14 @@ final class EditUserProfileViewModel: ObservableObject {
     var email: String = ""
     var homeCountry: String = ""
     var bio: String = ""
+    
     @Published var imageSelection: PhotosPickerItem? = nil
     @Published var selectedImage: UIImage? = nil
     @Published var errorMessage: String? = nil
-
     
+    // NEW: A set of selected interests
+    @Published var selectedInterests: Set<Tag> = []
+
     func loadImage(from item: PhotosPickerItem?) async throws  -> UIImage? {
         guard let item = item else { return nil }
         
@@ -31,10 +34,9 @@ final class EditUserProfileViewModel: ObservableObject {
         }
     }
     
-    
     func saveChanges(userId: String) async throws {
         var updateFields = [String: Any]()
-               
+        
         if !firstName.isEmpty {
             updateFields[DBUser.CodingKeys.firstName.rawValue] = firstName
         }
@@ -50,11 +52,15 @@ final class EditUserProfileViewModel: ObservableObject {
         if !bio.isEmpty {
             updateFields[DBUser.CodingKeys.bio.rawValue] = bio
         }
+        
+        let interestsArray = selectedInterests.map(\.rawValue)
+        updateFields[DBUser.CodingKeys.interests.rawValue] = interestsArray
+        
         if let image = selectedImage {
-            // Assuming you have a method to upload the image and get the URL
             let imageURL = try await UserManager.shared.uploadImageToFirebase(image, userId: userId)
             updateFields[DBUser.CodingKeys.photoURL.rawValue] = imageURL
         }
+        
         if !updateFields.isEmpty {
             do {
                 try await UserManager.shared.updateUserInformation(userId: userId, fields: updateFields)
@@ -66,7 +72,6 @@ final class EditUserProfileViewModel: ObservableObject {
         }
     }
     
-    
     func setBio(bio: String) {
         self.bio = bio
     }
@@ -75,23 +80,25 @@ final class EditUserProfileViewModel: ObservableObject {
 struct EditUserProfileView: View {
     
     @StateObject var viewModel = EditUserProfileViewModel()
-    //var user: DBUser
     @EnvironmentObject var userStateManager: UserStateManager
+    
     @State private var isImagePickerPresented = false
     @State private var isErrorAlertPresented = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 16) {
+                
+                // MARK: - Profile Image
                 if let selectedImage = viewModel.selectedImage {
-                        Image(uiImage: selectedImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                            .shadow(radius: 5)
+                    Image(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                        .shadow(radius: 5)
                 } else {
                     Image(systemName: "person.circle.fill")
                         .foregroundStyle(.gray)
@@ -109,16 +116,51 @@ struct EditUserProfileView: View {
                         .foregroundStyle(.gray)
                 }
                 
+                // MARK: - Text Fields
+                BottomLineTextField(
+                    placeholder: "\(userStateManager.currentUser?.firstName ?? "First Name")",
+                    text: $viewModel.firstName
+                )
                 
-                BottomLineTextField(placeholder: "\(userStateManager.currentUser?.firstName ?? "First Name")", text: $viewModel.firstName)
+                BottomLineTextField(
+                    placeholder: "\(userStateManager.currentUser?.lastName ?? "Last Name")",
+                    text: $viewModel.lastName
+                )
                 
-                BottomLineTextField(placeholder: "\(userStateManager.currentUser?.lastName ?? "Last Name")", text: $viewModel.lastName)
-                    .padding(.vertical)
+                BottomLineTextField(
+                    placeholder: "\(userStateManager.currentUser?.homeCountry ?? "Home Country")",
+                    text: $viewModel.homeCountry
+                )
                 
-                BottomLineTextField(placeholder: "\(userStateManager.currentUser?.homeCountry ?? "Home Country")", text: $viewModel.homeCountry)
+                CustomTextEditor(
+                    placeholder: "\(userStateManager.currentUser?.bio ?? "Your Biography")",
+                    text: $viewModel.bio
+                )
+                .frame(minHeight: 120)
                 
-                CustomTextEditor(placeholder: "\(userStateManager.currentUser?.bio ?? "Your Biography")", text: $viewModel.bio)
-                    .padding(.top, 25)
+                // MARK: - Interests Selection (Scroll or List)
+                Text("Select Your Interests")
+                    .font(.headline)
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(Tag.allCases, id: \.self) { tag in
+                            MultipleSelectionRow(
+                                label: tag.rawValue,
+                                isSelected: viewModel.selectedInterests.contains(tag)
+                            ) {
+                                // Toggling logic
+                                if viewModel.selectedInterests.contains(tag) {
+                                    viewModel.selectedInterests.remove(tag)
+                                } else {
+                                    viewModel.selectedInterests.insert(tag)
+                                }
+                            }
+                        }
+                    }
+                }
+                .frame(height: 200)
+                .padding(.horizontal)
                 
                 Button {
                     Task {
@@ -134,15 +176,31 @@ struct EditUserProfileView: View {
                     Text("Save Changes")
                         .font(.title3)
                 }
-                .padding(.top, 20)
+                .padding(.top, 10)
                 
                 Spacer()
-                .navigationTitle("Edit Profile")
             }
+            .padding()
+            .navigationTitle("Edit Profile")
             .onAppear {
-                viewModel.setBio(bio: userStateManager.currentUser?.bio ?? "")
+                // Initialize text fields & selectedInterests from current user
+                if let user = userStateManager.currentUser {
+                    viewModel.firstName = user.firstName ?? ""
+                    viewModel.lastName = user.lastName ?? ""
+                    viewModel.homeCountry = user.homeCountry ?? ""
+                    viewModel.bio = user.bio ?? ""
+                    // Set up the interests if any exist
+                    if let existingInterests = user.interests {
+                        viewModel.selectedInterests = Set(existingInterests)
+                    }
+                }
             }
-            .photosPicker(isPresented: $isImagePickerPresented, selection: $viewModel.imageSelection, matching: .images)
+            // MARK: - Image Picker
+            .photosPicker(
+                isPresented: $isImagePickerPresented,
+                selection: $viewModel.imageSelection,
+                matching: .images
+            )
             .onChange(of: viewModel.imageSelection) { _, newSelection in
                 Task {
                     if let image = try await viewModel.loadImage(from: newSelection) {
@@ -150,11 +208,13 @@ struct EditUserProfileView: View {
                     }
                 }
             }
-            //.background(.yellow)
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(viewModel.errorMessage ?? "Something went wrong."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
         }
     }
-}
-
-#Preview {
-    EditUserProfileView()
 }

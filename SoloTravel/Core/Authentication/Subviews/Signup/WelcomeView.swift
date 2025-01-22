@@ -11,7 +11,7 @@ struct WelcomeView: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var isNotAuthenticated: Bool
     @Binding var isShowingWelcomeView: Bool
-    let dismissAfter: TimeInterval = 2.0
+    let dismissAfter: TimeInterval = 3.0
     
     
     var body: some View {

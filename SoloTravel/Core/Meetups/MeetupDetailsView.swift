@@ -1,3 +1,5 @@
+// MeetupDetailsView.swift
+
 import SwiftUI
 
 struct MeetupDetailsView: View {
@@ -52,6 +54,30 @@ struct MeetupDetailsView: View {
                         .font(.subheadline)
                         .padding(.bottom)
                         .bold()
+                    
+                    
+                    // Tags Section
+                    if let tags = meetup.tags, !tags.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Tags")
+                                .font(.headline)
+                                .padding(.top)
+
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                                ForEach(tags, id: \.self) { tag in
+                                    Text("\(tag)")
+                                        .frame(width: 100, height: 30) // Fixed width and height
+                                        .background(Color.green.opacity(0.2))
+                                        .foregroundColor(.green)
+                                        .font(.footnote)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+
+
                     
                     // Who's Going Section
                     HStack {

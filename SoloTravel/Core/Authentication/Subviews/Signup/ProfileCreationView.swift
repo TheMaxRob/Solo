@@ -65,13 +65,39 @@ struct ProfileCreationView: View {
                     CustomTextEditor(placeholder: "Tell us about yourself!", text: $viewModel.bio)
                     // Make it so there's a word limit on the biography
                     
+                    // MARK: Interests/Tags Section
+                    Text("Select Your Interests")
+                        .font(.headline)
+                        .padding(.bottom, 4)
+                    
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 8) {
+                            // For each Tag
+                            ForEach(Tag.allCases, id: \.self) { tag in
+                                MultipleSelectionRow(
+                                    label: tag.rawValue,
+                                    isSelected: viewModel.selectedTags.contains(tag)
+                                ) {
+                                    if viewModel.selectedTags.contains(tag) {
+                                        viewModel.selectedTags.remove(tag)
+                                    } else {
+                                        viewModel.selectedTags.insert(tag)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .frame(height: 200)
+                    .padding(.horizontal)
+
+                    
                     NavigationLink {
                         WelcomeView(isNotAuthenticated: $isNotAuthenticated, isShowingWelcomeView: $viewModel.isShowingWelcomeView)
                     } label: {
                         Text("Save and Continue")
                             .padding()
                             .frame(width: 350)
-                            .background(.black)
+                            .background(.blue)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                         // .foregroundStyle(.yellow)

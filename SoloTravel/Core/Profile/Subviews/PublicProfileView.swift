@@ -90,6 +90,26 @@ struct PublicProfileView: View {
                     Text("\(profileUser?.bio ?? viewModel.profileUser?.bio ?? "")")
                         .padding()
                     
+                    if let interests = profileUser?.interests ?? viewModel.profileUser?.interests, !interests.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Interests")
+                                .font(.headline)
+                                .padding(.top)
+
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                                ForEach(interests, id: \.self) { interest in
+                                    Text("\(interest)")
+                                        .frame(width: 100, height: 30) // Fixed width and height
+                                        .background(Color.green.opacity(0.2))
+                                        .foregroundColor(.green)
+                                        .font(.footnote)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .padding()
+                    }
+                    
                     // Report User Button
                     if (profileUser?.userId ?? viewModel.profileUser?.userId ?? "" != userStateManager.currentUser?.userId) {
                         Button {
@@ -155,8 +175,10 @@ struct PublicProfileView: View {
                             //print("profileUser in PublicProfileView: \(profileUser)")
                             if (profileUser == nil) {
                                 try await viewModel.getUser(userId: profileUserId ?? "")
+                                print("user interests: \(profileUser?.interests ?? [])")
                             }
                             try await viewModel.loadImage(from: viewModel.profileUser?.photoURL ?? "")
+                            
                         } catch {
                             isErrorAlertPresented = true
                         }
