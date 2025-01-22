@@ -17,20 +17,24 @@ struct ProfileCreationView: View {
     @State private var showErrorAlert = false
     @EnvironmentObject var userStateManager: UserStateManager
     
-    
     var body: some View {
         NavigationStack {
-            
             ScrollView {
-                VStack {
+                VStack(spacing: 16) { // Added consistent spacing between sections
+                    
+                    // Welcome Text
                     Text("Welcome!")
                         .bold()
                         .font(.title)
                     
+                    // Profile Picture
                     if let selectedImage = viewModel.selectedImage {
                         Image(uiImage: selectedImage)
                             .resizable()
                             .scaledToFill()
+                            .frame(width: 200, height: 200) // Adjusted size for a consistent design
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.gray, lineWidth: 2))
                             .shadow(radius: 5)
                             .onTapGesture {
                                 isImagePickerPresented.toggle()
@@ -38,59 +42,51 @@ struct ProfileCreationView: View {
                     } else {
                         ZStack {
                             RoundedRectangle(cornerRadius: 25)
-                                .frame(width: 400, height: 400)
+                                .frame(width: 200, height: 200) // Adjusted size
                                 .foregroundStyle(Color(red: 0.95, green: 0.95, blue: 0.95))
                             
                             VStack {
                                 Image(systemName: "camera.viewfinder")
-                                    .font(.system(size: 75))
+                                    .font(.system(size: 50))
                                     .foregroundStyle(.gray)
                                 
-                                Text("Upload a picture for your meetup!")
+                                Text("Upload a picture for your profile!")
                                     .foregroundStyle(.gray)
                             }
                         }
                         .onTapGesture {
                             isImagePickerPresented.toggle()
                         }
-                        .padding(.bottom)
                     }
                     
+                    // Text Fields
                     BottomLineTextField(placeholder: "First Name", text: $viewModel.firstName)
                     BottomLineTextField(placeholder: "Last Name", text: $viewModel.lastName)
                     BottomLineTextField(placeholder: "Home Country", text: $viewModel.homeCountry)
                     BottomLineTextField(placeholder: "How old are you?", text: $viewModel.age)
                         .padding(.top, 10)
                     
+                    // Biography
                     CustomTextEditor(placeholder: "Tell us about yourself!", text: $viewModel.bio)
-                    // Make it so there's a word limit on the biography
+                        .frame(height: 120) // Adjusted height for better layout
+                        .padding(.bottom, 20) // Added space below the editor
                     
-                    // MARK: Interests/Tags Section
+                    // Interests Section
                     Text("Select Your Interests")
                         .font(.headline)
-                        .padding(.bottom, 4)
-                    
+                        .padding(.bottom, 10) // Added space below the title
+
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 8) {
-                            // For each Tag
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                             ForEach(Tag.allCases, id: \.self) { tag in
-                                MultipleSelectionRow(
-                                    label: tag.rawValue,
-                                    isSelected: viewModel.selectedTags.contains(tag)
-                                ) {
-                                    if viewModel.selectedTags.contains(tag) {
-                                        viewModel.selectedTags.remove(tag)
-                                    } else {
-                                        viewModel.selectedTags.insert(tag)
-                                    }
-                                }
+                                interestTagView(for: tag)
                             }
                         }
+                        .padding()
                     }
-                    .frame(height: 200)
-                    .padding(.horizontal)
-
+                    .frame(height: 200) // Set consistent height for the interests section
                     
+                    // Save and Continue Button
                     NavigationLink {
                         WelcomeView(isNotAuthenticated: $isNotAuthenticated, isShowingWelcomeView: $viewModel.isShowingWelcomeView)
                     } label: {
@@ -100,21 +96,21 @@ struct ProfileCreationView: View {
                             .background(.blue)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
-                        // .foregroundStyle(.yellow)
                     }
                     .simultaneousGesture(TapGesture().onEnded {
                         Task {
                             do {
                                 try await userStateManager.loadUser()
-                                print("user loaded: \(String(describing: userStateManager.currentUser))")
                                 try await viewModel.saveUserProfile(userId: userStateManager.currentUser?.userId ?? "")
                             } catch {
                                 showErrorAlert = true
                             }
                         }
                     })
+                    
                     Spacer()
                 }
+                .padding()
             }
             .alert(isPresented: $showErrorAlert) {
                 Alert(
@@ -123,7 +119,11 @@ struct ProfileCreationView: View {
                     dismissButton: .default(Text("OK"))
                 )
             }
-            .photosPicker(isPresented: $isImagePickerPresented, selection: $viewModel.imageSelection, matching: .images)
+            .photosPicker(
+                isPresented: $isImagePickerPresented,
+                selection: $viewModel.imageSelection,
+                matching: .images
+            )
             .onChange(of: viewModel.imageSelection) { _, newSelection in
                 Task {
                     if let image = try await viewModel.loadImage(from: newSelection) {
@@ -132,6 +132,23 @@ struct ProfileCreationView: View {
                 }
             }
         }
+    }
+    
+    func interestTagView(for tag: Tag) -> some View {
+        Text(tag.rawValue)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(viewModel.selectedTags.contains(tag) ? Color.green.opacity(0.2) : Color.gray.opacity(0.2))
+            .foregroundColor(viewModel.selectedTags.contains(tag) ? .green : .gray)
+            .font(.footnote)
+            .clipShape(Capsule())
+            .onTapGesture {
+                if viewModel.selectedTags.contains(tag) {
+                    viewModel.selectedTags.remove(tag)
+                } else {
+                    viewModel.selectedTags.insert(tag)
+                }
+            }
     }
 }
 

@@ -87,134 +87,143 @@ struct EditUserProfileView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                
-                // MARK: - Profile Image
-                if let selectedImage = viewModel.selectedImage {
-                    Image(uiImage: selectedImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 100, height: 100)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                        .shadow(radius: 5)
-                } else {
-                    Image(systemName: "person.circle.fill")
-                        .foregroundStyle(.gray)
-                        .font(.system(size: 85))
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                        .shadow(radius: 5)
-                }
-                
-                Button {
-                    isImagePickerPresented.toggle()
-                } label: {
-                    Text("Upload profile picture")
-                        .font(.caption)
-                        .foregroundStyle(.gray)
-                }
-                
-                // MARK: - Text Fields
-                BottomLineTextField(
-                    placeholder: "\(userStateManager.currentUser?.firstName ?? "First Name")",
-                    text: $viewModel.firstName
-                )
-                
-                BottomLineTextField(
-                    placeholder: "\(userStateManager.currentUser?.lastName ?? "Last Name")",
-                    text: $viewModel.lastName
-                )
-                
-                BottomLineTextField(
-                    placeholder: "\(userStateManager.currentUser?.homeCountry ?? "Home Country")",
-                    text: $viewModel.homeCountry
-                )
-                
-                CustomTextEditor(
-                    placeholder: "\(userStateManager.currentUser?.bio ?? "Your Biography")",
-                    text: $viewModel.bio
-                )
-                .frame(minHeight: 120)
-                
-                // MARK: - Interests Selection (Scroll or List)
-                Text("Select Your Interests")
-                    .font(.headline)
-                
+            NavigationStack {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(Tag.allCases, id: \.self) { tag in
-                            MultipleSelectionRow(
-                                label: tag.rawValue,
-                                isSelected: viewModel.selectedInterests.contains(tag)
-                            ) {
-                                // Toggling logic
-                                if viewModel.selectedInterests.contains(tag) {
-                                    viewModel.selectedInterests.remove(tag)
-                                } else {
-                                    viewModel.selectedInterests.insert(tag)
+                    VStack(spacing: 16) {
+                        
+                        // MARK: - Profile Image
+                        if let selectedImage = viewModel.selectedImage {
+                            Image(uiImage: selectedImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                                .shadow(radius: 5)
+                        } else {
+                            Image(systemName: "person.circle.fill")
+                                .foregroundStyle(.gray)
+                                .font(.system(size: 85))
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                                .shadow(radius: 5)
+                        }
+                        
+                        Button {
+                            isImagePickerPresented.toggle()
+                        } label: {
+                            Text("Upload profile picture")
+                                .font(.caption)
+                                .foregroundStyle(.gray)
+                        }
+                        
+                        // MARK: - Text Fields
+                        BottomLineTextField(
+                            placeholder: "\(userStateManager.currentUser?.firstName ?? "First Name")",
+                            text: $viewModel.firstName
+                        )
+                        
+                        BottomLineTextField(
+                            placeholder: "\(userStateManager.currentUser?.lastName ?? "Last Name")",
+                            text: $viewModel.lastName
+                        )
+                        
+                        BottomLineTextField(
+                            placeholder: "\(userStateManager.currentUser?.homeCountry ?? "Home Country")",
+                            text: $viewModel.homeCountry
+                        )
+                        
+                        CustomTextEditor(
+                            placeholder: "\(userStateManager.currentUser?.bio ?? "Your Biography")",
+                            text: $viewModel.bio
+                        )
+                        .frame(minHeight: 120)
+                        .padding(.bottom, 20) // Add extra space below the text editor
+                        
+                        // MARK: - Interests Selection
+                        Text("Select Your Interests")
+                            .font(.headline)
+                            .padding(.bottom, 10) // Add space below the title
+
+                        ScrollView { // Wrap the grid in a ScrollView for proper scrolling
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                                ForEach(Tag.allCases, id: \.self) { tag in
+                                    interestTagView(for: tag)
                                 }
                             }
+                            .padding()
+                        }
+                        .frame(height: 200)
+                        
+                        Button {
+                            Task {
+                                do {
+                                    try await viewModel.saveChanges(userId: userStateManager.currentUser?.userId ?? "")
+                                    try await userStateManager.refreshUser()
+                                    dismiss()
+                                } catch {
+                                    isErrorAlertPresented = true
+                                }
+                            }
+                        } label: {
+                            Text("Save Changes")
+                                .font(.title3)
+                        }
+                        .padding(.top, 10)
+                        
+                        Spacer()
+                    }
+                    .padding()
+                }
+                .navigationTitle("Edit Profile")
+                .onAppear {
+                    if let user = userStateManager.currentUser {
+                        viewModel.firstName = user.firstName ?? ""
+                        viewModel.lastName = user.lastName ?? ""
+                        viewModel.homeCountry = user.homeCountry ?? ""
+                        viewModel.bio = user.bio ?? ""
+                        if let existingInterests = user.interests {
+                            viewModel.selectedInterests = Set(existingInterests)
                         }
                     }
                 }
-                .frame(height: 200)
-                .padding(.horizontal)
-                
-                Button {
-                    Task {
-                        do {
-                            try await viewModel.saveChanges(userId: userStateManager.currentUser?.userId ?? "")
-                            try await userStateManager.refreshUser()
-                            dismiss()
-                        } catch {
-                            isErrorAlertPresented = true
-                        }
-                    }
-                } label: {
-                    Text("Save Changes")
-                        .font(.title3)
-                }
-                .padding(.top, 10)
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Edit Profile")
-            .onAppear {
-                // Initialize text fields & selectedInterests from current user
-                if let user = userStateManager.currentUser {
-                    viewModel.firstName = user.firstName ?? ""
-                    viewModel.lastName = user.lastName ?? ""
-                    viewModel.homeCountry = user.homeCountry ?? ""
-                    viewModel.bio = user.bio ?? ""
-                    // Set up the interests if any exist
-                    if let existingInterests = user.interests {
-                        viewModel.selectedInterests = Set(existingInterests)
-                    }
-                }
-            }
-            // MARK: - Image Picker
-            .photosPicker(
-                isPresented: $isImagePickerPresented,
-                selection: $viewModel.imageSelection,
-                matching: .images
-            )
-            .onChange(of: viewModel.imageSelection) { _, newSelection in
-                Task {
-                    if let image = try await viewModel.loadImage(from: newSelection) {
-                        viewModel.selectedImage = image
-                    }
-                }
-            }
-            .alert(isPresented: $isErrorAlertPresented) {
-                Alert(
-                    title: Text("Error"),
-                    message: Text(viewModel.errorMessage ?? "Something went wrong."),
-                    dismissButton: .default(Text("OK"))
+                .photosPicker(
+                    isPresented: $isImagePickerPresented,
+                    selection: $viewModel.imageSelection,
+                    matching: .images
                 )
+                .onChange(of: viewModel.imageSelection) { _, newSelection in
+                    Task {
+                        if let image = try await viewModel.loadImage(from: newSelection) {
+                            viewModel.selectedImage = image
+                        }
+                    }
+                }
+                .alert(isPresented: $isErrorAlertPresented) {
+                    Alert(
+                        title: Text("Error"),
+                        message: Text(viewModel.errorMessage ?? "Something went wrong."),
+                        dismissButton: .default(Text("OK"))
+                    )
+                }
             }
         }
+
+    func interestTagView(for tag: Tag) -> some View {
+        Text(tag.rawValue)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(viewModel.selectedInterests.contains(tag) ? Color.green.opacity(0.2) : Color.gray.opacity(0.2))
+            .foregroundColor(viewModel.selectedInterests.contains(tag) ? .green : .gray)
+            .font(.footnote)
+            .clipShape(Capsule())
+            .onTapGesture {
+                if viewModel.selectedInterests.contains(tag) {
+                    viewModel.selectedInterests.remove(tag)
+                } else {
+                    viewModel.selectedInterests.insert(tag)
+                }
+            }
     }
+
 }
