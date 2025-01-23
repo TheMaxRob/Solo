@@ -44,6 +44,7 @@ struct MapView: View {
     @State private var searchResults = [SearchResult]()
     @State private var isSheetPresented: Bool = true
     @State private var scene: MKLookAroundScene?
+    @State private var showingTagFilter = false
     
     @State private var region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515),
@@ -90,9 +91,9 @@ struct MapView: View {
                 
                 // Date Range Button Overlay
                 VStack {
-                    
                     HStack {
                         
+                        // Calendar button
                         Button {
                             showingDatePicker.toggle()
                         } label: {
@@ -106,7 +107,7 @@ struct MapView: View {
                         }
                         .padding()
                         
-                        
+                        // Search Button
                         Button {
                             isSheetPresented = true
                         } label: {
@@ -116,9 +117,101 @@ struct MapView: View {
                                 .background(.ultraThinMaterial)
                                 .clipShape(Circle())
                         }
+                        
                     }
+                    
+                    HStack {
+                        
+                        Spacer()
+                        // Filter Button
+                        Button {
+                            showingTagFilter.toggle()
+                        } label: {
+                            Image(systemName: "slider.horizontal.3")
+                                .font(.system(size: 20))
+                                .padding()
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                        }
+                        .padding(.trailing, 10)
+                    }
+                    
+                    
                     Spacer()
                 }
+                
+                // Tag Filter Popup
+                if showingTagFilter {
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text("Filter by Tags")
+                                .font(.headline)
+                            Spacer()
+                            Button {
+                                showingTagFilter = false
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.gray)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top)
+                        
+                        Divider().padding(.horizontal, 8)
+                        
+                        // List (or grid) of tags
+                        ScrollView {
+                            LazyVStack(alignment: .leading) {
+                                ForEach(Tag.allCases, id: \.self) { tag in
+                                    // A toggle or a row that toggles membership in desiredTags
+                                    Button {
+                                        if viewModel.desiredTags.contains(tag) {
+                                            viewModel.desiredTags.remove(tag)
+                                        } else {
+                                            viewModel.desiredTags.insert(tag)
+                                        }
+                                    } label: {
+                                        HStack {
+                                            // Show a checkmark if selected
+                                            Image(systemName: viewModel.desiredTags.contains(tag)
+                                                  ? "checkmark.square"
+                                                  : "square")
+                                            Text(tag.rawValue)
+                                            Spacer()
+                                        }
+                                        .foregroundColor(.primary)
+                                    }
+                                    .padding(.vertical, 4)
+                                    .padding(.horizontal, 8)
+                                }
+                            }
+                        }
+                        .frame(maxHeight: 250)
+                        
+                        Divider().padding(.horizontal, 8)
+                        
+                        // Apply button
+                        Button("Apply") {
+                            Task {
+                                do {
+                                    try await viewModel.fetchMeetups(userStateManager: userStateManager)
+                                } catch {
+                                    print("Failed to fetch meetups: \(error)")
+                                }
+                            }
+                            showingTagFilter = false
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .padding()
+
+                    }
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .shadow(radius: 10)
+                    .padding()
+                    .transition(.scale)
+                }
+
                 
                 // Date Picker Popup
                 if showingDatePicker {

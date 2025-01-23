@@ -20,7 +20,7 @@ struct ProfileCreationView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) { // Added consistent spacing between sections
+                VStack(spacing: 16) {
                     
                     // Welcome Text
                     Text("Welcome!")
@@ -32,7 +32,7 @@ struct ProfileCreationView: View {
                         Image(uiImage: selectedImage)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 200, height: 200) // Adjusted size for a consistent design
+                            .frame(width: 200, height: 200)
                             .clipShape(Circle())
                             .overlay(Circle().stroke(Color.gray, lineWidth: 2))
                             .shadow(radius: 5)
