@@ -272,6 +272,9 @@ struct MapView: View {
             }
         }
         .onChange(of: tappedLocation) { _, newValue in
+            // Dismiss search sheet
+            isSheetPresented = false
+            
             // If there's a new tapped location, show the creation view
             if newValue != nil {
                 showingCreationView = true

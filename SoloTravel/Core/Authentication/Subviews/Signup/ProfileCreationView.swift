@@ -21,8 +21,6 @@ struct ProfileCreationView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    
-                    // Welcome Text
                     Text("Welcome!")
                         .bold()
                         .font(.title)
@@ -42,7 +40,7 @@ struct ProfileCreationView: View {
                     } else {
                         ZStack {
                             RoundedRectangle(cornerRadius: 25)
-                                .frame(width: 200, height: 200) // Adjusted size
+                                .frame(width: 200, height: 200)
                                 .foregroundStyle(Color(red: 0.95, green: 0.95, blue: 0.95))
                             
                             VStack {
@@ -68,13 +66,13 @@ struct ProfileCreationView: View {
                     
                     // Biography
                     CustomTextEditor(placeholder: "Tell us about yourself!", text: $viewModel.bio)
-                        .frame(height: 120) // Adjusted height for better layout
-                        .padding(.bottom, 20) // Added space below the editor
+                        .frame(height: 120)
+                        .padding(.bottom, 20)
                     
                     // Interests Section
                     Text("Select Your Interests")
                         .font(.headline)
-                        .padding(.bottom, 10) // Added space below the title
+                        .padding(.bottom, 10)
 
                     ScrollView {
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
@@ -84,7 +82,7 @@ struct ProfileCreationView: View {
                         }
                         .padding()
                     }
-                    .frame(height: 200) // Set consistent height for the interests section
+                    .frame(height: 200)
                     
                     // Save and Continue Button
                     NavigationLink {
