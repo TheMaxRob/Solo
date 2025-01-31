@@ -47,7 +47,7 @@ struct PublicProfileView: View {
                             .shadow(radius: 5)
                     }
                     
-                    Text("\(profileUser?.firstName ?? viewModel.profileUser?.firstName ?? "") \(profileUser?.lastName ?? viewModel.profileUser?.lastName ?? ""), \(profileUser?.age ?? viewModel.profileUser?.age ?? "")")
+                    Text("\(profileUser?.firstName ?? viewModel.profileUser?.firstName ?? "") \(profileUser?.lastName ?? viewModel.profileUser?.lastName ?? ""), \(profileUser?.ageRange?.rawValue ?? "")")
                         .font(.title)
                         .fontWeight(.bold)
                     

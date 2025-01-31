@@ -172,7 +172,7 @@ final class UserManager {
                     DBUser.CodingKeys.lastName.rawValue: lastName,
                     DBUser.CodingKeys.homeCountry.rawValue: country,
                     DBUser.CodingKeys.bio.rawValue: bio,
-                    DBUser.CodingKeys.age.rawValue: age,
+                    DBUser.CodingKeys.ageRange.rawValue: age,
                     DBUser.CodingKeys.photoURL.rawValue: photoURL,
                     DBUser.CodingKeys.interests.rawValue: selectedInterestNames
                 ]

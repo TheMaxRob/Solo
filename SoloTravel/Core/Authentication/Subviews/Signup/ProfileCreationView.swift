@@ -61,8 +61,33 @@ struct ProfileCreationView: View {
                     BottomLineTextField(placeholder: "First Name", text: $viewModel.firstName)
                     BottomLineTextField(placeholder: "Last Name", text: $viewModel.lastName)
                     BottomLineTextField(placeholder: "Home Country", text: $viewModel.homeCountry)
-                    BottomLineTextField(placeholder: "How old are you?", text: $viewModel.age)
-                        .padding(.top, 10)
+                    
+                    
+                    HStack(spacing: 12) {
+                        ForEach(AgeRange.allCases, id: \.self) { range in
+                            Button {
+                                // When tapped, set the selected age range
+                                viewModel.selectedAgeRange = range
+                            } label: {
+                                Text(range.rawValue)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        viewModel.selectedAgeRange == range
+                                        ? Color.blue.opacity(0.2)
+                                        : Color.gray.opacity(0.2)
+                                    )
+                                    .foregroundColor(
+                                        viewModel.selectedAgeRange == range
+                                        ? .blue
+                                        : .gray
+                                    )
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+
+                    
                     
                     // Biography
                     CustomTextEditor(placeholder: "Tell us about yourself!", text: $viewModel.bio)
