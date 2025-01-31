@@ -106,6 +106,22 @@ struct ProfileCreationView: View {
                     }
                     .padding()
                     
+                    
+                    
+                    Text("Social Links (Optional)")
+                        .font(.headline)
+                        .padding(.top, 16)
+                    
+                    BottomLineTextField(
+                        placeholder: "Facebook Username",
+                        text: $viewModel.facebookUsername
+                    )
+                    BottomLineTextField(
+                        placeholder: "Instagram Username",
+                        text: $viewModel.instagramUsername
+                    )
+
+                    
                     // Save and Continue Button
                     NavigationLink {
                         WelcomeView(isNotAuthenticated: $isNotAuthenticated, isShowingWelcomeView: $viewModel.isShowingWelcomeView)

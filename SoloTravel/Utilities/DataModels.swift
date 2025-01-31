@@ -288,6 +288,7 @@ struct DBUser: Codable, Identifiable, Equatable {
     var reportedUsers: [String]?
     var bookmarkedMeetups: [String]?
     var interests: [Tag]?
+    var socials: [String: String]?
     
     
     init(auth: AuthDataResultModel) {
@@ -308,6 +309,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.reportedUsers = []
         self.bookmarkedMeetups = []
         self.interests = []
+        self.socials = [:]
     }
     
     init(
@@ -321,7 +323,8 @@ struct DBUser: Codable, Identifiable, Equatable {
         homeCountry: String? = nil,
         ageRange: AgeRange? = nil,
         bio: String? = nil,
-        interests: [Tag]? = nil
+        interests: [Tag]? = nil,
+        socials: [String: String]? = nil
     ) {
         self.userId = userId
         self.email = email
@@ -344,6 +347,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.reportedUsers = []
         self.bookmarkedMeetups = []
         self.interests = interests
+        self.socials = socials
     }
     
     enum CodingKeys: String, CodingKey {
@@ -368,6 +372,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         case reportedUsers = "reported_users"
         case bookmarkedMeetups = "bookmarked_meetups"
         case interests = "interests"
+        case socials = "socials"
     }
     
     
@@ -394,6 +399,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.reportedUsers = try container.decodeIfPresent([String].self, forKey: .reportedUsers)
         self.bookmarkedMeetups = try container.decodeIfPresent([String].self, forKey: .bookmarkedMeetups)
         self.interests = try container.decodeIfPresent([Tag].self, forKey: .interests)
+        self.socials = try container.decodeIfPresent([String: String].self, forKey: .socials)
     }
     
     
@@ -420,6 +426,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         try container.encodeIfPresent(self.reportedUsers, forKey: .reportedUsers)
         try container.encodeIfPresent(self.bookmarkedMeetups, forKey: .bookmarkedMeetups)
         try container.encodeIfPresent(self.interests, forKey: .interests)
+        try container.encodeIfPresent(self.socials, forKey: .socials)
     }
 }
 

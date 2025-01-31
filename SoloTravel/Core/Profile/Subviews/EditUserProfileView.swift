@@ -21,6 +21,10 @@ final class EditUserProfileViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var selectedInterests: Set<Tag> = []
     @Published var selectedAgeRange: AgeRange? = nil
+    
+    @Published var facebookUsername: String = ""
+    @Published var instagramUsername: String = ""
+
 
     func loadImage(from item: PhotosPickerItem?) async throws  -> UIImage? {
         guard let item = item else { return nil }
@@ -51,11 +55,15 @@ final class EditUserProfileViewModel: ObservableObject {
         if !bio.isEmpty {
             updateFields[DBUser.CodingKeys.bio.rawValue] = bio
         }
-        
-        // Save age range if selected
         if let selectedAgeRange = selectedAgeRange {
             updateFields[DBUser.CodingKeys.ageRange.rawValue] = selectedAgeRange.rawValue
         }
+        
+        let updatedSocials: [String: String] = [
+            "facebook": facebookUsername,
+            "instagram": instagramUsername
+        ]
+        updateFields[DBUser.CodingKeys.socials.rawValue] = updatedSocials
         
         let interestsArray = selectedInterests.map(\.rawValue)
         updateFields[DBUser.CodingKeys.interests.rawValue] = interestsArray
@@ -191,6 +199,21 @@ struct EditUserProfileView: View {
                     }
                     .frame(height: 200)
                     
+                    
+                    // MARK: - Social Fields
+                    Text("Social Links (Optional)")
+                        .font(.headline)
+                    // Facebook
+                    BottomLineTextField(
+                        placeholder: "Facebook Username",
+                        text: $viewModel.facebookUsername
+                    )
+                    // Instagram
+                    BottomLineTextField(
+                        placeholder: "Instagram Username",
+                        text: $viewModel.instagramUsername
+                    )
+                    
                     Button {
                         Task {
                             do {
@@ -228,6 +251,11 @@ struct EditUserProfileView: View {
                     if let existingInterests = user.interests {
                         viewModel.selectedInterests = Set(existingInterests)
                     }
+                    
+                    if let userSocials = user.socials {
+                                            viewModel.facebookUsername = userSocials["facebook"] ?? ""
+                                            viewModel.instagramUsername = userSocials["instagram"] ?? ""
+                                        }
                 }
             }
             .photosPicker(

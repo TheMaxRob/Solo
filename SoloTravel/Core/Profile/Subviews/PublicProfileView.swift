@@ -10,6 +10,7 @@ import SwiftUI
 struct PublicProfileView: View {
     
     @StateObject private var viewModel = PublicProfileViewModel()
+    
     //var userId: String
     var profileUser: DBUser?
     var profileUserId: String?
@@ -27,7 +28,8 @@ struct PublicProfileView: View {
         userStateManager.currentUser?.blockedBy?.contains(viewModel.profileUser?.userId ?? "") == true
     }
     @EnvironmentObject private var userStateManager: UserStateManager
-
+    @Environment(\.openURL) var openURL
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -50,6 +52,40 @@ struct PublicProfileView: View {
                     Text("\(profileUser?.firstName ?? viewModel.profileUser?.firstName ?? "") \(profileUser?.lastName ?? viewModel.profileUser?.lastName ?? ""), \(profileUser?.ageRange?.rawValue ?? "")")
                         .font(.title)
                         .fontWeight(.bold)
+                    
+                    // If the user has ANY socials, show them in an HStack
+                    if let userSocials = profileUser?.socials, !userSocials.isEmpty {
+                        HStack(spacing: 20) {
+                            // FACEBOOK
+                            if let facebookHandle = userSocials["facebook"], !facebookHandle.isEmpty {
+                                Button {
+                                    if let url = URL(string: "https://facebook.com/\(facebookHandle)") {
+                                        openURL(url)
+                                    }
+                                } label: {
+                                    Image(systemName: "book")
+                                        .resizable()
+                                        .frame(width: 32, height: 32)
+                                }
+                            }
+                            
+                            // INSTAGRAM
+                            if let instagramHandle = userSocials["instagram"], !instagramHandle.isEmpty {
+                                Button {
+                                    // Compose the Instagram URL
+                                    if let url = URL(string: "https://instagram.com/\(instagramHandle)") {
+                                        openURL(url)
+                                    }
+                                } label: {
+                                    Image(systemName: "camera")
+                                        .resizable()
+                                        .frame(width: 40, height: 32)
+                                }
+                            }
+                        }
+                        .padding()
+                    }
+
                     
                     // Message button
                     Button {
