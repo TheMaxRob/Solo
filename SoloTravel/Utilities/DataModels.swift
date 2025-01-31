@@ -256,6 +256,15 @@ struct Conversation: Codable, Identifiable {
     }
 }
 
+enum AgeRange: String, Codable, CaseIterable {
+    case range18to25 = "18-25"
+    case range26to30 = "26-30"
+    case range31to35 = "31-35"
+    case range36to40 = "36-40"
+    case range40Plus  = "40+"
+}
+
+
 struct DBUser: Codable, Identifiable, Equatable {
     var id: String { userId }
     let userId: String
@@ -269,7 +278,7 @@ struct DBUser: Codable, Identifiable, Equatable {
     let createdMeetups: [String]?
     let conversations: [String]?
     let homeCountry: String?
-    let age: String?
+    let ageRange: AgeRange?
     let bio: String?
     var hasUnreadMessages: Bool?
     var blockedUsers: [String]?
@@ -293,7 +302,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.createdMeetups = []
         self.conversations = []
         self.homeCountry = ""
-        self.age = ""
+        self.ageRange = nil
         self.bio = ""
         self.hasUnreadMessages = false
         self.reportedUsers = []
@@ -310,7 +319,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         createdMeetups: [String]? = [],
         conversations: [String]? = [],
         homeCountry: String? = nil,
-        age: String? = nil,
+        ageRange: AgeRange? = nil,
         bio: String? = nil,
         interests: [Tag]? = nil
     ) {
@@ -325,7 +334,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.createdMeetups = []
         self.conversations = []
         self.homeCountry = homeCountry
-        self.age = age
+        self.ageRange = ageRange
         self.bio = bio
         self.hasUnreadMessages = false
         self.blockedUsers = []
@@ -349,7 +358,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         case createdMeetups = "created_meetups"
         case conversations = "conversations"
         case homeCountry = "home_country"
-        case age = "age"
+        case ageRange = "age_range"
         case bio = "bio"
         case hasUnreadMessages = "has_unread_messages"
         case blockedUsers = "blocked_users"
@@ -375,7 +384,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         self.createdMeetups = try container.decodeIfPresent([String].self, forKey: .createdMeetups)
         self.conversations = try container.decodeIfPresent([String].self, forKey: .conversations)
         self.homeCountry = try container.decodeIfPresent(String.self, forKey: .homeCountry)
-        self.age = try container.decodeIfPresent(String.self, forKey: .age)
+        self.ageRange = try container.decodeIfPresent(AgeRange.self, forKey: .ageRange)
         self.bio = try container.decodeIfPresent(String.self, forKey: .bio)
         self.hasUnreadMessages = try container.decodeIfPresent(Bool.self, forKey: .hasUnreadMessages)
         self.blockedUsers = try container.decodeIfPresent([String].self, forKey: .blockedUsers)
@@ -401,7 +410,7 @@ struct DBUser: Codable, Identifiable, Equatable {
         try container.encodeIfPresent(self.createdMeetups, forKey: .createdMeetups)
         try container.encodeIfPresent(self.conversations, forKey: .conversations)
         try container.encodeIfPresent(self.homeCountry, forKey: .homeCountry)
-        try container.encodeIfPresent(self.age, forKey: .age)
+        try container.encodeIfPresent(self.ageRange?.rawValue, forKey: .ageRange)
         try container.encodeIfPresent(self.bio, forKey: .bio)
         try container.encodeIfPresent(self.hasUnreadMessages, forKey: .hasUnreadMessages)
         try container.encodeIfPresent(self.blockedUsers, forKey: .blockedUsers)

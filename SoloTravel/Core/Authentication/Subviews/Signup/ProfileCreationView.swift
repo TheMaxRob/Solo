@@ -25,7 +25,7 @@ struct ProfileCreationView: View {
                         .bold()
                         .font(.title)
                     
-                    // Profile Picture
+                    // Profile Picture (unchanged)
                     if let selectedImage = viewModel.selectedImage {
                         Image(uiImage: selectedImage)
                             .resizable()
@@ -61,28 +61,50 @@ struct ProfileCreationView: View {
                     BottomLineTextField(placeholder: "First Name", text: $viewModel.firstName)
                     BottomLineTextField(placeholder: "Last Name", text: $viewModel.lastName)
                     BottomLineTextField(placeholder: "Home Country", text: $viewModel.homeCountry)
-                    BottomLineTextField(placeholder: "How old are you?", text: $viewModel.age)
-                        .padding(.top, 10)
+                    
+                    // Age Range Selection
+                    Text("How Old Are You?")
+                    HStack(spacing: 12) {
+                        ForEach(AgeRange.allCases, id: \.self) { range in
+                            Button {
+                                viewModel.selectedAgeRange = range
+                            } label: {
+                                Text(range.rawValue)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        viewModel.selectedAgeRange == range
+                                        ? Color.blue.opacity(0.2)
+                                        : Color.gray.opacity(0.2)
+                                    )
+                                    .foregroundColor(
+                                        viewModel.selectedAgeRange == range
+                                        ? .blue
+                                        : .gray
+                                    )
+                                    .clipShape(Capsule())
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+                            }
+                        }
+                    }
+                    .padding(.bottom, 30)
                     
                     // Biography
                     CustomTextEditor(placeholder: "Tell us about yourself!", text: $viewModel.bio)
-                        .frame(height: 120)
                         .padding(.bottom, 20)
                     
                     // Interests Section
                     Text("Select Your Interests")
                         .font(.headline)
                         .padding(.bottom, 10)
-
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                            ForEach(Tag.allCases, id: \.self) { tag in
-                                interestTagView(for: tag)
-                            }
+                    
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        ForEach(Tag.allCases, id: \.self) { tag in
+                            interestTagView(for: tag)
                         }
-                        .padding()
                     }
-                    .frame(height: 200)
+                    .padding()
                     
                     // Save and Continue Button
                     NavigationLink {

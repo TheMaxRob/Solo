@@ -19,9 +19,8 @@ final class EditUserProfileViewModel: ObservableObject {
     @Published var imageSelection: PhotosPickerItem? = nil
     @Published var selectedImage: UIImage? = nil
     @Published var errorMessage: String? = nil
-    
-    // NEW: A set of selected interests
     @Published var selectedInterests: Set<Tag> = []
+    @Published var selectedAgeRange: AgeRange? = nil
 
     func loadImage(from item: PhotosPickerItem?) async throws  -> UIImage? {
         guard let item = item else { return nil }
@@ -53,6 +52,11 @@ final class EditUserProfileViewModel: ObservableObject {
             updateFields[DBUser.CodingKeys.bio.rawValue] = bio
         }
         
+        // Save age range if selected
+        if let selectedAgeRange = selectedAgeRange {
+            updateFields[DBUser.CodingKeys.ageRange.rawValue] = selectedAgeRange.rawValue
+        }
+        
         let interestsArray = selectedInterests.map(\.rawValue)
         updateFields[DBUser.CodingKeys.interests.rawValue] = interestsArray
         
@@ -77,6 +81,7 @@ final class EditUserProfileViewModel: ObservableObject {
     }
 }
 
+
 struct EditUserProfileView: View {
     
     @StateObject var viewModel = EditUserProfileViewModel()
@@ -87,143 +92,180 @@ struct EditUserProfileView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-            NavigationStack {
-                ScrollView {
-                    VStack(spacing: 16) {
-                        
-                        // MARK: - Profile Image
-                        if let selectedImage = viewModel.selectedImage {
-                            Image(uiImage: selectedImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                                .shadow(radius: 5)
-                        } else {
-                            Image(systemName: "person.circle.fill")
-                                .foregroundStyle(.gray)
-                                .font(.system(size: 85))
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                                .shadow(radius: 5)
-                        }
-                        
-                        Button {
-                            isImagePickerPresented.toggle()
-                        } label: {
-                            Text("Upload profile picture")
-                                .font(.caption)
-                                .foregroundStyle(.gray)
-                        }
-                        
-                        // MARK: - Text Fields
-                        BottomLineTextField(
-                            placeholder: "\(userStateManager.currentUser?.firstName ?? "First Name")",
-                            text: $viewModel.firstName
-                        )
-                        
-                        BottomLineTextField(
-                            placeholder: "\(userStateManager.currentUser?.lastName ?? "Last Name")",
-                            text: $viewModel.lastName
-                        )
-                        
-                        BottomLineTextField(
-                            placeholder: "\(userStateManager.currentUser?.homeCountry ?? "Home Country")",
-                            text: $viewModel.homeCountry
-                        )
-                        
-                        CustomTextEditor(
-                            placeholder: "\(userStateManager.currentUser?.bio ?? "Your Biography")",
-                            text: $viewModel.bio
-                        )
-                        .frame(minHeight: 120)
-                        .padding(.bottom, 20) // Add extra space below the text editor
-                        
-                        // MARK: - Interests Selection
-                        Text("Select Your Interests")
-                            .font(.headline)
-                            .padding(.bottom, 10) // Add space below the title
-
-                        ScrollView { // Wrap the grid in a ScrollView for proper scrolling
-                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                                ForEach(Tag.allCases, id: \.self) { tag in
-                                    interestTagView(for: tag)
-                                }
-                            }
-                            .padding()
-                        }
-                        .frame(height: 200)
-                        
-                        Button {
-                            Task {
-                                do {
-                                    try await viewModel.saveChanges(userId: userStateManager.currentUser?.userId ?? "")
-                                    try await userStateManager.refreshUser()
-                                    dismiss()
-                                } catch {
-                                    isErrorAlertPresented = true
-                                }
-                            }
-                        } label: {
-                            Text("Save Changes")
-                                .font(.title3)
-                        }
-                        .padding(.top, 10)
-                        
-                        Spacer()
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    
+                    // MARK: - Profile Image
+                    if let selectedImage = viewModel.selectedImage {
+                        Image(uiImage: selectedImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                            .shadow(radius: 5)
+                    } else {
+                        Image(systemName: "person.circle.fill")
+                            .foregroundStyle(.gray)
+                            .font(.system(size: 85))
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                            .shadow(radius: 5)
                     }
-                    .padding()
-                }
-                .navigationTitle("Edit Profile")
-                .onAppear {
-                    if let user = userStateManager.currentUser {
-                        viewModel.firstName = user.firstName ?? ""
-                        viewModel.lastName = user.lastName ?? ""
-                        viewModel.homeCountry = user.homeCountry ?? ""
-                        viewModel.bio = user.bio ?? ""
-                        if let existingInterests = user.interests {
-                            viewModel.selectedInterests = Set(existingInterests)
-                        }
+                    
+                    Button {
+                        isImagePickerPresented.toggle()
+                    } label: {
+                        Text("Upload profile picture")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
                     }
-                }
-                .photosPicker(
-                    isPresented: $isImagePickerPresented,
-                    selection: $viewModel.imageSelection,
-                    matching: .images
-                )
-                .onChange(of: viewModel.imageSelection) { _, newSelection in
-                    Task {
-                        if let image = try await viewModel.loadImage(from: newSelection) {
-                            viewModel.selectedImage = image
-                        }
-                    }
-                }
-                .alert(isPresented: $isErrorAlertPresented) {
-                    Alert(
-                        title: Text("Error"),
-                        message: Text(viewModel.errorMessage ?? "Something went wrong."),
-                        dismissButton: .default(Text("OK"))
+                    
+                    // MARK: - Text Fields
+                    BottomLineTextField(
+                        placeholder: "\(userStateManager.currentUser?.firstName ?? "First Name")",
+                        text: $viewModel.firstName
                     )
+                    
+                    BottomLineTextField(
+                        placeholder: "\(userStateManager.currentUser?.lastName ?? "Last Name")",
+                        text: $viewModel.lastName
+                    )
+                    
+                    BottomLineTextField(
+                        placeholder: "\(userStateManager.currentUser?.homeCountry ?? "Home Country")",
+                        text: $viewModel.homeCountry
+                    )
+                    
+                    // MARK: - Age Range Selection
+                    Text("Select Your Age Range")
+                        .font(.headline)
+                    
+                    HStack(spacing: 12) {
+                        ForEach(AgeRange.allCases, id: \.self) { range in
+                            Button {
+                                viewModel.selectedAgeRange = range
+                            } label: {
+                                Text(range.rawValue)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        viewModel.selectedAgeRange == range
+                                        ? Color.blue.opacity(0.2)
+                                        : Color.gray.opacity(0.2)
+                                    )
+                                    .foregroundColor(
+                                        viewModel.selectedAgeRange == range
+                                        ? .blue
+                                        : .gray
+                                    )
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+                    .padding(.bottom, 30)
+                    
+                    // MARK: - Biography
+                    CustomTextEditor(
+                        placeholder: "\(userStateManager.currentUser?.bio ?? "Your Biography")",
+                        text: $viewModel.bio
+                    )
+                    .frame(minHeight: 120)
+                    .padding(.bottom, 20)
+                    
+                    // MARK: - Interests Selection
+                    Text("Select Your Interests")
+                        .font(.headline)
+                        .padding(.bottom, 10)
+                    
+                    ScrollView {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                            ForEach(Tag.allCases, id: \.self) { tag in
+                                interestTagView(for: tag)
+                            }
+                        }
+                        .padding()
+                    }
+                    .frame(height: 200)
+                    
+                    Button {
+                        Task {
+                            do {
+                                try await viewModel.saveChanges(userId: userStateManager.currentUser?.userId ?? "")
+                                try await userStateManager.refreshUser()
+                                dismiss()
+                            } catch {
+                                isErrorAlertPresented = true
+                            }
+                        }
+                    } label: {
+                        Text("Save Changes")
+                            .font(.title3)
+                    }
+                    .padding(.top, 10)
+                    
+                    Spacer()
                 }
+                .padding()
+            }
+            .navigationTitle("Edit Profile")
+            .onAppear {
+                if let user = userStateManager.currentUser {
+                    viewModel.firstName = user.firstName ?? ""
+                    viewModel.lastName = user.lastName ?? ""
+                    viewModel.homeCountry = user.homeCountry ?? ""
+                    viewModel.bio = user.bio ?? ""
+                    
+                    // Load the user's age range if available.
+                    if let ageRangeString = user.ageRange?.rawValue,
+                       let ageRange = AgeRange(rawValue: ageRangeString) {
+                        viewModel.selectedAgeRange = ageRange
+                    }
+                    
+                    if let existingInterests = user.interests {
+                        viewModel.selectedInterests = Set(existingInterests)
+                    }
+                }
+            }
+            .photosPicker(
+                isPresented: $isImagePickerPresented,
+                selection: $viewModel.imageSelection,
+                matching: .images
+            )
+            .onChange(of: viewModel.imageSelection) { _, newSelection in
+                Task {
+                    if let image = try await viewModel.loadImage(from: newSelection) {
+                        viewModel.selectedImage = image
+                    }
+                }
+            }
+            .alert(isPresented: $isErrorAlertPresented) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(viewModel.errorMessage ?? "Something went wrong."),
+                    dismissButton: .default(Text("OK"))
+                )
             }
         }
-
-    func interestTagView(for tag: Tag) -> some View {
-        Text(tag.rawValue)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(viewModel.selectedInterests.contains(tag) ? Color.green.opacity(0.2) : Color.gray.opacity(0.2))
-            .foregroundColor(viewModel.selectedInterests.contains(tag) ? .green : .gray)
-            .font(.footnote)
-            .clipShape(Capsule())
-            .onTapGesture {
-                if viewModel.selectedInterests.contains(tag) {
-                    viewModel.selectedInterests.remove(tag)
-                } else {
-                    viewModel.selectedInterests.insert(tag)
-                }
-            }
     }
-
+    
+    func interestTagView(for tag: Tag) -> some View {
+            Text(tag.rawValue)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(viewModel.selectedInterests.contains(tag) ? Color.green.opacity(0.2) : Color.gray.opacity(0.2))
+                .foregroundColor(viewModel.selectedInterests.contains(tag) ? .green : .gray)
+                .font(.footnote)
+                .clipShape(Capsule())
+                .onTapGesture {
+                    if viewModel.selectedInterests.contains(tag) {
+                        viewModel.selectedInterests.remove(tag)
+                    } else {
+                        viewModel.selectedInterests.insert(tag)
+                    }
+                }
+        }
 }
