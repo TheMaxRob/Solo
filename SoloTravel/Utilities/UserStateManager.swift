@@ -17,6 +17,7 @@ final class UserStateManager: ObservableObject {
     
     func updateUser(_ user: DBUser) {
         self.currentUser = user
+        CrashManager.shared.setUserId(userId: user.userId)
     }
     
     
@@ -60,7 +61,7 @@ final class UserStateManager: ObservableObject {
             print("Fetched user from Firestore with id = \(fetchedUser.userId)")
             
             self.currentUser = fetchedUser
-
+            CrashManager.shared.setUserId(userId: self.currentUser?.userId ?? "")
             // Load and cache the profile image
             if let _ = currentUser?.photoURL {
                 try await loadProfileImage(from: currentUser?.photoURL ?? "")
@@ -76,7 +77,7 @@ final class UserStateManager: ObservableObject {
     func refreshUser() async throws {
         guard let userId = currentUser?.userId else { return }
         self.currentUser = try await UserManager.shared.fetchUser(userId: userId)
-        
+        CrashManager.shared.setUserId(userId: userId)
         // Refresh and cache the profile image
         if let _ = currentUser?.photoURL {
             try await loadProfileImage(from: currentUser?.photoURL ?? "")

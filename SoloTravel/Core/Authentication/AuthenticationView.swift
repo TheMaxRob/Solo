@@ -21,46 +21,53 @@ struct AuthenticationView: View {
     @Binding var isNotAuthenticated: Bool
     
     var body: some View {
-        NavigationStack {
-            
-            VStack {
-                
-                Image("EiffelTower 1")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 550)
-                    .padding(.top, 30)
-                    .padding(.bottom, 5)
-                    
-                
-                
-                NavigationLink {
-                    SignInEmailView(isNotAuthenticated: $isNotAuthenticated, showSignInView: $viewModel.showSignInView)
-                } label: {
-                    Text("Sign in with Email")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .frame(height: 55)
-                        .frame(maxWidth: .infinity)
-                        .background(.blue)
-                        .cornerRadius(10)
-                }
-                
-                NavigationLink {
-                    CreateAccountView(showCreateAccountView: $viewModel.showCreateAccountView, isNotAuthenticated: $isNotAuthenticated)
-                } label: {
-                    Text("Create Account")
-                        .font(.headline)
-                        .padding()
-                        .font(.headline)
-                        .foregroundStyle(.blue)
-                        .cornerRadius(10)
-                }
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Sign In")
+        Button("Crash") {
+            fatalError("Test Crash")
         }
+
+//        NavigationStack {
+//            
+//            
+//            
+//            VStack {
+//                
+//                                
+//                Image("EiffelTower 1")
+//                    .resizable()
+//                    .scaledToFill()
+//                    .frame(height: 550)
+//                    .padding(.top, 30)
+//                    .padding(.bottom, 5)
+//                    
+//                
+//                
+//                NavigationLink {
+//                    SignInEmailView(isNotAuthenticated: $isNotAuthenticated, showSignInView: $viewModel.showSignInView)
+//                } label: {
+//                    Text("Sign in with Email")
+//                        .font(.headline)
+//                        .foregroundStyle(.white)
+//                        .frame(height: 55)
+//                        .frame(maxWidth: .infinity)
+//                        .background(.blue)
+//                        .cornerRadius(10)
+//                }
+//                
+//                NavigationLink {
+//                    CreateAccountView(showCreateAccountView: $viewModel.showCreateAccountView, isNotAuthenticated: $isNotAuthenticated)
+//                } label: {
+//                    Text("Create Account")
+//                        .font(.headline)
+//                        .padding()
+//                        .font(.headline)
+//                        .foregroundStyle(.blue)
+//                        .cornerRadius(10)
+//                }
+//                Spacer()
+//            }
+//            .padding()
+//            .navigationTitle("Sign In")
+//        }
     }
 }
 

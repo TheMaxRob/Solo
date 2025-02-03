@@ -13,6 +13,7 @@
 		920E50312C0C144400368677 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 920E50302C0C144400368677 /* GoogleService-Info.plist */; };
 		920E50332C0C18F500368677 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920E50322C0C18F500368677 /* SettingsViewModel.swift */; };
 		9212B0522D35FC7A004E249D /* MeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9212B0512D35FC7A004E249D /* MeetupView.swift */; };
+		923647102D51689A00970468 /* CrashManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9236470F2D51689A00970468 /* CrashManager.swift */; };
 		923E94282C3E2F58002AE12B /* RequestedMeetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */; };
 		923E942A2C3E34EB002AE12B /* UserPFPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E94292C3E34EB002AE12B /* UserPFPView.swift */; };
 		925180FE2C25F735003F8ACA /* ProfilePicturesCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */; };
@@ -111,6 +112,7 @@
 		920E50302C0C144400368677 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		920E50322C0C18F500368677 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		9212B0512D35FC7A004E249D /* MeetupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetupView.swift; sourceTree = "<group>"; };
+		9236470F2D51689A00970468 /* CrashManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashManager.swift; sourceTree = "<group>"; };
 		923E94272C3E2F58002AE12B /* RequestedMeetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestedMeetupView.swift; sourceTree = "<group>"; };
 		923E94292C3E34EB002AE12B /* UserPFPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPFPView.swift; sourceTree = "<group>"; };
 		925180FD2C25F735003F8ACA /* ProfilePicturesCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicturesCreationView.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 		92D2F8002BCE7DCB0057534B = {
 			isa = PBXGroup;
 			children = (
+				9236470F2D51689A00970468 /* CrashManager.swift */,
 				92D2F80B2BCE7DCB0057534B /* SoloTravel */,
 				920E50302C0C144400368677 /* GoogleService-Info.plist */,
 				92D2F81C2BCE7DCD0057534B /* SoloTravelTests */,
@@ -487,6 +490,7 @@
 				92D2F8052BCE7DCB0057534B /* Sources */,
 				92D2F8062BCE7DCB0057534B /* Frameworks */,
 				92D2F8072BCE7DCB0057534B /* Resources */,
+				9236470E2D5145A300970468 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -618,6 +622,32 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		9236470E2D5145A300970468 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(SRCROOT)/$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(SRCROOT)/$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}.debug.dylib",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		92D2F8052BCE7DCB0057534B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -648,6 +678,7 @@
 				9287213A2C29338A004176B6 /* BookmarkedMeetupsView.swift in Sources */,
 				92037BC02D3C795900CA83A1 /* ClusterMapViewRepresentable.swift in Sources */,
 				92736A232C43125200D8266C /* MeetupDetailsViewModel.swift in Sources */,
+				923647102D51689A00970468 /* CrashManager.swift in Sources */,
 				92F1A70D2C0FC6B000649E6D /* MeetupManager.swift in Sources */,
 				92A8FF8C2C3C40980025FAA9 /* CheckMarkButton.swift in Sources */,
 				925B35EC2BE2EBC200DAF991 /* AuthenticationView.swift in Sources */,
@@ -848,9 +879,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"SoloTravel/Preview Content\"";
 				DEVELOPMENT_TEAM = 9QHY7Y942C;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SoloTravel/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Solo;
@@ -879,9 +912,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"SoloTravel/Preview Content\"";
 				DEVELOPMENT_TEAM = 9QHY7Y942C;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SoloTravel/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Solo;
