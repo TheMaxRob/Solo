@@ -10,28 +10,34 @@ import FirebaseAuth
 
 struct RootView: View {
     @EnvironmentObject private var userStateManager: UserStateManager
-    @State var isNotAuthenticated: Bool = false
+    @State private var isNotAuthenticated: Bool = false
     
     var body: some View {
-        ZStack {
-            NavigationStack {
-                SoloTabView(isNotAuthenticated: $isNotAuthenticated)
+        Group {
+            if isNotAuthenticated {
+                NavigationStack {
+                    AuthenticationView(showAuthenticationView: $isNotAuthenticated,
+                                       isNotAuthenticated: $isNotAuthenticated)
+                }
+            } else {
+                NavigationStack {
+                    SoloTabView(isNotAuthenticated: $isNotAuthenticated)
+                }
             }
         }
         .onAppear {
-            Task { try await userStateManager.loadUser() }
-        }
-        .onChange(of: userStateManager.currentUser) { _, newUser in
-            isNotAuthenticated = newUser == nil
             Task {
-                try await userStateManager.refreshUser()
+                do {
+                    try await userStateManager.loadUser()
+                } catch {
+                    print("Error loading user: \(error)")
+                }
+                isNotAuthenticated = userStateManager.currentUser == nil
             }
         }
-        .fullScreenCover(isPresented: $isNotAuthenticated, content: {
-            NavigationStack {
-                AuthenticationView(showAuthenticationView: $isNotAuthenticated, isNotAuthenticated: $isNotAuthenticated)
-            }
-        })
+        .onChange(of: userStateManager.currentUser) { oldUser, newUser in
+            isNotAuthenticated = (newUser == nil)
+        }
     }
 }
 

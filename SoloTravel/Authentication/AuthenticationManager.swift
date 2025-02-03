@@ -43,8 +43,10 @@ final class AuthenticationManager {
     
     func getAuthenticatedUser() throws -> AuthDataResultModel {
         guard let user = Auth.auth().currentUser else {
+            print("no authenticated user found")
             throw URLError(.badServerResponse)
         }
+        print("Auth.auth().currentUser exists, returning \(user)")
         return AuthDataResultModel(user: user)
     }
     

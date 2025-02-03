@@ -52,12 +52,23 @@ final class UserStateManager: ObservableObject {
     
     
     func loadUser() async throws {
-        let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
-        self.currentUser = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
-        
-        // Load and cache the profile image
-        if let _ = currentUser?.photoURL {
-            try await loadProfileImage(from: currentUser?.photoURL ?? "")
+        do {
+            let authDataResult = try AuthenticationManager.shared.getAuthenticatedUser()
+            print("Got authDataResult, uid = \(authDataResult.uid)")
+            
+            let fetchedUser = try await UserManager.shared.fetchUser(userId: authDataResult.uid)
+            print("Fetched user from Firestore with id = \(fetchedUser.userId)")
+            
+            self.currentUser = fetchedUser
+
+            // Load and cache the profile image
+            if let _ = currentUser?.photoURL {
+                try await loadProfileImage(from: currentUser?.photoURL ?? "")
+            }
+        } catch {
+            print("No authenticated Firebase user or fetch failed, setting currentUser = nil")
+            self.currentUser = nil
+            throw error
         }
     }
     
