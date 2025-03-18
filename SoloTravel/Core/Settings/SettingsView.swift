@@ -43,6 +43,9 @@ struct SettingsView: View {
                     Text("Delete Account")
                 }
                 emailSection
+                    .padding()
+                
+                contactUs
             }
             .alert(isPresented: $isErrorAlertPresented) {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Something went wrong."), dismissButton: .default(Text("OK")))
@@ -89,4 +92,33 @@ extension SettingsView {
             Text("Email Section")
         }
     }
+    
+    private var contactUs: some View {
+        Section {
+            Button("Customer Support") {
+                openEmailSupport()
+            }
+            
+            Button("Report a Bug") {
+                openBugReportPage()
+            }
+        } header: {
+            Text("Contact Us")
+        }
+    }
+
+    private func openEmailSupport() {
+        let email = "support@solotravel.com"
+        let subject = "Customer Support Request"
+        if let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+           let url = URL(string: "mailto:\(email)?subject=\(encodedSubject)") {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    private func openBugReportPage() {
+        let url = URL(string: "https://solotravel.com/report-bug")!
+        UIApplication.shared.open(url)
+    }
+
 }
