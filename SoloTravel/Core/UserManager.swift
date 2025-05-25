@@ -156,7 +156,8 @@ final class UserManager {
                            bio: String,
                            age: String,
                            photoURL: String,
-                           selectedInterests: [Tag]) async throws {
+                           selectedInterests: [Tag],
+                           socials: [String: String] ) async throws {
         print("createUserProfile called")
         guard !userId.isEmpty else {
             throw UserManagerError.invalidUserId
@@ -172,9 +173,10 @@ final class UserManager {
                     DBUser.CodingKeys.lastName.rawValue: lastName,
                     DBUser.CodingKeys.homeCountry.rawValue: country,
                     DBUser.CodingKeys.bio.rawValue: bio,
-                    DBUser.CodingKeys.age.rawValue: age,
+                    DBUser.CodingKeys.ageRange.rawValue: age,
                     DBUser.CodingKeys.photoURL.rawValue: photoURL,
-                    DBUser.CodingKeys.interests.rawValue: selectedInterestNames
+                    DBUser.CodingKeys.interests.rawValue: selectedInterestNames,
+                    DBUser.CodingKeys.socials.rawValue: socials
                 ]
                 try await userCollection.document(userId).updateData(userProfile)
             } else {

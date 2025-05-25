@@ -16,12 +16,9 @@ struct TestView: View {
     @StateObject private var viewModel = TestViewModel()
     
     var body: some View {
-        Text("Message")
-            .frame(width: 125, height: 40)
-            .background(.black)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .foregroundStyle(.white)
+        Text("Hello")
     }
+    
 }
 
 #Preview {
